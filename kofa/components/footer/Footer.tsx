@@ -4,43 +4,19 @@ import { MotionToggle } from "@/components/ui/MotionToggle";
 import { LogoMark } from "@/components/ui/LogoMark";
 import { TextLink } from "@/components/ui/Button";
 import { AnimatedDivider } from "@/components/motion/Reveal";
+import { Rise } from "@/components/motion/Rise";
 import { nav, site } from "@/data/site";
 import { activeCategories } from "@/data/portfolio";
 
-/** Faint scientific line graphic, concentric arcs, drawn as hairlines. */
-function FooterLines() {
-  return (
-    <svg
-      aria-hidden="true"
-      className="pointer-events-none absolute -right-[14%] -top-[38%] h-[190%] w-auto text-teal opacity-[0.13] sm:-right-[6%]"
-      viewBox="0 0 600 600"
-      fill="none"
-    >
-      {[110, 168, 226, 284, 342, 400].map((r, i) => (
-        <circle
-          key={r}
-          cx="300"
-          cy="300"
-          r={r}
-          stroke="currentColor"
-          strokeWidth="1"
-          strokeDasharray={i % 2 ? "2 9" : undefined}
-          vectorEffect="non-scaling-stroke"
-        />
-      ))}
-      <line x1="0" y1="300" x2="600" y2="300" stroke="currentColor" strokeWidth="1" />
-      <line x1="300" y1="0" x2="300" y2="600" stroke="currentColor" strokeWidth="1" />
-      {[
-        [300, 190],
-        [358, 300],
-        [242, 358],
-        [416, 416],
-      ].map(([cx, cy]) => (
-        <circle key={`${cx}-${cy}`} cx={cx} cy={cy} r="3" fill="currentColor" />
-      ))}
-    </svg>
-  );
-}
+/* The concentric-arc graphic that used to sit here (six circles, a full-width
+   horizontal and a full-height vertical crossing at their centre, plus four
+   seated dots) has been removed. At 190% of the footer's height it put a large
+   crosshair behind the directory, and a crosshair is a targeting reticle, not
+   a network motif — it read as decoration for its own sake rather than as part
+   of the living-network language the rest of the site uses.
+
+   Its removal is also why this file no longer needs `overflow-hidden` on the
+   root element: that clip existed solely as a bleed guard for the graphic. */
 
 /**
  * Standalone footer link.
@@ -87,44 +63,67 @@ export function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="relative overflow-hidden border-t border-rule bg-ivory-deep">
-      <FooterLines />
-
+    <footer className="relative border-t border-rule bg-ivory-deep">
       <Container className="relative">
-        {/* Closing phrase, the last thing the page says. */}
-        <div className="pt-[clamp(4.5rem,9vw,8.5rem)]">
-          <p className="type-display max-w-[18ch] text-balance text-ink">
-            Advancing global health{" "}
-            <span className="accent-italic">through</span> innovation.
-          </p>
-        </div>
+        {/* The closing phrase that used to open the footer — "Advancing global
+            health through innovation.", set at `type-display` — has been
+            removed.
 
-        <AnimatedDivider className="mt-[clamp(4rem,8vw,7rem)]" />
+            CTASection renders immediately above this on every page and already
+            ends with a display-size serif statement ("Building something that
+            could change healthcare?"), one that carries a button and therefore
+            has a job. Two display headlines separated by nothing but a rule
+            made the page look like it ended twice, and the second one was the
+            weaker of the pair: a restatement of the tagline with nothing to
+            act on. The directory below now starts the footer, which is what a
+            footer is for.
 
-        {/* Directory */}
+            With the arc graphic gone too, this element no longer clips, so the
+            Rise entrances below have no overflow-hidden ancestor at all. */}
+        <AnimatedDivider className="pt-[clamp(3.5rem,6vw,5.5rem)]" />
+
+        {/* Directory.
+
+            All four lean from the same side rather than toward each other.
+            The inward lean is for a PAIR, where the two columns are halves of
+            one statement and the gesture is the pair closing; this is a
+            directory, four peers read left to right, and leaning the outer two
+            inward would imply a relationship between the logo block and the
+            contact block that is not there. One direction plus a 0.07 stagger
+            reads as the row arriving in reading order, which is what it is. */}
         <div className="grid grid-cols-2 gap-x-8 gap-y-12 py-14 md:grid-cols-12">
-          <div className="col-span-2 md:col-span-4">
+          <Rise from="left" className="col-span-2 md:col-span-4">
             <LogoMark />
             <p className="type-body-xs mt-5 max-w-[34ch]">
               An evergreen family office venture fund supporting biotech and
               healthcare innovations.
             </p>
-          </div>
+          </Rise>
 
-          <nav aria-label="Footer" className="md:col-span-3 md:col-start-6">
-            <Eyebrow tone="mute" className="mb-5">
-              Navigate
-            </Eyebrow>
-            <ul className="space-y-3">
-              {nav.map((item) => (
-                <li key={item.href}>
-                  <FooterLink href={item.href}>{item.label}</FooterLink>
-                </li>
-              ))}
-            </ul>
-          </nav>
+          {/* Rise renders div/section/article/li/header/figure/aside and not
+              nav, so the landmark stays inside the wrapper instead of becoming
+              it. The grid placement moves out to the wrapper so the row is
+              laid out exactly as before. */}
+          <Rise
+            from="left"
+            delay={0.07}
+            className="md:col-span-3 md:col-start-6"
+          >
+            <nav aria-label="Footer">
+              <Eyebrow tone="mute" className="mb-5">
+                Navigate
+              </Eyebrow>
+              <ul className="space-y-3">
+                {nav.map((item) => (
+                  <li key={item.href}>
+                    <FooterLink href={item.href}>{item.label}</FooterLink>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          </Rise>
 
-          <div className="md:col-span-3">
+          <Rise from="left" delay={0.14} className="md:col-span-3">
             <Eyebrow tone="mute" className="mb-5">
               Focus
             </Eyebrow>
@@ -135,9 +134,9 @@ export function Footer() {
                 </li>
               ))}
             </ul>
-          </div>
+          </Rise>
 
-          <div className="col-span-2 md:col-span-2">
+          <Rise from="left" delay={0.21} className="col-span-2 md:col-span-2">
             <Eyebrow tone="mute" className="mb-5">
               Contact
             </Eyebrow>
@@ -147,11 +146,15 @@ export function Footer() {
                 Start a conversation
               </TextLink>
             </div>
-          </div>
+          </Rise>
         </div>
 
         <div className="h-px w-full bg-rule" />
 
+        {/* No entrance on the legal bar, on purpose. It is chrome rather than
+            content, and the row it would animate contains the control for
+            switching motion off — a thing that performs on its way in before
+            offering to stop things performing. The gesture ends at the rule. */}
         <div className="flex flex-col gap-4 py-8 sm:flex-row sm:items-center sm:justify-between">
           <p className="type-eyebrow text-ink-mute">
             © {year} {site.name}. All rights reserved.

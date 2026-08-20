@@ -12,6 +12,7 @@ import {
 import { TextLink } from "@/components/ui/Button";
 import { Arrow } from "@/components/ui/Arrow";
 import { ImageReveal, Reveal } from "@/components/motion/Reveal";
+import { Rise } from "@/components/motion/Rise";
 import { Lag } from "@/components/motion/Lag";
 import { CompanyVisual } from "@/components/portfolio/CompanyVisual";
 import { NewsCard } from "@/components/news/NewsCard";
@@ -109,7 +110,9 @@ export default async function CompanyPage({ params }: Params) {
           className="bg-grid absolute inset-0 -z-10 opacity-55 [mask-image:linear-gradient(to_bottom,black,transparent_92%)]"
         />
         <Container>
-          <Reveal>
+          {/* First mark on the page, with nothing above it to answer to, so
+              it takes the house default and leads in from the left. */}
+          <Rise from="left">
             <Link
               href="/portfolio"
               // -my-1.5/py-1.5 lifts the 19.5px line box past the 24px minimum.
@@ -122,11 +125,16 @@ export default async function CompanyPage({ params }: Params) {
               />
               All portfolio
             </Link>
-          </Reveal>
+          </Rise>
 
+          {/* The 7/4 split closes on its own centre line: the identity column
+              in from the left, the facts rail opposite it at col-start-9 from
+              the right. The rule is at the top of components/motion/Rise.tsx.
+              The three pieces of the left column arrive 60ms apart, so the
+              column reads top to bottom rather than as one slab. */}
           <div className="mt-12 grid grid-cols-12 gap-y-10">
             <div className="col-span-12 lg:col-span-7">
-              <Reveal>
+              <Rise from="left">
                 <div className="relative h-9 w-[168px]">
                   <Image
                     src={company.logo}
@@ -137,21 +145,21 @@ export default async function CompanyPage({ params }: Params) {
                     className="logo-plate object-contain object-left"
                   />
                 </div>
-              </Reveal>
+              </Rise>
 
-              <Reveal delay={0.06}>
+              <Rise from="left" delay={0.06}>
                 <h1 className="type-display mt-9 text-ink">{company.name}</h1>
-              </Reveal>
+              </Rise>
 
-              <Reveal delay={0.12}>
+              <Rise from="left" delay={0.12}>
                 <p className="type-statement mt-7 max-w-[24ch] text-ink-soft">
                   {company.shortDescription}
                 </p>
-              </Reveal>
+              </Rise>
             </div>
 
             <div className="col-span-12 lg:col-span-4 lg:col-start-9 lg:self-end">
-              <Reveal delay={0.18}>
+              <Rise from="right" delay={0.18}>
                 <dl className="border-t border-rule">
                   {facts.map((f) => (
                     <div
@@ -176,7 +184,7 @@ export default async function CompanyPage({ params }: Params) {
                     {linkLabel}
                   </TextLink>
                 </div>
-              </Reveal>
+              </Rise>
             </div>
           </div>
         </Container>
@@ -205,28 +213,31 @@ export default async function CompanyPage({ params }: Params) {
       {/* ---------- description, 60/40 ---------- */}
       <Section className="border-t border-rule mt-[clamp(4rem,7vw,6.5rem)]">
         <Container>
+          {/* The label at column 1 and the prose at column 5 are the section's
+              two halves, not a heading over a body, so they lean toward each
+              other the same way the hero's do. */}
           <div className="grid grid-cols-12 gap-y-10">
             <div className="col-span-12 lg:col-span-3">
-              <Reveal>
+              <Rise from="left">
                 <Eyebrow index={String(position).padStart(2, "0")}>
                   {company.category}
                 </Eyebrow>
-              </Reveal>
+              </Rise>
             </div>
 
             <div className="col-span-12 lg:col-span-7 lg:col-start-5">
-              <Reveal delay={0.06}>
+              <Rise from="right" delay={0.06}>
                 <BodyCopy size="lg" className="max-w-[62ch] text-ink">
                   {company.description}
                 </BodyCopy>
-              </Reveal>
-              <Reveal delay={0.12}>
+              </Rise>
+              <Rise from="right" delay={0.12}>
                 <div className="mt-10">
                   <TextLink href={company.website} external dir="up-right">
                     {acquired ? "Read the acquisition announcement" : "Visit company website"}
                   </TextLink>
                 </div>
-              </Reveal>
+              </Rise>
             </div>
           </div>
         </Container>
@@ -236,6 +247,11 @@ export default async function CompanyPage({ params }: Params) {
       {related.length > 0 && (
         <Section className="border-t border-rule bg-sage-bg">
           <Container>
+            {/* This row stays on the neutral Reveal on purpose. It is a
+                heading over content rather than a half of it, and the section
+                only has one arrival worth spending: if the header leans in
+                too, the rows below stop being the thing that happens. Same
+                call as the section headers on the homepage. */}
             <div className="grid grid-cols-12 items-baseline gap-y-6">
               <div className="col-span-12 lg:col-span-8">
                 <Reveal>
@@ -257,10 +273,19 @@ export default async function CompanyPage({ params }: Params) {
             </div>
 
             <div className="mt-12">
+              {/* A single-column stack of rows, so every one of them takes the
+                  house default and leads in from the left. 70ms apart, and
+                  capped, so a long list still finishes arriving while the
+                  reader is still near the top of it. */}
               {related.map((item, i) => (
-                <Reveal key={item.slug} delay={Math.min(i * 0.05, 0.2)} as="div">
+                <Rise
+                  key={item.slug}
+                  from="left"
+                  delay={Math.min(i * 0.07, 0.21)}
+                  as="div"
+                >
                   <NewsCard item={item} variant="row" />
-                </Reveal>
+                </Rise>
               ))}
               <div className="h-px w-full bg-rule" />
             </div>
@@ -271,49 +296,70 @@ export default async function CompanyPage({ params }: Params) {
       {/* ---------- prev / all / next ---------- */}
       <Section space="tight" className="border-t border-rule">
         <Container>
+          {/* A three-up row, and the only place on the page where the lean says
+              something the layout cannot: previous is hung on the left edge and
+              enters from the left, next is hung on the right and enters from
+              the right, so the two ends close on the "All portfolio" link
+              between them. The middle takes "up", which carries no skew, being
+              a centred line with no side to come from. */}
           <nav
             aria-label="Portfolio navigation"
             className="grid grid-cols-1 items-center gap-8 md:grid-cols-3"
           >
             {prev ? (
-              <Link
-                href={`/portfolio/${prev.slug}`}
-                className="group/link min-w-0"
-              >
-                <span className="type-eyebrow text-ink-mute">Previous</span>
-                <span className="mt-2.5 flex items-center gap-3 text-[1.0625rem] font-serif text-ink transition-colors duration-300 ease-kofa group-hover/link:text-teal">
-                  <Arrow
-                    size={15}
-                    dir="left"
-                    className="shrink-0 transition-transform duration-300 ease-kofa group-hover/link:-translate-x-1"
-                  />
-                  <span className="truncate">{prev.name}</span>
-                </span>
-              </Link>
+              // The Rise div is the grid child now, so min-w-0 moves onto it or
+              // the name below stops truncating, and the anchor needs an
+              // explicit `block`: it was only ever a block box because grid
+              // blockified it, and left inline it fragments around the flex row
+              // and its hover target shrinks to the width of the word. That is
+              // why NewsCard's Link carries one too.
+              <Rise from="left" className="min-w-0">
+                <Link
+                  href={`/portfolio/${prev.slug}`}
+                  className="group/link block min-w-0"
+                >
+                  <span className="type-eyebrow text-ink-mute">Previous</span>
+                  <span className="mt-2.5 flex items-center gap-3 text-[1.0625rem] font-serif text-ink transition-colors duration-300 ease-kofa group-hover/link:text-teal">
+                    <Arrow
+                      size={15}
+                      dir="left"
+                      className="shrink-0 transition-transform duration-300 ease-kofa group-hover/link:-translate-x-1"
+                    />
+                    <span className="truncate">{prev.name}</span>
+                  </span>
+                </Link>
+              </Rise>
             ) : (
               <span />
             )}
 
-            <div className="md:text-center">
-              <TextLink href="/portfolio" arrow={false} tone="teal">
-                All portfolio
-              </TextLink>
-            </div>
+            <Rise from="up" delay={0.07}>
+              <div className="md:text-center">
+                <TextLink href="/portfolio" arrow={false} tone="teal">
+                  All portfolio
+                </TextLink>
+              </div>
+            </Rise>
 
             {next ? (
-              <Link
-                href={`/portfolio/${next.slug}`}
-                className="group/link min-w-0 md:text-right"
-              >
-                <span className="type-eyebrow text-ink-mute">Next</span>
-                <span className="mt-2.5 flex items-center gap-3 text-[1.0625rem] font-serif text-ink transition-colors duration-300 ease-kofa group-hover/link:text-teal md:justify-end">
-                  <span className="truncate">{next.name}</span>
-                  <Arrow
-                    size={15}
-                    className="shrink-0 transition-transform duration-300 ease-kofa group-hover/link:translate-x-1"
-                  />
-                </span>
-              </Link>
+              // As above. The anchor keeps its own md:text-right, which works
+              // again once `block` makes it a block box, so the wrapper carries
+              // nothing but the grid child's min-w-0.
+              <Rise from="right" delay={0.14} className="min-w-0">
+                <Link
+                  href={`/portfolio/${next.slug}`}
+                  className="group/link block min-w-0 md:text-right"
+                >
+                  <span className="type-eyebrow text-ink-mute">Next</span>
+                  <span className="mt-2.5 flex items-center gap-3 text-[1.0625rem] font-serif text-ink transition-colors duration-300 ease-kofa group-hover/link:text-teal md:justify-end">
+                    <span className="truncate">{next.name}</span>
+                    <Arrow
+                      size={15}
+                      className="shrink-0 transition-transform duration-300 ease-kofa group-hover/link:translate-x-1"
+                    />
+                  </span>
+                </Link>
+              </Rise>
             ) : (
               <span />
             )}

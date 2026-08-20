@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Container, Eyebrow } from "@/components/ui/primitives";
-import { LineReveal, Reveal } from "@/components/motion/Reveal";
+import { LineReveal } from "@/components/motion/Reveal";
+import { Rise } from "@/components/motion/Rise";
 
 /* ---------------------------------------------------------------------------
    Interior page hero. Shorter than the homepage's, no canvas, just the grid
@@ -31,9 +32,12 @@ export function PageHero({
       />
 
       <Container>
-        <Reveal>
+        {/* The eyebrow is the first mark on the page and has nothing above it
+            to answer to, so it takes the house default and leads in from the
+            left. */}
+        <Rise from="left">
           <Eyebrow>{eyebrow}</Eyebrow>
-        </Reveal>
+        </Rise>
 
         <div className="mt-8 grid grid-cols-12 gap-y-10">
           <h1 className="type-display col-span-12 max-w-[17ch] text-ink lg:col-span-8">
@@ -42,7 +46,11 @@ export function PageHero({
 
           {(intro || aside) && (
             <div className="col-span-12 lg:col-span-4 lg:col-start-9 lg:self-end">
-              <Reveal delay={0.18}>
+              {/* This column sits at col-start-9, opposite a headline that
+                  occupies the left eight, so it leans in from the right and
+                  the row closes on its own centre line rather than both halves
+                  sliding the same way. The rule is at the top of Rise.tsx. */}
+              <Rise from="right" delay={0.18}>
                 {intro && (
                   <>
                     <div className="h-px w-full bg-rule" />
@@ -52,13 +60,18 @@ export function PageHero({
                   </>
                 )}
                 {aside}
-              </Reveal>
+              </Rise>
             </div>
           )}
         </div>
 
+        {/* The meta rail takes no lean. It is a horizontal run of pairs hung
+            off its own border-top, and a full-width line that slid in sideways
+            under a rule it is supposed to be aligned to reads as a layout fault
+            rather than an entrance. "up" also carries no skew, which is what
+            you want for a row of 1px-aligned baselines. */}
         {meta && meta.length > 0 && (
-          <Reveal delay={0.26}>
+          <Rise from="up" delay={0.26}>
             <dl className="mt-[clamp(3rem,5vw,4.5rem)] flex flex-wrap items-center gap-x-12 gap-y-3 border-t border-rule pt-6">
               {meta.map((m) => (
                 <div key={m.k} className="flex items-baseline gap-2.5">
@@ -67,7 +80,7 @@ export function PageHero({
                 </div>
               ))}
             </dl>
-          </Reveal>
+          </Rise>
         )}
       </Container>
     </section>

@@ -64,7 +64,15 @@ export function LogoMark({
         className="shrink-0 transition-colors duration-500 ease-kofa group-hover/logo:text-teal"
       />
       {label && (
-        <span className="flex items-baseline gap-[0.45em] leading-none">
+        /* Optically centred, not baseline-aligned.
+           Both words are set in caps, so a shared baseline is technically
+           correct and looks wrong: at 11px against 17px the label's cap height
+           is barely two thirds of the wordmark's, so with their feet on one
+           line the label's optical centre sits well below the wordmark's and
+           the whole thing reads as having slipped down. Centring the two boxes
+           puts the middles on one line instead of the feet, which is what the
+           eye is actually measuring in a lockup this size. */
+        <span className="flex items-center gap-[0.45em] leading-none">
           <span className="text-[1.0625rem] font-semibold tracking-[-0.012em]">
             KOFA
           </span>

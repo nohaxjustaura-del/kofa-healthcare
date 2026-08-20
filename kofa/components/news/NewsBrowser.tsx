@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { useMotionOff } from "@/components/motion/MotionPreference";
+import { Rise } from "@/components/motion/Rise";
 import { NewsCard } from "./NewsCard";
 import { useTablist } from "@/components/ui/useTablist";
 import { companiesWithNews, newsSorted, type NewsType } from "@/data/news";
@@ -82,8 +83,11 @@ export function NewsBrowser() {
 
   return (
     <>
-      {/* --- primary: news type --- */}
-      <div className="border-y border-rule">
+      {/* --- primary: news type ---
+          Outside the tablist's overflow-x-auto and leaning from "up", for the
+          reasons written out over the same strip in
+          components/portfolio/PortfolioBrowser.tsx. */}
+      <Rise from="up" as="div" className="border-y border-rule">
         <div
           role="tablist"
           aria-label="Filter by news type"
@@ -124,9 +128,13 @@ export function NewsBrowser() {
             );
           })}
         </div>
-      </div>
+      </Rise>
 
-      {/* --- secondary: company (portfolio news only) --- */}
+      {/* --- secondary: company (portfolio news only) ---
+          No Rise on this row: it is height-animated open and shut by the
+          AnimatePresence below, and the element doing that is necessarily
+          overflow-hidden, which is the one place a skew must never go. Its
+          entrance is the collapse itself. */}
       <AnimatePresence initial={false}>
         {type !== "KOFA News" && (
           <motion.div
@@ -167,7 +175,12 @@ export function NewsBrowser() {
         )}
       </AnimatePresence>
 
-      {/* --- list --- */}
+      {/* --- list ---
+          And none below here either, same reasoning as the portfolio grid:
+          the rows are AnimatePresence children animating their own layout, and
+          a deep-linked ?type= / ?company= re-filters one tick after mount,
+          which would put the re-projection inside any entrance the panel had.
+          The rows already arrive; the filter furniture above them did not. */}
       <div
         id="news-panel"
         role="tabpanel"

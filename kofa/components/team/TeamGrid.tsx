@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import { useMotionOff } from "@/components/motion/MotionPreference";
+import { RiseGroup, RiseItem } from "@/components/motion/Rise";
 import { Arrow } from "@/components/ui/Arrow";
 import { Eyebrow } from "@/components/ui/primitives";
 import { OPEN_TEAM_SLOTS, teamSorted, type TeamMember } from "@/data/team";
@@ -86,6 +87,19 @@ function OpenSlot({ n }: { n: number }) {
   );
 }
 
+/* ---------------------------------------------------------------------------
+   Entrance lean, read off a card's position in the grid flow.
+   The lean is composed for the three-up row, the widest layout the grid
+   reaches: the row opens outward from its own middle, first column in from
+   the left, the centre with no side to come from, the last in from the right.
+   Taking the flow index rather than hard-coding a direction per member is
+   what keeps that true as the CMS fills the roster in and the open slots
+   shuffle along behind it. At the two-column breakpoint the sequence walks
+   around the pairs instead of closing them, which at RiseItem's 16px of
+   travel is well under the threshold where the pairing reads either way.
+--------------------------------------------------------------------------- */
+const COLUMN_LEAN = ["left", "up", "right"] as const;
+
 export function TeamGrid() {
   const [open, setOpen] = useState<TeamMember | null>(null);
   const reduced = useMotionOff();
@@ -113,9 +127,12 @@ export function TeamGrid() {
 
   return (
     <>
-      <div className="grid grid-cols-1 gap-x-8 gap-y-16 md:grid-cols-2 lg:grid-cols-3">
+      <RiseGroup className="grid grid-cols-1 gap-x-8 gap-y-16 md:grid-cols-2 lg:grid-cols-3">
         {teamSorted.map((member, i) => (
-          <article key={member.slug}>
+          // The lean goes on the card, never on the portrait frame below it:
+          // that frame is overflow-hidden and would shear the skewed corners
+          // off mid-flight.
+          <RiseItem key={member.slug} as="article" from={COLUMN_LEAN[i % 3]}>
             <button
               type="button"
               onClick={(e) => {
@@ -160,15 +177,23 @@ export function TeamGrid() {
                 <span className="block h-px w-full origin-left scale-x-0 bg-teal transition-transform duration-[600ms] ease-kofa group-hover/member:scale-x-100" />
               </span>
             </button>
-          </article>
+          </RiseItem>
         ))}
 
         {Array.from({ length: OPEN_TEAM_SLOTS }, (_, i) => (
-          <OpenSlot key={i} n={teamSorted.length + i + 1} />
+          // The open slots sit in the same flow as the filled cards, so their
+          // lean continues that count rather than restarting at zero.
+          <RiseItem key={i} from={COLUMN_LEAN[(teamSorted.length + i) % 3]}>
+            <OpenSlot n={teamSorted.length + i + 1} />
+          </RiseItem>
         ))}
-      </div>
+      </RiseGroup>
 
-      {/* ---------- side panel ---------- */}
+      {/* ---------- side panel ----------
+           Stays outside the RiseGroup and gets no entrance of its own. It is
+           position: fixed, and a transformed ancestor becomes the containing
+           block for a fixed descendant, so a Rise anywhere above it would pin
+           the overlay to the card grid instead of the viewport. */}
       <AnimatePresence>
         {open && (
           <>

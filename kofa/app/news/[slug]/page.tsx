@@ -6,6 +6,7 @@ import { Container, Eyebrow, Section } from "@/components/ui/primitives";
 import { Button, TextLink } from "@/components/ui/Button";
 import { Arrow } from "@/components/ui/Arrow";
 import { Reveal } from "@/components/motion/Reveal";
+import { Rise } from "@/components/motion/Rise";
 import { NewsCard } from "@/components/news/NewsCard";
 import { formatNewsDate, getNews, news, relatedNews } from "@/data/news";
 import { getCompany } from "@/data/portfolio";
@@ -66,6 +67,11 @@ export default async function ArticlePage({ params }: Params) {
 
       <article>
         {/* ---------- masthead ---------- */}
+        {/* Everything inside this section stays on Reveal. The section clips,
+            it is overflow-hidden so the background grid can be masked off at
+            its edges, and Rise's skew pushes the far corners outside the border
+            box for the length of the flight, which a clipping ancestor shears.
+            See hazard (1) at the top of components/motion/Rise.tsx. */}
         <section className="relative overflow-hidden pb-[clamp(2.5rem,4vw,3.5rem)] pt-[clamp(7rem,11vw,10rem)]">
           <div
             aria-hidden
@@ -130,6 +136,9 @@ export default async function ArticlePage({ params }: Params) {
           <div className="mx-auto max-w-[50rem]">
             <div className="h-px w-full bg-rule" />
 
+            {/* The body keeps the neutral entrance. This is a reading page, and
+                a column of paragraphs that travels sideways puts the motion in
+                front of the sentence. Rise is for the furniture around it. */}
             <Reveal delay={0.1}>
               {item.body ? (
                 <div className="mt-12 space-y-6 text-[1.0625rem] leading-[1.72] text-ink-soft">
@@ -165,8 +174,11 @@ export default async function ArticlePage({ params }: Params) {
             </Reveal>
 
             {/* ---------- related company ---------- */}
+            {/* Furniture, not prose: a composed card sitting under the article,
+                so it leans in from the left, the house default for a block in a
+                single column. */}
             {company && (
-              <Reveal delay={0.14}>
+              <Rise from="left" delay={0.14}>
                 <div className="mt-16 border-t border-rule pt-10">
                   <Eyebrow tone="mute">Portfolio company</Eyebrow>
                   <Link
@@ -195,7 +207,7 @@ export default async function ArticlePage({ params }: Params) {
                     </span>
                   </Link>
                 </div>
-              </Reveal>
+              </Rise>
             )}
           </div>
         </Container>
@@ -208,10 +220,12 @@ export default async function ArticlePage({ params }: Params) {
                 <Eyebrow tone="mute">Related</Eyebrow>
                 <h2 className="type-section mt-6 text-ink">Keep reading</h2>
                 <div className="mt-10">
+                  {/* A single-column stack of rows, so each one comes in from
+                      the left, 0.06s apart, and the list assembles downward. */}
                   {related.map((r, i) => (
-                    <Reveal key={r.slug} delay={i * 0.06} as="div">
+                    <Rise key={r.slug} from="left" delay={i * 0.06} as="div">
                       <NewsCard item={r} variant="row" />
-                    </Reveal>
+                    </Rise>
                   ))}
                   <div className="h-px w-full bg-rule" />
                 </div>

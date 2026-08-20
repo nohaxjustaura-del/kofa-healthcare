@@ -303,9 +303,12 @@ export function ContactForm() {
                   );
                 })}
               </div>
-              <p className="type-meta mt-4 text-ink-mute">
-                Categories pending KOFA approval. Editable in the CMS.
-              </p>
+              {/* The line that used to sit here — "Categories pending KOFA
+                  approval. Editable in the CMS." — was a note from the build
+                  to the client that was shipping to real visitors. Someone
+                  reaching out to a fund does not need to be told the fund has
+                  not signed off on its own form yet. It belongs in the handover
+                  document, not under the radio buttons. */}
             </fieldset>
 
             {/* --- message --- */}

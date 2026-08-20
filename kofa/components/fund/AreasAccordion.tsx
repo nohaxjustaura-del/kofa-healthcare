@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { useMotionOff } from "@/components/motion/MotionPreference";
+import { RiseGroup, RiseItem } from "@/components/motion/Rise";
 import { Arrow } from "@/components/ui/Arrow";
 import { investmentAreas } from "@/data/site";
 import { portfolioSorted, type HealthcareCategory } from "@/data/portfolio";
@@ -64,7 +65,15 @@ export function AreasAccordion() {
   const reduced = useMotionOff();
 
   return (
-    <div className="border-t border-rule">
+    // A single-column stack, so the rows lean in from the left, the house
+    // default, and RiseGroup's own stagger cascades them down the list. The
+    // lean sits on the row WRAPPER, never inside the panel below: that panel is
+    // overflow-hidden so it can animate its height, and a skew inside a
+    // clipping frame has its far corners sheared off for the length of the
+    // flight. A low `amount` because the group is as tall as the whole
+    // accordion; on the default the first rows would already be sitting in
+    // view before it fired.
+    <RiseGroup className="border-t border-rule" amount={0.1}>
       {investmentAreas.map((area, i) => {
         const isOpen = open === area.slug;
         const companies = portfolioSorted.filter(
@@ -72,7 +81,11 @@ export function AreasAccordion() {
         );
 
         return (
-          <div key={area.slug} className="border-b border-rule">
+          <RiseItem
+            key={area.slug}
+            from="left"
+            className="border-b border-rule"
+          >
             <h3>
               <button
                 type="button"
@@ -167,9 +180,9 @@ export function AreasAccordion() {
                 </motion.div>
               )}
             </AnimatePresence>
-          </div>
+          </RiseItem>
         );
       })}
-    </div>
+    </RiseGroup>
   );
 }

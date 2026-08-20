@@ -17,6 +17,7 @@ import {
   SectionHeading,
 } from "@/components/ui/primitives";
 import { Reveal } from "@/components/motion/Reveal";
+import { Rise } from "@/components/motion/Rise";
 import { useMounted } from "@/components/motion/useMounted";
 import { getLenis } from "@/components/motion/SmoothScroll";
 import { useMotionOff } from "@/components/motion/MotionPreference";
@@ -422,28 +423,34 @@ export function ProcessTrack() {
       aria-labelledby={HEADING_ID}
     >
       <Container>
+        {/* The header is the only part of this section in normal flow: it sits
+            above the spacer, outside `.ptrack__view`'s clip and outside
+            everything the scrub transforms, so it is the only part that can
+            take the lateral entrance. Columns 1-6 and 9-12 are a paired grid,
+            so they lean toward each other and the row closes on its own centre
+            line. Nothing below this Container is touched — see the card below. */}
         <div ref={headRef} className="grid grid-cols-12 gap-y-8">
           <div className="col-span-12 lg:col-span-6">
-            <Reveal>
+            <Rise from="left">
               <Eyebrow index="02">How we invest</Eyebrow>
-            </Reveal>
-            {/* The id lands on the Reveal wrapper rather than the heading:
+            </Rise>
+            {/* The id lands on the Rise wrapper rather than the heading:
                 SectionHeading takes no id, and aria-labelledby resolves the
                 referenced element's text content either way. */}
-            <Reveal delay={0.06} id={HEADING_ID}>
+            <Rise from="left" delay={0.06} id={HEADING_ID}>
               <SectionHeading className="mt-7 max-w-[15ch]">
                 From scientific insight to{" "}
                 <span className="accent-italic">meaningful</span> impact.
               </SectionHeading>
-            </Reveal>
+            </Rise>
           </div>
           <div className="col-span-12 lg:col-span-4 lg:col-start-9">
-            <Reveal delay={0.12}>
+            <Rise from="right" delay={0.12}>
               <p className="type-body-sm max-w-[40ch] lg:pt-4">
                 Evergreen capital sets our horizon by the science and the
                 regulatory path rather than by a fund clock.
               </p>
-            </Reveal>
+            </Rise>
           </div>
         </div>
       </Container>
@@ -501,6 +508,14 @@ export function ProcessTrack() {
                   >
                     <span className="ptrack__node" aria-hidden="true" />
 
+                    {/* Stays Reveal, deliberately. Rise's skew needs room
+                        outside the border box and this sits inside
+                        `.ptrack__view`, which is `overflow: clip` in pinned
+                        mode; and the lane above it is already carrying the
+                        scrub's translate, which a second transform here would
+                        compose with. Neutral fade-up is the right register
+                        inside the track anyway — the track's own sideways
+                        travel is the gesture. */}
                     <Reveal delay={i * 0.06} y={18}>
                       <span className="ptrack__n type-eyebrow tabular-nums text-ink-mute">
                         {stage.n}

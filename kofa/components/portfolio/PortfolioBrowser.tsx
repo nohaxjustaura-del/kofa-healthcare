@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { useMotionOff } from "@/components/motion/MotionPreference";
+import { Rise } from "@/components/motion/Rise";
 import { PortfolioCard } from "./PortfolioCard";
 import { useTablist } from "@/components/ui/useTablist";
 import {
@@ -92,8 +93,15 @@ export function PortfolioBrowser() {
 
   return (
     <>
-      {/* --- taxonomy --- */}
-      <div className="border-y border-rule">
+      {/* --- taxonomy ---
+          The Rise goes on the outer strip, outside the tablist's own
+          overflow-x-auto, which would shear a skewed child off at the scroll
+          edge. from="up" because a rule-to-rule strip spanning the whole
+          measure has no side to come from, and because "up" is the one lean
+          that carries no skew: the underline below is a layoutId animation
+          measuring against this box, and framer's projection maths understands
+          an ancestor's translate and scale but not its shear. */}
+      <Rise from="up" as="div" className="border-y border-rule">
         <div
           role="tablist"
           aria-label="Filter portfolio by category"
@@ -136,9 +144,17 @@ export function PortfolioBrowser() {
             );
           })}
         </div>
-      </div>
+      </Rise>
 
-      {/* --- grid --- */}
+      {/* --- grid ---
+          Deliberately no Rise from here down. Every card is already an
+          AnimatePresence child animating its own layout, and layout projection
+          drives the same transform Rise would: two systems writing one matrix
+          is one too many, and projection cannot account for shear at all.
+          A Rise on the panel wrapper is no safer, because a deep-linked
+          ?category= filters the list one tick after mount, which lands the
+          re-projection squarely inside the entrance. The cards already arrive
+          on their own; the furniture above them is what was missing one. */}
       <div
         id="portfolio-panel"
         role="tabpanel"
