@@ -24,7 +24,7 @@ import {
   portfolioSorted,
 } from "@/data/portfolio";
 import { newsForCompany } from "@/data/news";
-import { pageMetadata } from "@/lib/metadata";
+import { pageMetadata, siteUrl } from "@/lib/metadata";
 import { site } from "@/data/site";
 
 type Params = { params: Promise<{ slug: string }> };
@@ -80,7 +80,7 @@ export default async function CompanyPage({ params }: Params) {
     name: company.name,
     description: company.description,
     url: company.website,
-    funder: { "@type": "Organization", name: site.name, url: site.url },
+    funder: { "@type": "Organization", name: site.name, url: siteUrl },
   };
 
   /** Never let a malformed CMS URL take the whole page down. */

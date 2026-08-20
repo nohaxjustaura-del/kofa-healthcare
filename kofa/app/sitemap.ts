@@ -1,10 +1,10 @@
 import type { MetadataRoute } from "next";
 import { portfolio } from "@/data/portfolio";
 import { news } from "@/data/news";
-import { site } from "@/data/site";
+import { siteUrl } from "@/lib/metadata";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const base = site.url;
+  const base = siteUrl;
   const now = new Date();
 
   const staticRoutes = [

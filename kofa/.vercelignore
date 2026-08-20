@@ -1,0 +1,21 @@
+# Nothing here needs to travel to the build machine: Vercel installs
+# dependencies and runs `next build` itself, so uploading the local results of
+# both is pure transfer cost. Without this the CLI was packing ~168 MB and the
+# upload was failing partway.
+#
+# .next-dev is this project's dev-server output directory (next.config.ts
+# splits dev and production dist dirs so a dev server and a production server
+# can share one checkout) — it is doubly irrelevant to a deploy.
+
+node_modules
+.next
+.next-dev
+*.tsbuildinfo
+
+# Local env and Vercel link state
+.env*.local
+.vercel
+
+# Editor / OS noise
+.DS_Store
+Thumbs.db

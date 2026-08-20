@@ -2,6 +2,65 @@ import type { Metadata } from "next";
 import { site } from "@/data/site";
 
 /**
+ * THE ORIGIN THIS DEPLOYMENT IS ACTUALLY SERVED FROM
+ * ---------------------------------------------------------------------------
+ * Every absolute URL the site emits — og:image, og:url, canonical, the sitemap
+ * entries, the sitemap reference in robots.txt — has to point at the host the
+ * visitor is really on, or it points somewhere that is not serving this build.
+ *
+ * `site.url` is the BRAND address (data/site.ts) and is the right answer once
+ * the custom domain is attached. It is the wrong answer before that: the first
+ * Vercel deployment emitted
+ *   og:image = https://www.kofahealthcare.com/opengraph-image?…
+ * while the site itself was on kofa-healthcare.vercel.app, so every social card
+ * fetched an image from a host that does not serve one, and every canonical
+ * pointed at a different site.
+ *
+ * Resolution order, first match wins:
+ *
+ *   1. NEXT_PUBLIC_SITE_URL — explicit override. Set this in the Vercel
+ *      dashboard the moment the custom domain goes live and nothing else has
+ *      to change.
+ *   2. VERCEL_PROJECT_PRODUCTION_URL on a production deploy — the project's
+ *      canonical production host. Vercel updates this to the custom domain as
+ *      soon as one is assigned, so this arrangement corrects itself.
+ *   3. VERCEL_URL — the unique per-deployment host, which is what a preview
+ *      build should describe itself as rather than claiming to be production.
+ *   4. site.url — local development, and the honest fallback anywhere the
+ *      platform variables are absent.
+ *
+ * Read at module scope, which on Vercel means build time for the statically
+ * generated routes. That is the correct moment: the HTML is prerendered then,
+ * so a value read later could not reach it anyway.
+ *
+ * Note this is deliberately NOT used for the domain printed on the OG card
+ * artwork (app/opengraph-image.tsx). That is branding — it should read
+ * "kofahealthcare.com" whatever host happens to serve the image.
+ */
+function resolveSiteUrl(): string {
+  const strip = (u: string) => u.replace(/\/+$/, "");
+
+  const explicit = process.env.NEXT_PUBLIC_SITE_URL;
+  if (explicit) return strip(explicit);
+
+  if (
+    process.env.VERCEL_ENV === "production" &&
+    process.env.VERCEL_PROJECT_PRODUCTION_URL
+  ) {
+    return `https://${strip(process.env.VERCEL_PROJECT_PRODUCTION_URL)}`;
+  }
+
+  if (process.env.VERCEL_URL) {
+    return `https://${strip(process.env.VERCEL_URL)}`;
+  }
+
+  return strip(site.url);
+}
+
+/** The origin every absolute URL on the site is built from. */
+export const siteUrl = resolveSiteUrl();
+
+/**
  * SHARED SOCIAL METADATA
  * ---------------------------------------------------------------------------
  * One place that builds the `openGraph` and `twitter` blocks for every route,

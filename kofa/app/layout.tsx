@@ -12,7 +12,7 @@ import {
 import { SmoothScroll } from "@/components/motion/SmoothScroll";
 import { Arrival } from "@/components/motion/Arrival";
 import { ScrollProgress } from "@/components/ui/ScrollProgress";
-import { socialMetadata } from "@/lib/metadata";
+import { socialMetadata, siteUrl } from "@/lib/metadata";
 import { site } from "@/data/site";
 
 /**
@@ -56,7 +56,7 @@ const serif = Fraunces({
 const sans = GeistSans;
 
 export const metadata: Metadata = {
-  metadataBase: new URL(site.url),
+  metadataBase: new URL(siteUrl),
   title: {
     default: `${site.name} · ${site.tagline}`,
     template: `%s · ${site.name}`,
@@ -84,7 +84,7 @@ const orgSchema = {
   "@context": "https://schema.org",
   "@type": "Organization",
   name: site.name,
-  url: site.url,
+  url: siteUrl,
   email: site.email,
   foundingDate: String(site.founded),
   description: site.intro,
