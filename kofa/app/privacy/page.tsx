@@ -2,14 +2,20 @@ import type { Metadata } from "next";
 import { Container, Eyebrow, Section } from "@/components/ui/primitives";
 import { PageHero } from "@/components/ui/PageHero";
 import { TextLink } from "@/components/ui/Button";
+import { pageMetadata } from "@/lib/metadata";
 import { site } from "@/data/site";
 
-export const metadata: Metadata = {
+/* Noindex, but still built through the shared helper. This page declared no
+   openGraph at all, so it inherited the root layout's — meaning a pasted
+   /privacy link rendered a card titled "KOFA Healthcare · Empower Innovations
+   …" and pointing at the homepage. Inheriting the wrong card is quieter than
+   having none, and no less wrong. */
+export const metadata: Metadata = pageMetadata({
   title: "Privacy Policy",
   description: `Privacy policy for ${site.name}.`,
-  alternates: { canonical: "/privacy" },
+  path: "/privacy",
   robots: { index: false, follow: true },
-};
+});
 
 /**
  * Deliberately not drafted here. A privacy policy is a legal document; writing

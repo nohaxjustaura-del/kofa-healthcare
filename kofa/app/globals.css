@@ -115,7 +115,15 @@
 
 @layer components {
   /* ---------------------------------------------------------------------
-     Editorial display, Instrument Serif.
+     Editorial display, Fraunces.
+
+     Named here because this line read "Instrument Serif" for as long as the
+     RETUNED FOR FRAUNCES note fourteen lines below read what it says. The
+     block contradicted itself across a single screen, and the wrong face was
+     the one you hit first when skimming for the display font — which is the
+     one you would then go and set a new class in. app/layout.tsx is the
+     authority: it constructs Fraunces as `--font-display-serif`, and
+     `--font-serif` below resolves to that.
 
      OPTICAL SIZING. Tracking and leading are clamped alongside font-size
      rather than fixed per class. A serif set at 100px wants noticeably
@@ -558,83 +566,31 @@ html[data-motion="off"] [data-arrival] {
 
 
 /* ==========================================================
-   CUSTOM CURSOR
+   CUSTOM CURSOR (REMOVED)
+   ----------------------------------------------------------
+   The drawn cursor was deleted along with components/ui/Cursor.tsx,
+   and the whole `[data-kofa-cursor="on"]` block that used to live
+   here went with it: `cursor: none` on <html> and everything under
+   it, the `cursor: text` reinstatement for text fields and
+   contenteditables, the `cursor: pointer` for <select>, the
+   `cursor: not-allowed` for disabled controls, and the
+   `[data-native-cursor]` escape hatch.
+
+   Every one of those rules was scoped to `[data-kofa-cursor="on"]`,
+   and Cursor.tsx was the only thing that ever wrote that attribute,
+   so the entire block had been unreachable from the moment the
+   `<Cursor />` line came out of app/layout.tsx. Dead CSS is worse
+   than dead TS: nothing type-checks it, so it survives every build
+   and reads as live behaviour to whoever opens this file next.
+
+   The note still sitting in app/layout.tsx says putting `<Cursor />`
+   back is the whole switch. It is not, any more. The component and
+   these rules are a pair and would have to be restored together,
+   from version control. Never reinstate this block on its own:
+   `cursor: none` with nothing drawing a pointer is a page with no
+   pointer at all, which is the failure the original rules spent
+   most of their length defending against.
    ========================================================== */
-
-/* ============================================================
-   CUSTOM CURSOR
-   ------------------------------------------------------------
-   `data-kofa-cursor` is set on <html> by components/ui/Cursor.tsx,
-   and only after that component has confirmed a fine pointer and no
-   reduced-motion preference. Nothing below applies otherwise, so a
-   touch device, a reduced-motion visitor and a visitor with JS off
-   all keep the native pointer untouched. The component also drops
-   the attribute for as long as an overlay holds the scroll lock,
-   which is what stops the mobile menu from being a page with no
-   pointer on it at all.
-
-   UNLAYERED ON PURPOSE. Tailwind's utilities sit in
-   `@layer utilities`, and an unlayered rule beats a layered one
-   whatever the specificity. Without that, `cursor-pointer` on the
-   ContactForm radio pills would survive and leave one stray OS
-   pointer sitting on the page.
-   ============================================================ */
-
-[data-kofa-cursor="on"],
-[data-kofa-cursor="on"] * {
-  cursor: none;
-}
-
-/* The caret is information, not decoration: it says where typing will
-   land, and it is the only cue that text can be selected at all. A
-   drawn dot replaces neither, so fields keep the real one and
-   Cursor.tsx fades both of its bodies out over them (state "native").
-   `:where()` contributes no specificity, so the whole selector stays
-   at (0,2,1) and the disabled rule below can still outrank it. */
-[data-kofa-cursor="on"]
-  input:where(
-    [type="text"],
-    [type="email"],
-    [type="tel"],
-    [type="url"],
-    [type="search"],
-    [type="password"],
-    [type="number"],
-    [type="date"],
-    [type="datetime-local"],
-    [type="time"],
-    [type="month"],
-    [type="week"],
-    :not([type])
-  ):not(:disabled),
-[data-kofa-cursor="on"] textarea:not(:disabled),
-[data-kofa-cursor="on"] [contenteditable]:not([contenteditable="false"]) {
-  cursor: text;
-}
-
-/* A <select> hands off to an OS popup; it needs a real pointer to
-   hand off from. */
-[data-kofa-cursor="on"] select:not(:disabled) {
-  cursor: pointer;
-}
-
-/* A refusal has to stay legible. Button.tsx promises
-   `disabled:cursor-not-allowed`; this keeps that promise while the
-   custom cursor is up, and outranks the `cursor: text` rule above
-   because that one excludes :disabled outright. */
-[data-kofa-cursor="on"] :disabled,
-[data-kofa-cursor="on"] [aria-disabled="true"],
-[data-kofa-cursor="on"] [aria-disabled="true"] * {
-  cursor: not-allowed;
-}
-
-/* Escape hatch for anything that needs the OS pointer back, e.g. a
-   future map or canvas widget. Cursor.tsx reads the same attribute
-   and stands its own two bodies down over it. */
-[data-kofa-cursor="on"] [data-native-cursor],
-[data-kofa-cursor="on"] [data-native-cursor] * {
-  cursor: auto;
-}
 
 
 /* ==========================================================
@@ -652,10 +608,10 @@ html[data-motion="off"] [data-arrival] {
    HORIZONTAL PROCESS TRACK
    components/home/ProcessTrack.tsx
    ------------------------------------------------------------
-   Base = the stacked vertical list, i.e. what Philosophy rendered
-   below xl. Everything about the pinned horizontal mode lives in
-   the one guarded block below, so the stacked list is what ships
-   whenever any of three conditions fails:
+   Base = the stacked vertical list, which is what this section
+   falls back to below xl. Everything about the pinned horizontal
+   mode lives in the one guarded block below, so the stacked list is
+   what ships whenever any of three conditions fails:
 
      · viewport < 1024px       five cards need the room
      · reduced motion          pinning the viewport and moving the
@@ -835,7 +791,7 @@ html[data-motion="off"] [data-arrival] {
     padding: 2.25rem var(--ptrack-pad) 0;
   }
   /* The first card carries no rule and no inset, so its text starts on
-     the heading's own left edge. Same device as Philosophy's xl:pl-0. */
+     the heading's own left edge. */
   .ptrack[data-ptrack-pin="true"] .ptrack__card:first-child {
     border-left: 0;
     padding-left: 0;

@@ -11,6 +11,21 @@ import { Arrow } from "@/components/ui/Arrow";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
+/* The `lg` breakpoint, as a media query, for the one place that has to know it
+   in JavaScript instead of in a Tailwind class.
+
+   Stated in `rem` rather than `px` because that is literally what Tailwind v4
+   emits: `lg:` compiles to `@media (width >= 64rem)`, and this project
+   overrides no `--breakpoint-*` in the @theme block of app/globals.css, so the
+   stock v4 scale is in force. Inside a media query `rem` resolves against the
+   browser's DEFAULT font size — not against :root's — which makes 64rem
+   exactly 1024px on a stock browser, and exactly 1280px for a visitor who has
+   raised their default text size to 20px. Hardcoding 1024px would be correct
+   for most people and silently wrong for precisely the visitors who most need
+   this panel to behave, because the JS would stop agreeing with `lg:hidden`.
+   Track the source of truth instead of restating it. */
+const DESKTOP_QUERY = "(min-width: 64rem)";
+
 export function Navigation() {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
@@ -62,14 +77,77 @@ export function Navigation() {
     };
   }, []);
 
-  /* Close the panel on navigation. */
+  /* A mirror of `open` for effects that must NOT re-run when it changes.
+
+     Reading state through a ref is usually a smell; here it is the whole
+     point. The navigation effect below needs to know whether it is closing a
+     panel that was actually open, but it has to stay keyed on [pathname]
+     alone — put `open` in its dependencies and opening the panel re-runs the
+     effect, which closes it again on the spot. */
+  const openRef = useRef(false);
   useEffect(() => {
+    openRef.current = open;
+  }, [open]);
+
+  /* Close the panel on navigation, and hand focus back to the trigger.
+
+     Without the handoff, following a link inside the panel unmounts the
+     element that held focus and the browser drops focus to <body>: the next
+     Tab restarts from the top of the document, and a screen reader loses its
+     place on the page it just arrived at. The openRef guard is what keeps
+     that from misfiring — an ordinary navigation that began somewhere other
+     than this panel must not yank focus onto a hamburger nobody touched. */
+  useEffect(() => {
+    if (!openRef.current) return;
     setOpen(false);
+    triggerRef.current?.focus();
   }, [pathname]);
 
-  /* Escape to close, scroll lock, and focus handoff while open. */
+  /* Escape to close, scroll lock, focus containment, and the `lg` escape
+     hatch — everything that is true only while the panel is open. */
   useEffect(() => {
     if (!open) return;
+
+    /* Pairs with the `inert` set in this effect's cleanup — see the comment
+       there. It has to be cleared here, on the way IN, because AnimatePresence
+       reverses an interrupted exit on the SAME DOM node: dismiss the menu and
+       reopen it inside the 450ms slide-out and the element comes back still
+       carrying the attribute, i.e. a menu that is visible and completely dead.
+       Clearing unconditionally is free when the attribute is not there. */
+    panelRef.current?.removeAttribute("inert");
+
+    /* THE lg CROSSING, AND WHY IT USED TO STRAND THE PAGE.
+
+       The panel is `lg:hidden`. Widening the viewport past `lg` — rotating a
+       tablet, dragging a window edge, an OS sidebar closing — therefore takes
+       the panel off the screen without touching `open`. The body lock below
+       is released only by this effect's cleanup, and that cleanup is keyed on
+       [open], so it never ran: the page stayed scroll-locked with no visible
+       control left to unlock it. The hamburger is `lg:hidden` too, so it is
+       gone as well, and Escape only rescues someone who thinks to press it.
+       The result was a dead page that a reload was the only cure for.
+
+       So the breakpoint is watched HERE, inside the effect, and never in the
+       markup. That is deliberate and load-bearing: a media query is a
+       client-only value, and nothing that reaches the DOM may branch on one
+       during render or hydration breaks. An effect runs after the match, so
+       it can read the query freely. */
+    const desktop = window.matchMedia(DESKTOP_QUERY);
+    const closeIfDesktop = () => {
+      if (desktop.matches) setOpen(false);
+    };
+
+    // Once immediately: `change` only fires on a LATER crossing, and this
+    // effect can perfectly well start out already wide.
+    closeIfDesktop();
+
+    // And never take the body lock in a viewport the panel cannot be seen in;
+    // that state IS the bug. `open` is about to flip false, at which point
+    // this effect re-runs and bails at the top, so there is nothing to clean.
+    if (desktop.matches) return;
+
+    desktop.addEventListener("change", closeIfDesktop);
+
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
 
@@ -77,18 +155,71 @@ export function Navigation() {
       if (e.key === "Escape") {
         setOpen(false);
         triggerRef.current?.focus();
+        return;
       }
       if (e.key !== "Tab") return;
-      const focusables = panelRef.current?.querySelectorAll<HTMLElement>(
-        'a[href], button:not([disabled])',
-      );
-      if (!focusables?.length) return;
+
+      /* The cycle is the TRIGGER plus the panel's focusables, in that order.
+
+         Querying `panelRef` alone left the trigger outside the loop. It is a
+         DOM sibling of the panel — it lives in the <header> — so once focus
+         entered the panel the wrap could never carry it back out, and the
+         trigger is the only VISIBLE way to close this thing. Anyone who did
+         not guess at Escape was shut in the menu with no way out.
+
+         Trigger first because that is its DOM order (the header precedes the
+         panel), so the wrap agrees with where an untrapped Tab would have
+         gone and the loop reads as one continuous ring. Rebuilt on every
+         keystroke rather than cached because the panel's contents mount
+         through a staggered animation. */
+      const focusables: HTMLElement[] = [];
+      if (triggerRef.current) focusables.push(triggerRef.current);
+      if (panelRef.current) {
+        focusables.push(
+          ...panelRef.current.querySelectorAll<HTMLElement>(
+            "a[href], button:not([disabled])",
+          ),
+        );
+      }
+      if (!focusables.length) return;
+
       const first = focusables[0];
       const last = focusables[focusables.length - 1];
-      if (e.shiftKey && document.activeElement === first) {
-        e.preventDefault();
-        last.focus();
-      } else if (!e.shiftKey && document.activeElement === last) {
+      const active = document.activeElement;
+
+      /* The `stranded` arm is what makes this a trap instead of a pair of
+         wrap-around edges, and it is the same arm the profile dialog in
+         components/team/TeamGrid.tsx carries. Testing only first/last assumes
+         focus is already somewhere in the ring, and one entirely ordinary
+         gesture breaks that assumption: tapping the panel's dead space — the
+         84px top spacer, the strapline in the footer — moves focus to <body>.
+         Some browsers also decline to focus a <button> on click at all, so
+         focus can be on <body> from the moment the panel opens.
+
+         From there activeElement is neither first nor last, the handler
+         declines to act, and native Tab restarts at the top of the DOCUMENT:
+         the skip link — which un-hides itself at z-[100], paints on top of a
+         panel that is claiming `aria-modal`, and jumps to #main behind it —
+         and then the logo. Focus walks straight through content the dialog is
+         telling assistive tech does not exist, which is a worse lie than never
+         having claimed to be modal.
+
+         So anything outside the ring AND outside the panel is pulled back to
+         whichever edge Tab was heading for. The second half of that test
+         matters: an element inside the panel that the selector does not match
+         (a future input, anything with a tabindex) is left to native Tab,
+         which keeps it contained on its own — yanking it to an edge would
+         make the panel's own contents untabbable. */
+      const stranded =
+        !focusables.some((el) => el === active) &&
+        !panelRef.current?.contains(active);
+
+      if (e.shiftKey) {
+        if (stranded || active === first) {
+          e.preventDefault();
+          last.focus();
+        }
+      } else if (stranded || active === last) {
         e.preventDefault();
         first.focus();
       }
@@ -96,8 +227,28 @@ export function Navigation() {
 
     document.addEventListener("keydown", onKey);
     return () => {
+      desktop.removeEventListener("change", closeIfDesktop);
       document.body.style.overflow = prevOverflow;
       document.removeEventListener("keydown", onKey);
+
+      /* Everything that made this a dialog dies with this effect, but
+         AnimatePresence deliberately keeps the panel MOUNTED for its 450ms
+         slide-out. For that window the markup below still says
+         `role="dialog" aria-modal="true"` while the Escape handler and the Tab
+         trap are already gone — a dismissed menu whose links are still in the
+         tab order, still telling a screen reader that the rest of the page
+         does not exist. Someone who closed the menu and kept tabbing landed
+         back inside it with no trap to carry them out and no Escape to close
+         what was already closed.
+
+         `inert` removes the exiting subtree from the tab order, the
+         accessibility tree and hit-testing without touching layout or paint,
+         so the exit animation is byte-for-byte what it was. Focus has already
+         been handed to the trigger by whichever path closed the panel, so
+         nothing is displaced. Browsers without `inert` ignore it and get the
+         old behaviour. Cleared again on the way in, at the top of this effect
+         — that pairing is load-bearing, not tidiness. */
+      panelRef.current?.setAttribute("inert", "");
     };
   }, [open]);
 
@@ -216,7 +367,36 @@ export function Navigation() {
           <motion.div
             id="mobile-menu"
             ref={panelRef}
-            className="fixed inset-0 z-40 flex flex-col bg-ivory lg:hidden"
+            /* A modal in behaviour, so it says so. `aria-modal` is what tells
+               assistive tech to hold its virtual cursor inside this subtree;
+               without it a screen reader user swiping in DOM order walked
+               straight out of the "modal" and into the page behind it, which
+               is still there, still scroll-locked, and unreachable by touch.
+
+               Worth knowing for whoever extends this: the trigger deliberately
+               sits OUTSIDE this element (it is in the <header>, above it), so
+               it is outside the subtree `aria-modal` confines. The Tab cycle
+               in the effect above is what keeps it reachable. If a close
+               control is ever added inside the panel, that cycle is the thing
+               to revisit. */
+            role="dialog"
+            aria-modal="true"
+            aria-label="Site menu"
+            /* Lenis matches this attribute before it consults any heuristic
+               and hands the wheel back to the browser (see the LENIS block in
+               app/globals.css). Without it Lenis swallows the wheel over the
+               panel and applies it to a document that the body lock has
+               already frozen, so the new scroller below would not scroll at
+               all with smooth scrolling running. */
+            data-lenis-prevent=""
+            /* WCAG 1.4.4 / 1.4.10. This was `fixed inset-0 flex flex-col` with
+               no overflow handling: at roughly 640px of minimum content, a
+               landscape phone or a 1280x800 desktop at 200% zoom pushed the
+               menu past both edges of the viewport, and the body lock meant
+               there was no way to reach any of it. `overscroll-contain` stops
+               a flick that reaches the end here from chaining out to the page
+               behind. */
+            className="fixed inset-0 z-40 flex flex-col overflow-y-auto overscroll-contain bg-ivory lg:hidden"
             initial={reduced ? { opacity: 0 } : { opacity: 0, y: -12 }}
             animate={{ opacity: 1, y: 0 }}
             exit={reduced ? undefined : { opacity: 0, y: -8 }}
@@ -224,9 +404,16 @@ export function Navigation() {
           >
             <div className="h-[84px] shrink-0" />
 
+            {/* `my-auto`, not `flex-1 justify-center`. Both centre the menu
+                while there is room to spare, but they fail differently when
+                there is not: `justify-center` splits the overflow across both
+                edges and puts the first link above the top of the scroller,
+                where nothing can reach it. Auto margins never resolve
+                negative, so they flatten to zero under pressure and the
+                overflow all spills downward, into the scroller added above. */}
             <nav
               aria-label="Primary mobile"
-              className="flex flex-1 flex-col justify-center px-6 sm:px-8"
+              className="my-auto flex flex-col px-6 sm:px-8"
             >
               <ul>
                 {nav.map((item, i) => {

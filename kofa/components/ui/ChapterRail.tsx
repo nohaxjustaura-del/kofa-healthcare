@@ -145,7 +145,7 @@ export function ChapterRail({ sections }: { sections: Chapter[] }) {
                     transition list containing `transform` never sees the
                     change and the label jumps instead of sliding. Same trap
                     the header comment in Navigation.tsx describes, and the
-                    reason ViewCursor writes `transition-[opacity,scale]`. */}
+                    reason this one lists its properties explicitly. */}
                 <span
                   className="type-eyebrow pointer-events-none absolute right-full top-1/2 mr-3 -translate-y-1/2 translate-x-1 whitespace-nowrap text-ink-mute opacity-0 transition-[opacity,translate] duration-500 ease-kofa group-hover:translate-x-0 group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:opacity-100"
                 >

@@ -26,9 +26,9 @@ import { investmentProcess } from "@/data/site";
 /* ===========================================================================
    INVESTMENT PROCESS — HORIZONTAL PINNED TRACK
    ---------------------------------------------------------------------------
-   The replacement for Philosophy's five-across row. Same copy, same continuous
-   hairline, same numbered nodes; the row now runs wider than the viewport and
-   travels sideways while the section is held against the top of the screen.
+   Five stages, one continuous hairline, numbered nodes. The row runs wider
+   than the viewport and travels sideways while the section is held against the
+   top of the screen.
 
    MECHANISM. A tall spacer (.ptrack) holds a `position: sticky` child that is
    exactly one viewport tall, so the spacer's surplus height is the distance
@@ -40,12 +40,24 @@ import { investmentProcess } from "@/data/site";
 
    THREE WAYS OUT, ALL OF THEM CSS. The pinned layout is the exception, not the
    default. It applies only inside
-       @media (min-width: 1024px) and (prefers-reduced-motion: no-preference)
-   and only under [data-ptrack-pin="true"], which React writes after mount. So
-   the plain stacked list is what ships for narrow viewports, for a visitor who
-   has switched motion off, and for a visitor whose JavaScript never runs — the
-   last of which no media query can test for, and which would otherwise have
-   left three of five stages clipped off-screen with no way to reach them.
+       @media (min-width: 1024px)
+   and only under [data-ptrack-pin="true"], which React writes after mount as
+   `mounted && !motionOff`. So the plain stacked list is what ships for narrow
+   viewports, for a visitor who has switched motion off, and for a visitor
+   whose JavaScript never runs — the last of which no media query can test for,
+   and which would otherwise have left three of five stages clipped off-screen
+   with no way to reach them.
+
+   ONE media query, and only the width. This paragraph used to print the guard
+   as `@media (min-width: 1024px) and (prefers-reduced-motion: no-preference)`.
+   That second clause is not in app/globals.css and must never be added: on
+   this site reduced motion is the visitor's own choice, stamped on <html> as
+   data-motion="off" and read here through useMotionOff(), precisely so the OS
+   setting does not decide it — see components/motion/MotionPreference.tsx.
+   A comment that describes a rejected mechanism as the live one is how the
+   mechanism comes back: the next person tidying the CSS to match the docs
+   would have handed this branch to the OS and left the footer control
+   switching nothing on the one section that most needs it.
 
    Because the fallback is a layout branch it is never a JS branch: the tree is
    identical either way. The transform stays attached in both modes and simply

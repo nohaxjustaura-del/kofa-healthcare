@@ -24,6 +24,7 @@ import {
   portfolioSorted,
 } from "@/data/portfolio";
 import { newsForCompany } from "@/data/news";
+import { pageMetadata } from "@/lib/metadata";
 import { site } from "@/data/site";
 
 type Params = { params: Promise<{ slug: string }> };
@@ -37,17 +38,19 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const company = getCompany(slug);
   if (!company) return { title: "Not found" };
 
-  return {
+  /* Company pages are the ones that actually get forwarded — a partner sends
+     one round rather than the fund's homepage — so this is the route where a
+     blank card cost the most. It is also the route the shared helper matters
+     most on: there are as many of these as there are portfolio companies, and
+     the hand-written openGraph here was silently dropping og:site_name,
+     og:locale and the image from all of them at once. See lib/metadata.ts. */
+  return pageMetadata({
     title: company.name,
     description: company.shortDescription,
-    alternates: { canonical: `/portfolio/${company.slug}` },
-    openGraph: {
-      type: "profile",
-      title: `${company.name} · KOFA Healthcare portfolio`,
-      description: company.shortDescription,
-      url: `/portfolio/${company.slug}`,
-    },
-  };
+    path: `/portfolio/${company.slug}`,
+    socialTitle: `${company.name} · KOFA Healthcare portfolio`,
+    type: "profile",
+  });
 }
 
 export default async function CompanyPage({ params }: Params) {

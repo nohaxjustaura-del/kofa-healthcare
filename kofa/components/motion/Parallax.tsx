@@ -43,12 +43,11 @@ import {
    event. Instead the scroll progress is subscribed to directly and the write
    is coalesced into one rAF, so N scroll events between two frames produce one
    style write. The rAF is one-shot, not a loop: with no scrolling there is
-   nothing scheduled, which is the `running` flag contract from ViewCursor.tsx
-   arrived at from the other direction. It also means there is nothing to pause
-   on `visibilitychange`, a hidden tab does not scroll.
+   nothing scheduled. It also means there is nothing to pause on
+   `visibilitychange`, a hidden tab does not scroll.
 
-   REDUCED MOTION. `data-lag` on both elements, so the
-   `@media (prefers-reduced-motion: reduce)` block in globals.css pins them to
+   REDUCED MOTION. `data-lag` on both elements, so the `html[data-motion="off"]`
+   block in globals.css pins them to
    `transform: none !important` — which kills the translate AND the over-scale
    together, returning the child to exactly the frame's size with no gap.
    `object-position` is not a transform and that CSS cannot reach it, so mode 2

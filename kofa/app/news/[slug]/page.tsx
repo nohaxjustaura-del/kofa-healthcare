@@ -10,6 +10,7 @@ import { Rise } from "@/components/motion/Rise";
 import { NewsCard } from "@/components/news/NewsCard";
 import { formatNewsDate, getNews, news, relatedNews } from "@/data/news";
 import { getCompany } from "@/data/portfolio";
+import { pageMetadata } from "@/lib/metadata";
 import { site } from "@/data/site";
 
 type Params = { params: Promise<{ slug: string }> };
@@ -23,18 +24,19 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const item = getNews(slug);
   if (!item) return { title: "Not found" };
 
-  return {
+  /* socialTitle is the headline on its own, with no "· KOFA Healthcare"
+     suffix: og:title is rendered as the card's headline, and an article
+     already says whose site it is through og:site_name — which this route was
+     losing, along with the image, by hand-writing its own openGraph. See
+     lib/metadata.ts. */
+  return pageMetadata({
     title: item.title,
     description: item.excerpt,
-    alternates: { canonical: `/news/${item.slug}` },
-    openGraph: {
-      type: "article",
-      title: item.title,
-      description: item.excerpt,
-      url: `/news/${item.slug}`,
-      publishedTime: item.date,
-    },
-  };
+    path: `/news/${item.slug}`,
+    socialTitle: item.title,
+    type: "article",
+    publishedTime: item.date,
+  });
 }
 
 export default async function ArticlePage({ params }: Params) {

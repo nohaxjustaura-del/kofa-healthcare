@@ -12,6 +12,7 @@ import {
 import { SmoothScroll } from "@/components/motion/SmoothScroll";
 import { Arrival } from "@/components/motion/Arrival";
 import { ScrollProgress } from "@/components/ui/ScrollProgress";
+import { socialMetadata } from "@/lib/metadata";
 import { site } from "@/data/site";
 
 /**
@@ -48,7 +49,7 @@ const serif = Fraunces({
 });
 
 /**
- * Geist for navigation, body, buttons, labels and metadata; Instrument Serif
+ * Geist for navigation, body, buttons, labels and metadata; Fraunces
  * kept selective, for display headlines and editorial statements only. Geist
  * ships self-hosted with next/font, so there is no external font request.
  */
@@ -62,19 +63,19 @@ export const metadata: Metadata = {
   },
   description: site.intro,
   alternates: { canonical: "/" },
-  openGraph: {
-    type: "website",
-    siteName: site.name,
+  /*
+    The openGraph and twitter blocks are built by lib/metadata.ts, the same as
+    every other route's, so that the card image and the identity fields are
+    declared in exactly one place. They are not inherited: a child segment's
+    openGraph replaces this one outright rather than merging into it, which is
+    the whole reason the helper exists. See the comment at the top of
+    lib/metadata.ts before hand-writing an openGraph object anywhere.
+  */
+  ...socialMetadata({
     title: `${site.name} · ${site.tagline}`,
     description: site.intro,
-    url: site.url,
-    locale: "en_US",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: `${site.name} · ${site.tagline}`,
-    description: site.intro,
-  },
+    path: "/",
+  }),
   robots: { index: true, follow: true },
 };
 
@@ -96,7 +97,29 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${serif.variable} ${sans.variable}`}>
+    <html
+      lang="en"
+      className={`${serif.variable} ${sans.variable}`}
+      /*
+        Two of the scripts below stamp attributes onto document.documentElement
+        before <body> renders: the arrival guard writes data-arrival-seen, and
+        MOTION_PREFERENCE_SCRIPT writes data-motion. Both have to run pre-paint
+        to do their job, which means <html> already carries attributes React
+        never put there by the time hydration compares the two trees. React
+        reports that as "A tree hydrated but some attributes of the server
+        rendered HTML didn't match the client properties", pointing at <html>,
+        on every single page load.
+
+        suppressHydrationWarning here silences exactly that, and nothing else:
+        the flag covers this element's own attributes and does not propagate to
+        the tree below, so a genuine mismatch inside <body> — the class of bug
+        this warning exists to catch — still shouts. Deleting the scripts would
+        also silence it and would reintroduce the flash of motion and the
+        repeat-visit curtain flash they were added to prevent; this attribute
+        is the cheaper half of that trade.
+      */
+      suppressHydrationWarning
+    >
       <head>
         {/*
           Entrance animations render their `initial` state into the server HTML,
@@ -160,11 +183,13 @@ export default function RootLayout({
               is the one element a person expects to be exactly where they put
               it. The native cursor has no such budget to blow.
 
-              Removing this line is the entire switch: components/ui/Cursor.tsx
-              is what stamps `data-kofa-cursor` on <html>, and every rule in the
-              CUSTOM CURSOR block of app/globals.css is scoped to that
-              attribute, so all of it is inert with the component unmounted.
-              Put `<Cursor />` back here to re-enable.
+              components/ui/Cursor.tsx has since been deleted outright, along
+              with the CUSTOM CURSOR block in app/globals.css that was scoped to
+              the `data-kofa-cursor` attribute only that component ever wrote,
+              and components/ui/ViewCursor.tsx which depended on the same
+              machinery. This is therefore no longer a one-line switch: bringing
+              the drawn cursor back means restoring all three from version
+              control together. See the tombstone comment in app/globals.css.
             */}
           </MotionProvider>
         </MotionPreferenceProvider>

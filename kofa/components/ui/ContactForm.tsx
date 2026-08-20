@@ -9,7 +9,13 @@ import { contactReasons, site } from "@/data/site";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
-type Status = "idle" | "sending" | "sent" | "mailto" | "error";
+type Status =
+  | "idle"
+  | "sending"
+  | "sent"
+  | "mailto"
+  | "error"
+  | "rate-limited";
 
 interface Fields {
   name: string;
@@ -18,6 +24,12 @@ interface Fields {
   website: string;
   reason: string;
   message: string;
+  /* Honeypot. /api/contact has always rejected submissions where this key is
+     truthy, but nothing ever rendered or sent it, so the defence was a comment
+     in route.ts and nothing more — the branch could not fire. It is a real
+     field now. A human never sees it and never fills it; a form-scraping bot
+     that fills every input it finds does, and gets silently dropped. */
+  company_url: string;
 }
 
 const EMPTY: Fields = {
@@ -27,6 +39,7 @@ const EMPTY: Fields = {
   website: "",
   reason: contactReasons[0],
   message: "",
+  company_url: "",
 };
 
 /* ---------------------------------------------------------------------------
@@ -72,6 +85,26 @@ function Field({
           </span>
         )}
       </label>
+      {/* There is deliberately no `outline-none` on this input. It used to sit
+          here unconditionally, while the indicator meant to replace it
+          (`focus:border-b-teal`) lives only in the non-error branch below — so
+          an errored field had no focus indicator whatsoever, which is exactly
+          the state validate() focuses it into. WCAG 2.4.7, on the one control
+          a keyboard user is forced into.
+
+          Do not "fix" this by adding `focus:outline-2` back alongside
+          `outline-none`. Tailwind v4 compiles `outline-none` to
+          `--tw-outline-style:none;outline-style:none` in @layer utilities,
+          which outranks the site's `:focus-visible` rule in @layer base, and
+          the outline-*width* utilities emit
+          `outline-style:var(--tw-outline-style)` without resetting that
+          variable — so the `none` set on the same element still wins and no
+          ring paints. Verified against the built CSS. Deleting the utility and
+          letting globals.css's `:focus-visible` do its job is the only fix.
+
+          `focus:ring-0` went with it: that is a Tailwind-v3 + @tailwindcss/forms
+          habit, and this project installs no forms plugin, so there was never a
+          default ring here to suppress. */}
       <input
         id={id}
         name={id}
@@ -84,7 +117,7 @@ function Field({
         aria-invalid={error ? true : undefined}
         aria-describedby={error ? `${id}-error` : undefined}
         onChange={(e) => onChange(e.target.value)}
-        className={`peer mt-3 w-full border-0 border-b bg-transparent pb-3 text-[1.0625rem] text-ink outline-none transition-colors duration-300 ease-kofa placeholder:text-ink-mute/60 focus:ring-0 ${
+        className={`peer mt-3 w-full border-0 border-b bg-transparent pb-3 text-[1.0625rem] text-ink transition-colors duration-300 ease-kofa placeholder:text-ink-mute/60 ${
           error
             ? "border-b-error"
             : "border-b-rule focus:border-b-teal hover:border-b-rule-strong"
@@ -176,6 +209,16 @@ export function ContactForm() {
         return;
       }
 
+      // 429 => /api/contact's per-IP limiter. Kept distinct from the generic
+      // error because the generic copy tells the visitor to try again, which is
+      // the one thing that cannot work here. A real person only ever sees this
+      // by accident (the threshold is five in ten minutes), so the message has
+      // to point them somewhere that does work: plain email.
+      if (res.status === 429) {
+        setStatus("rate-limited");
+        return;
+      }
+
       setStatus("error");
     } catch {
       setStatus("error");
@@ -232,6 +275,33 @@ export function ContactForm() {
             transition={{ duration: reduced ? 0 : 0.3 }}
             className="space-y-11"
           >
+            {/* Honeypot. Parked off-screen with a negative offset rather than
+                `display:none` or `hidden`, because the cheap bots worth
+                catching here skip anything the CSS has taken out of the render
+                tree — an off-screen field still looks like a real field to
+                them. It is absolutely positioned (against the wrapper .relative
+                above), so it contributes no height and does not disturb the
+                space-y-11 rhythm; body has overflow-x:hidden, so the negative
+                left offset cannot introduce a horizontal scrollbar.
+
+                aria-hidden on the wrapper keeps the whole subtree out of the
+                accessibility tree, and tabIndex={-1} keeps it out of the tab
+                order, so a screen-reader or keyboard user never meets it. Do
+                not give it a real autoComplete token: browsers must not be
+                encouraged to fill it. */}
+            <div aria-hidden className="absolute left-[-9999px] top-auto">
+              <label htmlFor="company_url">Company URL</label>
+              <input
+                id="company_url"
+                name="company_url"
+                type="text"
+                tabIndex={-1}
+                autoComplete="off"
+                value={f.company_url}
+                onChange={(e) => set("company_url")(e.target.value)}
+              />
+            </div>
+
             <div className="grid grid-cols-1 gap-11 sm:grid-cols-2">
               <Field
                 id="name"
@@ -322,6 +392,9 @@ export function ContactForm() {
                   *
                 </span>
               </label>
+              {/* `outline-none` and `focus:ring-0` are absent here for the same
+                  reason they are absent from <Field>'s input above — see the
+                  long comment there before you consider adding either back. */}
               <textarea
                 id="message"
                 name="message"
@@ -332,7 +405,7 @@ export function ContactForm() {
                 aria-describedby={errors.message ? "message-error" : undefined}
                 onChange={(e) => set("message")(e.target.value)}
                 placeholder="What are you building, and what clinical problem does it solve?"
-                className={`mt-3 w-full resize-y border-0 border-b bg-transparent pb-3 text-[1.0625rem] leading-[1.6] text-ink outline-none transition-colors duration-300 ease-kofa placeholder:text-ink-mute/60 focus:ring-0 ${
+                className={`mt-3 w-full resize-y border-0 border-b bg-transparent pb-3 text-[1.0625rem] leading-[1.6] text-ink transition-colors duration-300 ease-kofa placeholder:text-ink-mute/60 ${
                   errors.message
                     ? "border-b-error"
                     : "border-b-rule focus:border-b-teal hover:border-b-rule-strong"
@@ -345,9 +418,11 @@ export function ContactForm() {
               )}
             </div>
 
-            {status === "error" && (
+            {(status === "error" || status === "rate-limited") && (
               <p role="alert" className="type-body-sm text-error">
-                Something went wrong sending that. Please try again, or write to{" "}
+                {status === "rate-limited"
+                  ? "That's several messages in a short space of time. Please wait a few minutes before sending another, or write to "
+                  : "Something went wrong sending that. Please try again, or write to "}
                 <a href={`mailto:${site.email}`} className="link-draw text-ink">
                   {site.email}
                 </a>

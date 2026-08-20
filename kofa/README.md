@@ -51,18 +51,19 @@ render as full internal articles at `/news/[slug]`.
 
 ### Explicitly marked as needing KOFA input
 
-These render as visibly labelled slots, not as filler that could be mistaken for
-real content:
+Each of these is either a visibly labelled slot or withheld from the page
+entirely. Nothing here renders as filler that could be mistaken for real
+content, and nothing renders as a note from the build to the client:
 
 | What | Where | Note |
 |---|---|---|
 | Team roster | `/team` | Only Jing Lin (Founder & Managing Director) is public record. Her biography is a marked placeholder; two empty slots follow it. Set `OPEN_TEAM_SLOTS = 0` in `data/team.ts` once the real roster lands. |
 | Team portraits | `/team` | Initials plate with "Portrait to be supplied". Swaps for a photo the moment `portrait` is set. |
-| Geography, check size, ownership target | `/fund` | Tagged "CMS field" and italicised. KOFA does not publish these. |
+| Geography, check size, ownership target | `/fund` | KOFA does not publish these, so the rows do not render at all. They live in `CRITERIA` (`app/fund/page.tsx`) with `confirmed: false` and are filtered out; supply a value and flip the flag and each row returns with no code change. Three rows reading "To be confirmed" beside a dashed "CMS field" badge made the fund look undecided about what it invests in. |
 | Privacy policy | `/privacy` | Deliberately unwritten: it is a legal document. The page and its typography are ready for KOFA's existing text. |
 | Company photography | portfolio | No stock imagery is used anywhere. See §3. |
 | LinkedIn | footer | Omitted; no profile is published on the current site. |
-| Contact reason categories | `/contact` | Marked pending approval. |
+| Contact reason categories | `/contact` | Still awaiting KOFA sign-off, but the form no longer says so: the "categories pending approval" line under the radio pills was a note to the client shipping to real visitors. Edit the list in `components/ui/ContactForm.tsx`. |
 
 ---
 
@@ -70,7 +71,7 @@ real content:
 
 | Route | Notes |
 |---|---|
-| `/` | Hero, purpose, logo strip, portfolio preview, philosophy, featured story, portfolio news, KOFA news, CTA |
+| `/` | Hero, purpose, logo strip, portfolio preview, investment process, featured story, portfolio news, KOFA news, CTA |
 | `/fund` | Who we are · where we invest · perspective · areas of interest (expandable) |
 | `/team` | Editorial profiles opening into a side panel |
 | `/portfolio` | Filterable grid, URL-synced (`?category=`) |
@@ -137,7 +138,7 @@ row.
 
 `app/globals.css` holds the whole thing.
 
-**Type**: Instrument Serif for display and editorial statements only; Geist for
+**Type**: Fraunces for display and editorial statements only; Geist for
 navigation, body, buttons, labels and metadata. Both self-hosted: **zero external
 font requests.** Three body tiers (`.type-body` 16px / `-sm` 15px / `-xs` 14px),
 each carrying its own leading and tracking. Pick a tier; never override the size.
@@ -146,8 +147,12 @@ each carrying its own leading and tracking. Pick a tier; never override the size
 rather than fixed per class. A serif at 100px wants materially tighter letterfit
 than the same face at 46px, and one em value cannot serve both ends of that
 range. Each clamp is solved so the ratio lands on target at both extremes:
-`.type-display` measures **-0.012em / 1.06** at 46px and **-0.024em / 0.97** at
-91px, verified in the browser rather than judged by eye.
+`.type-display` measures **-0.008em / 1.08** at 46px and **-0.019em / 1.00** at
+100px, verified in the browser rather than judged by eye. Those figures belong
+to the face: the set they replaced was solved for Instrument Serif and ran
+roughly 35% more negative, which on Fraunces collided descenders with the caps
+of the next line. See "RETUNED FOR FRAUNCES" in `app/globals.css` before
+changing them.
 
 **Colour**: ivory `#F7F8F4`, alt sage `#F1F5F2`, ink `#121A18`, teal `#176D67`.
 Roughly 80% of the interface is neutral; teal marks interaction and hierarchy.
@@ -198,7 +203,7 @@ travel is a fraction of the element's own scroll distance rather than a fixed
 pixel offset, and a spring keeps it moving for a beat after the wheel stops.
 That trailing settle is the whole effect. Used twice, on the two largest
 editorial visuals. (It also pairs PP Editorial New with Euclid Flex, the same
-serif + geometric-sans logic as Instrument Serif + Geist.)
+serif + geometric-sans logic as Fraunces + Geist.)
 
 **biofarma.com.ar** commits to a deep teal `#01373D` as a full background, and
 sets large display figures in a light weight. Rebuilt as
@@ -310,8 +315,10 @@ dropping the horizontal gap below `sm`, where every item is full-width anyway
 and the gap does nothing. Cards now measure 327px with symmetric 24px gutters.
 
 Also fixed: `Section` silently swallowed `aria-labelledby`; nested `.map()`
-calls raised React key warnings; the `ViewCursor` rAF loop never idled and
-fought a CSS transform transition; `LineReveal` produced `"capitalfor"` in
+calls raised React key warnings; the contextual portfolio cursor's rAF loop
+never idled and fought a CSS transform transition (that component has since
+been deleted, along with the drawn global cursor that generalised it);
+`LineReveal` produced `"capitalfor"` in
 `textContent`; and three tap targets sat just under the 24px minimum (the
 mobile-menu email link, and the "All portfolio" / "All news" back links).
 

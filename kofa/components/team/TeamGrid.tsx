@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import { useMotionOff } from "@/components/motion/MotionPreference";
@@ -10,6 +10,23 @@ import { Eyebrow } from "@/components/ui/primitives";
 import { OPEN_TEAM_SLOTS, teamSorted, type TeamMember } from "@/data/team";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
+
+/* ---------------------------------------------------------------------------
+   What Tab is allowed to land on inside the member panel.
+   Deliberately narrow: the panel is assembled from a close button, an optional
+   LinkedIn anchor and static text, so there is no need for the exhaustive
+   focusable-element list a general-purpose trap would carry. Anything added to
+   the panel later that takes focus is covered by these selectors as long as it
+   is a real control rather than a tabindex-juggling div.
+--------------------------------------------------------------------------- */
+const PANEL_FOCUSABLE = [
+  "a[href]",
+  "button:not([disabled])",
+  "input:not([disabled])",
+  "select:not([disabled])",
+  "textarea:not([disabled])",
+  '[tabindex]:not([tabindex="-1"])',
+].join(",");
 
 /* ---------------------------------------------------------------------------
    Portrait plate.
@@ -104,26 +121,109 @@ export function TeamGrid() {
   const [open, setOpen] = useState<TeamMember | null>(null);
   const reduced = useMotionOff();
   const closeRef = useRef<HTMLButtonElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
   const lastTrigger = useRef<HTMLElement | null>(null);
+
+  /* The single close path.
+     Escape used to restore focus to the card that opened the panel while the
+     backdrop click just cleared state, so dismissing by backdrop dropped focus
+     onto <body> and the next Tab restarted from the top of the document — a
+     keyboard user who opened a profile from the last card was thrown back to
+     the skip link. Every dismissal now goes through here, so there is only one
+     place that can ever get the restore wrong.
+     Focusing synchronously is safe even though AnimatePresence keeps the panel
+     mounted for its exit: the trigger is outside the panel and never leaves the
+     DOM, and moving focus out first is exactly what we want before the panel
+     goes away. */
+  const closePanel = useCallback(() => {
+    setOpen(null);
+    lastTrigger.current?.focus();
+  }, []);
 
   useEffect(() => {
     if (!open) return;
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+
+    /* Cleared BEFORE the focus call, never after. The cleanup below marks the
+       panel `inert` on the way out, and reopening inside the exit window hands
+       AnimatePresence the same key, so it reuses the very same DOM node rather
+       than mounting a fresh one. Leaving the attribute on would make the focus
+       call below fail silently and drop the visitor into a dialog they cannot
+       reach with the keyboard at all. */
+    panelRef.current?.removeAttribute("inert");
     closeRef.current?.focus();
 
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        setOpen(null);
-        lastTrigger.current?.focus();
+        closePanel();
+        return;
+      }
+
+      /* Focus containment.
+         The panel claims aria-modal="true", which tells assistive tech the rest
+         of the page is unavailable. Nothing outside is inert or aria-hidden, so
+         without this trap Tab walked straight out of the panel and into the
+         card grid behind it — the claim was a lie, which is worse for a screen
+         reader user than never having made it. The trap lives in the same
+         effect as Escape so it is installed and torn down with the panel and
+         cannot outlive it. */
+      if (e.key !== "Tab") return;
+
+      const panel = panelRef.current;
+      if (!panel) return;
+
+      // Recomputed on every Tab rather than captured when the effect runs: the
+      // LinkedIn link renders only for members who have one, so the set is not
+      // fixed, and a cached list would eventually hand focus to a detached node.
+      const focusables = Array.from(
+        panel.querySelectorAll<HTMLElement>(PANEL_FOCUSABLE),
+      ).filter((el) => el.getClientRects().length > 0);
+
+      if (focusables.length === 0) {
+        // Should not happen — the close button is unconditional — but swallow
+        // the Tab rather than let it escape a dialog that says it is modal.
+        e.preventDefault();
+        return;
+      }
+
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      const active = document.activeElement;
+
+      // The `!panel.contains(active)` arm also recovers focus if something
+      // outside stole it while the panel was open.
+      if (e.shiftKey) {
+        if (active === first || !panel.contains(active)) {
+          e.preventDefault();
+          last.focus();
+        }
+      } else if (active === last || !panel.contains(active)) {
+        e.preventDefault();
+        first.focus();
       }
     };
+
     document.addEventListener("keydown", onKey);
     return () => {
       document.body.style.overflow = prev;
       document.removeEventListener("keydown", onKey);
+
+      /* The trap dies with this effect, but AnimatePresence deliberately keeps
+         the panel mounted for its 600ms slide-out, so for that window the close
+         button and the LinkedIn link were still in the tab order of a dialog
+         that had already been dismissed and whose Escape handler had just been
+         removed. A visitor who dismissed a profile and kept tabbing could land
+         back inside it with no way out but more tabbing.
+         `inert` takes the exiting subtree out of the tab order and the
+         accessibility tree without touching layout, paint, or the exit
+         animation, so AnimatePresence behaves exactly as before. Focus has
+         already been moved to the trigger by closePanel, so nothing is
+         displaced here. Browsers without `inert` simply ignore the attribute
+         and fall back to the old behaviour. */
+      panelRef.current?.setAttribute("inert", "");
     };
-  }, [open]);
+  }, [open, closePanel]);
 
   return (
     <>
@@ -206,10 +306,11 @@ export function TeamGrid() {
               // whole viewport and swallowed every click.
               exit={reduced ? undefined : { opacity: 0 }}
               transition={{ duration: reduced ? 0 : 0.4, ease: EASE }}
-              onClick={() => setOpen(null)}
+              onClick={closePanel}
             />
 
             <motion.div
+              ref={panelRef}
               role="dialog"
               aria-modal="true"
               aria-labelledby="panel-name"
@@ -224,10 +325,7 @@ export function TeamGrid() {
                 <button
                   ref={closeRef}
                   type="button"
-                  onClick={() => {
-                    setOpen(null);
-                    lastTrigger.current?.focus();
-                  }}
+                  onClick={closePanel}
                   className="-mr-2 flex h-11 w-11 items-center justify-center text-ink-soft transition-colors duration-300 ease-kofa hover:text-teal"
                 >
                   <span className="sr-only">Close profile</span>

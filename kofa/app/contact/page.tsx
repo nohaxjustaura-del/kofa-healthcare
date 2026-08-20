@@ -5,20 +5,20 @@ import { ContactForm } from "@/components/ui/ContactForm";
 import { LineReveal, Reveal } from "@/components/motion/Reveal";
 import { Rise } from "@/components/motion/Rise";
 import { ScientificBackground } from "@/components/motion/ScientificBackground";
+import { pageMetadata } from "@/lib/metadata";
 import { site } from "@/data/site";
 import { portfolio } from "@/data/portfolio";
 
-export const metadata: Metadata = {
+/* See lib/metadata.ts: a hand-written page-level `openGraph` replaces the root
+   layout's wholesale, taking og:site_name, og:locale, og:type and the share
+   card with it. The helper is the only place that block gets assembled. */
+export const metadata: Metadata = pageMetadata({
   title: "Contact",
   description:
     "Get in touch with KOFA Healthcare. We are always interested in meeting teams working on meaningful solutions to important clinical challenges.",
-  alternates: { canonical: "/contact" },
-  openGraph: {
-    title: "Contact · KOFA Healthcare",
-    description: "Let's advance healthcare together.",
-    url: "/contact",
-  },
-};
+  path: "/contact",
+  socialDescription: "Let's advance healthcare together.",
+});
 
 export default function ContactPage() {
   return (

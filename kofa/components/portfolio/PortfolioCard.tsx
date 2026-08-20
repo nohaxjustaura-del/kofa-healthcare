@@ -43,7 +43,6 @@ export function PortfolioCard({
   return (
     <Link
       href={`/portfolio/${company.slug}`}
-      data-view-cursor
       className="group/card block focus-visible:outline-none"
       aria-label={`${company.name}, ${company.category}`}
     >

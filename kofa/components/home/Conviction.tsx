@@ -41,9 +41,6 @@ export function Conviction() {
       id="conviction"
       className="relative overflow-hidden bg-[#0B2E2C]"
       aria-labelledby="conviction-heading"
-      // The custom cursor is teal on ivory and would vanish here. Read with
-      // closest(), so it covers everything nested inside.
-      data-cursor="light"
     >
       {/* The same living network, drawn pale on the dark ground. */}
       <div aria-hidden className="absolute inset-0">

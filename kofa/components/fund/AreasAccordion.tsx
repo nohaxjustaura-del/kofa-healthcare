@@ -163,12 +163,33 @@ export function AreasAccordion() {
                         </p>
                       )}
 
-                      {!area.stated && (
-                        <p className="type-meta mt-6 text-ink-mute">
-                          Derived from the published portfolio. Confirm with
-                          KOFA before promoting as a stated mandate.
-                        </p>
-                      )}
+                      {/* A paragraph gated on `!area.stated` used to sit here:
+                          "Derived from the published portfolio. Confirm with
+                          KOFA before promoting as a stated mandate." That is a
+                          note from the build to the client, and it was shipping
+                          as body copy inside the expanded panel of Digital
+                          Health and Emerging Technologies, on a public
+                          marketing page. A visitor reading the fund's areas of
+                          interest does not need to be told the fund has not
+                          signed off on its own mandate.
+
+                          Third time this defect class has been closed on this
+                          route: the unconfirmed CRITERIA rows in
+                          app/fund/page.tsx and the "categories pending
+                          approval" line in components/ui/ContactForm.tsx were
+                          the same thing. Scaffolding belongs in the handover
+                          document, not under the copy it annotates.
+
+                          `area.stated` itself stays in data/site.ts. This was
+                          the last place any code read it, but it is not dead
+                          data: it records which four areas KOFA names verbatim
+                          on kofahealthcare.com and which two were derived from
+                          the published portfolio, and that split is precisely
+                          what the hardcoded LAYOUT spans in
+                          components/home/AreasBento.tsx encode, wide cards for
+                          the four, narrow for the two. Delete the field and the
+                          next person to reorder investmentAreas has nothing
+                          left telling them why the spans fall where they do. */}
                     </div>
 
                     <div className="col-span-12 hidden lg:col-span-3 lg:col-start-9 lg:block">

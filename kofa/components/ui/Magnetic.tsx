@@ -7,10 +7,15 @@ import { isMotionOff } from "@/components/motion/MotionPreference";
    MAGNETIC
    ---------------------------------------------------------------------------
    Wraps a button or a link and lets it lean a few pixels toward the pointer
-   as it approaches, then settle back when the pointer leaves. Paired with
-   components/ui/Cursor.tsx it is the whole trick: the ring reaches for the
-   control at the same moment the control reaches back, and a hover stops
-   being a state change and becomes a small negotiation.
+   as it approaches, then settle back when the pointer leaves. A hover stops
+   being a state change and becomes a small negotiation: the control reaches
+   back before you arrive.
+
+   This used to be half of a pair, with components/ui/Cursor.tsx drawing a ring
+   that reached for the control at the same moment. That component was deleted
+   — a JS-followed pointer trails the hand by enough frames to read as the
+   whole page lagging — so this now stands on its own, against the native
+   cursor. It still works: the lean is on the control, not on the pointer.
 
    Kept deliberately small. `strength` 0.25 over a 90px radius means a control
    never travels more than ~22px, and the default settle is an ease-out, not a

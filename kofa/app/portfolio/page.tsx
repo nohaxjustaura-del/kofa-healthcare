@@ -3,18 +3,18 @@ import { Container, Section } from "@/components/ui/primitives";
 import { PageHero } from "@/components/ui/PageHero";
 import { PortfolioBrowser } from "@/components/portfolio/PortfolioBrowser";
 import { CTASection } from "@/components/ui/CTASection";
+import { pageMetadata } from "@/lib/metadata";
 import { activeCategories, portfolio } from "@/data/portfolio";
 
-export const metadata: Metadata = {
+/* See lib/metadata.ts: a hand-written page-level `openGraph` replaces the root
+   layout's wholesale, taking og:site_name, og:locale, og:type and the share
+   card with it. The helper is the only place that block gets assembled. */
+export const metadata: Metadata = pageMetadata({
   title: "Portfolio",
   description: `The ${portfolio.length} companies KOFA Healthcare has backed across cardiovascular, women's health, diagnostics, orthopedics and digital health.`,
-  alternates: { canonical: "/portfolio" },
-  openGraph: {
-    title: "Portfolio · KOFA Healthcare",
-    description: `Companies advancing the future of health. ${portfolio.length} companies across ${activeCategories.length} areas of medicine.`,
-    url: "/portfolio",
-  },
-};
+  path: "/portfolio",
+  socialDescription: `Companies advancing the future of health. ${portfolio.length} companies across ${activeCategories.length} areas of medicine.`,
+});
 
 export default function PortfolioPage() {
   return (

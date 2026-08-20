@@ -26,7 +26,8 @@ import { useMounted } from "@/components/motion/useMounted";
    the true top of the viewport. It is 1px tall and pointer-events-none, so
    being the topmost layer costs nothing — it never intercepts a click and
    never occludes a glyph. Below it: header z-50, mobile menu z-40. Above it:
-   ViewCursor z-[60] and the skip link z-[100], both of which should win.
+   the skip link at z-[100], which should win. (z-[60] is now unclaimed: it
+   belonged to the deleted ViewCursor.)
 
    NOT HIDDEN UNDER REDUCED MOTION. A progress indicator is information, not
    decoration; removing it would take something useful away from the people

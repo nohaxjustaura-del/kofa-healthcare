@@ -12,21 +12,22 @@ import { AreasAccordion } from "@/components/fund/AreasAccordion";
 import { CTASection } from "@/components/ui/CTASection";
 import { LineReveal } from "@/components/motion/Reveal";
 import { Rise, RiseGroup, RiseItem } from "@/components/motion/Rise";
+import { pageMetadata } from "@/lib/metadata";
 import { investmentProcess, site } from "@/data/site";
 import { activeCategories, portfolio } from "@/data/portfolio";
 
-export const metadata: Metadata = {
+/* Built through the shared helper rather than hand-written. A page-level
+   `openGraph` object replaces the root layout's outright instead of merging
+   into it, so writing one by hand here is what dropped og:site_name, og:locale,
+   og:type and the card image from this page. See lib/metadata.ts. */
+export const metadata: Metadata = pageMetadata({
   title: "The Fund",
   description:
     "KOFA Healthcare is an evergreen family office venture fund supporting biotech and healthcare innovations, investing from seed stage through commercial stage.",
-  alternates: { canonical: "/fund" },
-  openGraph: {
-    title: "The Fund · KOFA Healthcare",
-    description:
-      "Long-term capital for healthcare innovation. An evergreen family office venture fund.",
-    url: "/fund",
-  },
-};
+  path: "/fund",
+  socialDescription:
+    "Long-term capital for healthcare innovation. An evergreen family office venture fund.",
+});
 
 /* Only what KOFA publishes. Anything unconfirmed is marked, not invented. */
 const CRITERIA = [

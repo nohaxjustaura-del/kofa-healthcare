@@ -21,7 +21,7 @@ import {
    element, which is how most smooth-scroll libraries work. That mode would
    break, in this project alone:
      · `position: sticky` (FundIntro's node field, ProcessTrack's pin),
-     · framer-motion's `useScroll` (Hero parallax, Philosophy's drawn line,
+     · framer-motion's `useScroll` (Hero parallax, ProcessTrack's drawn line,
        Lag, Parallax, ScrollProgress),
      · IntersectionObserver (`whileInView` on every Reveal, the canvas
        field's off-screen pause, ChapterRail).
@@ -183,9 +183,11 @@ export function SmoothScroll() {
        `stop()` is the fix rather than destroying the instance: `onVirtualScroll`
        consults its nested-scroll check BEFORE the stopped check, so the panel
        keeps scrolling itself natively while the page behind it swallows the
-       wheel. Watching the one `style` attribute is the same mechanism
-       components/ui/Cursor.tsx already uses to notice an overlay, and costs
-       nothing between overlays. With `autoToggle` false Lenis never writes
+       wheel. Watching the one `style` attribute on both elements is what
+       makes this work without every overlay having to announce itself here,
+       and it costs nothing between overlays: the callback reads two inline
+       properties, touches no layout, and returns immediately when the answer
+       has not changed. With `autoToggle` false Lenis never writes
        inline overflow itself, so this cannot feed back into its own
        observer. */
     const isLocked = () => {
