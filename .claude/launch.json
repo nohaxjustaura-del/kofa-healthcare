@@ -1,0 +1,39 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "kofa",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "--prefix",
+        "kofa",
+        "run",
+        "dev"
+      ],
+      "port": 3200
+    },
+    {
+      "name": "kofa-prod",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "--prefix",
+        "kofa",
+        "run",
+        "start"
+      ],
+      "port": 3200
+    },
+    {
+      "name": "kofa-dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "--prefix",
+        "kofa",
+        "run",
+        "dev:auto"
+      ],
+      "port": 3201,
+      "autoPort": true
+    }
+  ]
+}

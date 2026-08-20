@@ -1,0 +1,936 @@
+@import "tailwindcss";
+
+/* ============================================================
+   KOFA HEALTHCARE: DESIGN SYSTEM
+   "The Living Network"
+   ============================================================ */
+
+@theme {
+  /* --- Surfaces --------------------------------------------- */
+  --color-ivory: #f7f8f4;
+  --color-ivory-deep: #f2f3ee;
+  --color-sage-bg: #f1f5f2;
+  --color-sage-bg-deep: #e9f0eb;
+  --color-white: #ffffff;
+
+  /* --- Ink --------------------------------------------------
+     Contrast against the ivory ground (#F7F8F4):
+       ink       16.6:1
+       ink-soft   5.8:1
+       ink-mute   5.0:1  ← metadata is 11px, so it is "small text" and
+                           needs 4.5:1. An airier grey read better but
+                           measured 2.96:1 and had to go. Tuned against the
+                           DARKEST ground it ever sits on (sage-bg-deep
+                           #E9F0EB, where it makes 4.6:1), not just ivory.
+                           Hierarchy here comes from size, case and
+                           tracking, not from washing the colour out.    */
+  --color-ink: #121a18;
+  --color-ink-soft: #59635f;
+  --color-ink-mute: #636d69;
+
+  /* --- Accent ----------------------------------------------- */
+  --color-teal: #176d67;
+  --color-teal-deep: #0f524d;
+  --color-sage: #b8cdc4;
+  --color-aqua: #4da9a0;
+
+  /* Semantic. The only non-neutral, non-accent colour on the site, form
+     validation. 5.2:1 on ivory, so it carries at 12px. */
+  --color-error: #b4443c;
+
+  /* --- Rules ------------------------------------------------ */
+  --color-rule: rgba(18, 26, 24, 0.12);
+  --color-rule-soft: rgba(18, 26, 24, 0.07);
+  --color-rule-strong: rgba(18, 26, 24, 0.2);
+  --color-rule-teal: rgba(23, 109, 103, 0.35);
+
+  /* --- Type ------------------------------------------------- */
+  --font-serif: var(--font-display-serif), "Iowan Old Style", Georgia, serif;
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, sans-serif;
+
+  /* --- Motion ----------------------------------------------- */
+  --ease-kofa: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-kofa-in: cubic-bezier(0.65, 0, 0.35, 1);
+
+  /* --- Layout ----------------------------------------------- */
+  --spacing-gutter: 1.5rem;
+}
+
+/* ============================================================
+   BASE
+   ============================================================ */
+
+@layer base {
+  * {
+    border-color: var(--color-rule);
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-ivory);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-synthesis-weight: none;
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    background-color: rgba(23, 109, 103, 0.16);
+    color: var(--color-ink);
+  }
+
+  /* Focus, visible, precise, never a fuzzy glow */
+  :focus-visible {
+    outline: 2px solid var(--color-teal);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--color-ivory);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(18, 26, 24, 0.16);
+    border: 3px solid var(--color-ivory);
+    border-radius: 99px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(18, 26, 24, 0.28);
+  }
+}
+
+/* ============================================================
+   TYPOGRAPHY PRIMITIVES
+   ============================================================ */
+
+@layer components {
+  /* ---------------------------------------------------------------------
+     Editorial display, Instrument Serif.
+
+     OPTICAL SIZING. Tracking and leading are clamped alongside font-size
+     rather than fixed per class. A serif set at 100px wants noticeably
+     tighter letterfit and tighter leading than the same face at 46px; a
+     single em value cannot serve both ends of a 46→100px range, it is
+     either loose at the top or cramped at the bottom.
+
+     Each clamp below is solved so the ratio lands where it should at both
+     extremes, e.g. for .type-display:
+        46px  →  -0.008em tracking, 1.08 leading
+       100px  →  -0.019em tracking, 1.00 leading
+     with a linear ramp between. Verified by measurement, not by eye.
+
+     RETUNED FOR FRAUNCES. The numbers above are ~35% less negative than the
+     set that preceded them, which were solved for Instrument Serif. That face
+     is narrow and closely fitted, and wanted the letterfit pulled hard at
+     display sizes. Fraunces is wider, rounder and carries an `opsz` axis that
+     is already tightening the fit as the size grows, so the old tracking
+     applied a second helping of the same correction and collided the
+     descenders of one line with the caps of the next. Leading is opened for
+     the same reason: Fraunces has the taller x-height of the two, so 0.96
+     that merely looked tight before now genuinely overlaps.
+  --------------------------------------------------------------------- */
+  .type-display {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: clamp(2.875rem, 1.4rem + 5.4vw, 6.25rem); /* 46px → 100px */
+    letter-spacing: clamp(-1.9px, 0.3015px - 0.1532vw, -0.37px);
+    line-height: clamp(49.7px, 27.72px + 5.03vw, 100px);
+  }
+
+  .type-display-sm {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: clamp(2.25rem, 1.4rem + 3.2vw, 4rem); /* 36px → 64px */
+    letter-spacing: clamp(-1.02px, 0.123px - 0.0882vw, -0.25px);
+    line-height: clamp(39.6px, 27.12px + 2.94vw, 65.3px);
+  }
+
+  .type-section {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: clamp(1.875rem, 1.15rem + 2.6vw, 3.25rem); /* 30px → 52px */
+    letter-spacing: clamp(-0.76px, 0.1554px - 0.0705vw, -0.16px);
+    line-height: 1.1;
+  }
+
+  .type-statement {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: clamp(1.5rem, 1rem + 1.9vw, 2.5rem); /* 24px → 40px */
+    letter-spacing: clamp(-0.48px, 0.0954px - 0.0453vw, -0.096px);
+    line-height: 1.18;
+  }
+
+  /* Small uppercase metadata label, the connective tissue of the site */
+  .type-eyebrow {
+    font-family: var(--font-sans);
+    font-size: 0.6875rem; /* 11px */
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .type-meta {
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    font-weight: 450;
+    line-height: 1.4;
+    letter-spacing: 0.02em;
+  }
+
+  /* Three body tiers, each carrying its own leading and tracking. Previously
+     `.type-body` was paired with an ad-hoc `text-[…]` override at 17 of its 24
+     call sites, which meant the leading stayed tuned for a size most of the
+     site no longer used. Pick a tier; never override the size. */
+  .type-body {
+    font-size: 1rem;
+    line-height: 1.62;
+    letter-spacing: -0.006em;
+    color: var(--color-ink-soft);
+  }
+
+  .type-body-sm {
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    letter-spacing: -0.005em;
+    color: var(--color-ink-soft);
+  }
+
+  .type-body-xs {
+    font-size: 0.875rem;
+    line-height: 1.58;
+    letter-spacing: -0.003em;
+    color: var(--color-ink-soft);
+  }
+
+  .type-body-lg {
+    font-size: clamp(1.0625rem, 1rem + 0.25vw, 1.1875rem);
+    line-height: 1.6;
+    letter-spacing: -0.008em;
+    color: var(--color-ink-soft);
+  }
+
+  /* Serif italic accent, used sparingly, on one word */
+  .accent-italic {
+    font-style: italic;
+    color: var(--color-teal);
+  }
+}
+
+/* ============================================================
+   UTILITIES
+   ============================================================ */
+
+@layer utilities {
+  .ease-kofa {
+    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  /* Faint scientific grid, the "graph paper" substrate */
+  .bg-grid {
+    background-image:
+      linear-gradient(to right, rgba(23, 109, 103, 0.055) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(23, 109, 103, 0.055) 1px, transparent 1px);
+    background-size: 88px 88px;
+  }
+
+  /* Masked reveal container for line-by-line headline animation */
+  .clip-line {
+    display: block;
+    overflow: hidden;
+    padding-bottom: 0.09em;
+    margin-bottom: -0.09em;
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+  .text-pretty {
+    text-wrap: pretty;
+  }
+
+  /* Underline that draws left → right on hover */
+  .link-draw {
+    position: relative;
+    display: inline-block;
+  }
+  .link-draw::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -2px;
+    height: 1px;
+    width: 100%;
+    background-color: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .link-draw:hover::after,
+  .link-draw:focus-visible::after {
+    transform: scaleX(1);
+  }
+
+  /* Logo normalisation: portfolio logos arrive as mixed JPEG/PNG/WebP
+     on white. Multiply blends the white away against ivory; the
+     grayscale/contrast pass unifies them into one muted system. */
+  .logo-mono {
+    mix-blend-mode: multiply;
+    filter: grayscale(1) contrast(0.82) brightness(1.04);
+    opacity: 0.68;
+    transition:
+      filter 500ms cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 500ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .group:hover .logo-mono,
+  .logo-mono:hover {
+    filter: grayscale(0) contrast(1) brightness(1);
+    opacity: 1;
+  }
+
+  .logo-plate {
+    mix-blend-mode: multiply;
+  }
+}
+
+/* ============================================================
+   MOTION: the site must be beautiful with all of this off
+   ------------------------------------------------------------
+   Keyed off `html[data-motion="off"]`, NOT off
+   `@media (prefers-reduced-motion: reduce)`.
+
+   Motion is on by default for everyone, and the visitor owns the
+   decision through the control in the footer. The attribute is
+   written before first paint by the inline script in
+   app/layout.tsx, so these rules are correct on frame one with no
+   flash, and, being an attribute on <html> rather than React
+   state, they cannot disagree with what the components think.
+   See components/motion/MotionPreference.tsx for why the OS
+   media query no longer decides this.
+
+   An attribute selector is also strictly more capable than the
+   media query it replaces: it can be toggled at runtime, which
+   is the entire point of having a control.
+   ============================================================ */
+
+html[data-motion="off"] {
+  scroll-behavior: auto;
+}
+
+html[data-motion="off"] *,
+html[data-motion="off"] *::before,
+html[data-motion="off"] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* ---------------------------------------------------------------------
+   Entrance elements render their hidden `initial` state into the server
+   HTML and rely on the animation library to reveal them. With motion off
+   the library is told to arrive with zero duration, but nothing may depend
+   on it having run: this page once had 47 of 56 revealed elements stuck at
+   opacity 0, i.e. mostly blank, for exactly the visitors least able to
+   tolerate that.
+
+   Content must never depend on an animation running in order to be visible.
+   These are the same declarations as the <noscript> fallback in
+   app/layout.tsx, for the same reason. Written flat rather than nested so
+   the compiled selector is unambiguous.
+--------------------------------------------------------------------- */
+html[data-motion="off"] [data-reveal],
+html[data-motion="off"] [data-lag] {
+  opacity: 1 !important;
+  transform: none !important;
+  clip-path: none !important;
+}
+
+/* ============================================================
+   TOUCH: nothing may hide behind a hover
+   ------------------------------------------------------------
+   A device with no hover has no way to reach content revealed by
+   one. The investment-area descriptions on the homepage were
+   collapsed to max-height:0 / opacity:0 until hovered, which made
+   six paragraphs of real copy unreachable on every phone.
+
+   `(hover: none)` is the correct test rather than a width query:
+   a small window on a laptop still hovers, and a large tablet
+   still does not. Being a media query it also evaluates the same
+   on server and client, so it cannot cause a hydration mismatch.
+   ============================================================ */
+@media (hover: none) {
+  [data-hover-reveal] {
+    max-height: none !important;
+    opacity: 1 !important;
+  }
+  [data-hover-reveal-gap] {
+    margin-top: 0.625rem !important;
+  }
+}
+
+/* Slow marquee for the portfolio logo strip */
+@keyframes kofa-marquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.animate-marquee {
+  animation: kofa-marquee 78s linear infinite;
+  will-change: transform;
+}
+.marquee-host:hover .animate-marquee,
+.marquee-host:focus-within .animate-marquee {
+  animation-play-state: paused;
+}
+
+html[data-motion="off"] .animate-marquee {
+  animation: none !important;
+}
+
+/* Slow morph for the translucent cellular form */
+@keyframes kofa-breathe {
+  0%,
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 0.85;
+  }
+  50% {
+    transform: scale(1.045) rotate(2.2deg);
+    opacity: 1;
+  }
+}
+
+.animate-breathe {
+  animation: kofa-breathe 26s ease-in-out infinite;
+}
+
+/* Membrane rotation for the cellular form */
+@keyframes kofa-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes kofa-drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(-1.6%, 2.4%, 0);
+  }
+}
+
+.animate-drift {
+  animation: kofa-drift 34s ease-in-out infinite;
+}
+
+
+/* ==========================================================
+   SMOOTH SCROLL
+   ========================================================== */
+
+/* ============================================================
+   LENIS
+   Inlined from node_modules/lenis/dist/lenis.css (v1.3.26) rather than
+   imported, so these rules sit with the rest of the design system and are
+   visible to whoever edits the base layer next. Lenis only ever ADDS the
+   `lenis` class to <html>, so every rule below is inert until
+   components/motion/SmoothScroll.tsx actually constructs an instance, i.e.
+   it costs nothing under reduced motion or with JavaScript off.
+   ============================================================ */
+
+/* Header clearance for anchors, stated once, here.
+   Lenis's scrollTo reads getComputedStyle(document.documentElement)
+   .scrollPaddingTop and subtracts it from the target, and native anchor jumps
+   and scrollIntoView honour it too. So the same landing point is produced with
+   Lenis running, with Lenis off under reduced motion, and with no JS at all.
+   The header is 84px (92px at sm) at rest and 66px once scrolled, which is the
+   state it will be in by the time an anchor scroll lands. Do NOT also pass an
+   `offset` to Lenis's `anchors` option: it would apply the clearance twice. */
+html {
+  scroll-padding-top: 96px;
+}
+
+/* Lenis writes the real window scroll position once a frame with
+   scrollTo({ behavior: "instant" }). `scroll-behavior: smooth` on html (set in
+   the base layer above) makes the browser animate towards each of those
+   writes, so two interpolators chase the same number and the page trails the
+   wheel by a fixed distance that never closes. Scoped to .lenis so the native
+   smooth behaviour survives for everyone Lenis is not running for. */
+html.lenis {
+  scroll-behavior: auto;
+}
+
+/* Lenis assumes the document, not a fixed-height box, owns the scroll. */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+/* Nested scrollers marked with data-lenis-prevent: Lenis bows out of these on
+   the attribute alone (onVirtualScroll matches the attribute before it ever
+   consults the allowNestedScroll heuristic), so the attribute is sufficient
+   for Lenis. This rule handles the other half: it stops the NATIVE scroll from
+   chaining out to the document once the nested scroller hits its end. Without
+   it, scrolling to the bottom of an open panel keeps going and takes the page
+   behind it with it. */
+.lenis [data-lenis-prevent],
+.lenis [data-lenis-prevent-wheel],
+.lenis [data-lenis-prevent-touch],
+.lenis [data-lenis-prevent-vertical],
+.lenis [data-lenis-prevent-horizontal] {
+  overscroll-behavior: contain;
+}
+
+/* An iframe swallows the wheel event, which strands the lerp mid-flight with
+   the page still moving. Only while actually smooth-scrolling, so an embed
+   stays interactive the rest of the time. */
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+
+/* Set when lenis.stop() is called, e.g. to lock the page behind a modal. */
+.lenis:not(.lenis-autoToggle).lenis-stopped {
+  overflow: clip;
+}
+
+/* NOTE: the `.lenis.lenis-autoToggle { transition-property: overflow; ... }`
+   rule from lenis.css is deliberately omitted. `autoToggle` is false and
+   turning it on would make Lenis start/stop itself from html's computed
+   overflow, which is not a mode this project wants. */
+
+
+/* ==========================================================
+   ARRIVAL
+   ========================================================== */
+
+/* ============================================================
+   ARRIVAL CURTAIN: the escape hatches
+   ------------------------------------------------------------
+   components/motion/Arrival.tsx renders a full-viewport ivory layer into
+   the server HTML and relies on JavaScript to take it away again. The two
+   cases where that JavaScript will not — or should not — run are handled
+   here rather than inside the component:
+
+     · data-motion="off". A ~1.5s choreographed load gate is the first thing
+       a visitor who asked the page to hold still should stop seeing. The
+       attribute is stamped before first paint, so, like a media query and
+       unlike a JS branch, it cannot cost us the SSR pass.
+
+     · data-arrival-seen, stamped on <html> by the pre-paint script in
+       app/layout.tsx when the session flag is already set. Without it the
+       curtain would sit on screen from first paint until hydration on every
+       repeat visit and then vanish — a flash, not a gate.
+
+   The third case, no JavaScript at all, is in the <noscript> block in
+   app/layout.tsx, for the same reason the [data-reveal] rules are: it is the
+   only mechanism that runs when nothing else does. Do not move any of these
+   three into a check inside the component.
+   ============================================================ */
+
+[data-arrival-seen] [data-arrival] {
+  display: none !important;
+}
+
+html[data-motion="off"] [data-arrival] {
+  display: none !important;
+}
+
+
+/* ==========================================================
+   CUSTOM CURSOR
+   ========================================================== */
+
+/* ============================================================
+   CUSTOM CURSOR
+   ------------------------------------------------------------
+   `data-kofa-cursor` is set on <html> by components/ui/Cursor.tsx,
+   and only after that component has confirmed a fine pointer and no
+   reduced-motion preference. Nothing below applies otherwise, so a
+   touch device, a reduced-motion visitor and a visitor with JS off
+   all keep the native pointer untouched. The component also drops
+   the attribute for as long as an overlay holds the scroll lock,
+   which is what stops the mobile menu from being a page with no
+   pointer on it at all.
+
+   UNLAYERED ON PURPOSE. Tailwind's utilities sit in
+   `@layer utilities`, and an unlayered rule beats a layered one
+   whatever the specificity. Without that, `cursor-pointer` on the
+   ContactForm radio pills would survive and leave one stray OS
+   pointer sitting on the page.
+   ============================================================ */
+
+[data-kofa-cursor="on"],
+[data-kofa-cursor="on"] * {
+  cursor: none;
+}
+
+/* The caret is information, not decoration: it says where typing will
+   land, and it is the only cue that text can be selected at all. A
+   drawn dot replaces neither, so fields keep the real one and
+   Cursor.tsx fades both of its bodies out over them (state "native").
+   `:where()` contributes no specificity, so the whole selector stays
+   at (0,2,1) and the disabled rule below can still outrank it. */
+[data-kofa-cursor="on"]
+  input:where(
+    [type="text"],
+    [type="email"],
+    [type="tel"],
+    [type="url"],
+    [type="search"],
+    [type="password"],
+    [type="number"],
+    [type="date"],
+    [type="datetime-local"],
+    [type="time"],
+    [type="month"],
+    [type="week"],
+    :not([type])
+  ):not(:disabled),
+[data-kofa-cursor="on"] textarea:not(:disabled),
+[data-kofa-cursor="on"] [contenteditable]:not([contenteditable="false"]) {
+  cursor: text;
+}
+
+/* A <select> hands off to an OS popup; it needs a real pointer to
+   hand off from. */
+[data-kofa-cursor="on"] select:not(:disabled) {
+  cursor: pointer;
+}
+
+/* A refusal has to stay legible. Button.tsx promises
+   `disabled:cursor-not-allowed`; this keeps that promise while the
+   custom cursor is up, and outranks the `cursor: text` rule above
+   because that one excludes :disabled outright. */
+[data-kofa-cursor="on"] :disabled,
+[data-kofa-cursor="on"] [aria-disabled="true"],
+[data-kofa-cursor="on"] [aria-disabled="true"] * {
+  cursor: not-allowed;
+}
+
+/* Escape hatch for anything that needs the OS pointer back, e.g. a
+   future map or canvas widget. Cursor.tsx reads the same attribute
+   and stands its own two bodies down over it. */
+[data-kofa-cursor="on"] [data-native-cursor],
+[data-kofa-cursor="on"] [data-native-cursor] * {
+  cursor: auto;
+}
+
+
+/* ==========================================================
+   CHAPTER RAIL
+   ========================================================== */
+
+
+
+
+/* ==========================================================
+   PROCESS TRACK
+   ========================================================== */
+
+/* ============================================================
+   HORIZONTAL PROCESS TRACK
+   components/home/ProcessTrack.tsx
+   ------------------------------------------------------------
+   Base = the stacked vertical list, i.e. what Philosophy rendered
+   below xl. Everything about the pinned horizontal mode lives in
+   the one guarded block below, so the stacked list is what ships
+   whenever any of three conditions fails:
+
+     · viewport < 1024px       five cards need the room
+     · reduced motion          pinning the viewport and moving the
+                               page sideways under a reader who
+                               asked for less motion is exactly the
+                               thing they asked us not to do
+     · JavaScript never ran    [data-ptrack-pin="true"] is written
+                               by React after mount
+
+   The third is the one no media query can express, and it is not
+   optional: without JS the transform never runs, and a clipped
+   horizontal track would leave three of five stages permanently
+   unreachable. All three are layout branches, never JS branches,
+   so the rendered tree is identical in every case and hydration
+   cannot mismatch.
+
+   Unlayered on purpose, so these sit above Tailwind's utility
+   layer. Nothing here sets a property that a utility on the same
+   element also sets.
+   ============================================================ */
+
+.ptrack__lane {
+  position: relative;
+  width: 100%;
+  max-width: 100rem;
+  margin-inline: auto;
+  padding-inline: 1.5rem;
+}
+@media (min-width: 640px) {
+  .ptrack__lane {
+    padding-inline: 2rem;
+  }
+}
+@media (min-width: 1024px) {
+  .ptrack__lane {
+    padding-inline: 3rem;
+  }
+}
+@media (min-width: 1280px) {
+  .ptrack__lane {
+    padding-inline: 5rem;
+  }
+}
+
+/* The drawn hairline, the nodes, the per-card rule and the custom
+   scrollbar belong to the pinned mode only. */
+.ptrack__line,
+.ptrack__node,
+.ptrack__cardrule,
+.ptrack__bar {
+  display: none;
+}
+
+.ptrack__list {
+  display: grid;
+  grid-template-columns: 1fr;
+  column-gap: 2rem;
+  row-gap: 0;
+}
+@media (min-width: 640px) {
+  .ptrack__list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.ptrack__card {
+  position: relative;
+  border-bottom: 1px solid var(--color-rule);
+  padding-block: 2rem 2.5rem;
+}
+
+.ptrack__title {
+  margin-top: 1rem;
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: clamp(1.3125rem, 0.95rem + 0.85vw, 1.75rem);
+  line-height: 1.14;
+  letter-spacing: -0.014em;
+  color: var(--color-ink);
+}
+
+.ptrack__body {
+  margin-top: 0.75rem;
+  max-width: 30ch;
+}
+
+.ptrack__n {
+  transition: color 600ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ------------------------------------------------------------
+   PINNED MODE
+   ------------------------------------------------------------ */
+@media (min-width: 1024px) {
+  .ptrack[data-ptrack-pin="true"] {
+    /* Five of these have to exceed the viewport at every width the
+       mode is live at; 20rem × 5 already does so at 1024px. */
+    --ptrack-card: clamp(20rem, 26vw, 27rem);
+    --ptrack-gap: clamp(1.5rem, 2.4vw, 2.75rem);
+    --ptrack-pad: 1.75rem;
+    /* Overwritten inline by the component with the heading's own
+       measured inset, which is exact past 1600px where Container
+       starts centring. This is only the first-frame value. */
+    --ptrack-edge: 3rem;
+
+    /* The surplus over the sticky child's 100vh is the pinned
+       distance. Set inline once measured; 100vh until then means an
+       unmeasured track simply does not pin rather than reserving a
+       screenful of nothing. */
+    height: var(--ptrack-pin-h, 100vh);
+  }
+
+  .ptrack[data-ptrack-pin="true"] .ptrack__sticky {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: clamp(2.5rem, 6vh, 4.5rem);
+  }
+
+  /* `clip` creates no scroll container, so a focused off-screen card
+     cannot leave the browser's own scrollIntoView holding a
+     scrollLeft the transform knows nothing about. `hidden` first for
+     anything that does not support it; the component also pins
+     scrollLeft to 0 for that case. */
+  .ptrack[data-ptrack-pin="true"] .ptrack__view {
+    width: 100%;
+    overflow: hidden;
+    overflow: clip;
+  }
+
+  .ptrack[data-ptrack-pin="true"] .ptrack__lane {
+    width: max-content;
+    max-width: none;
+    margin-inline: 0;
+    padding-inline: var(--ptrack-edge);
+    will-change: transform;
+  }
+
+  /* Spans the whole lane, end insets included, so the fill's scaleX
+     is the track's progress exactly and each node lights on the frame
+     the teal reaches it. */
+  .ptrack[data-ptrack-pin="true"] .ptrack__line {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background-color: var(--color-rule);
+  }
+  .ptrack[data-ptrack-pin="true"] .ptrack__line-fill {
+    position: absolute;
+    inset: 0;
+    transform-origin: left center;
+    background-color: var(--color-teal);
+  }
+
+  .ptrack[data-ptrack-pin="true"] .ptrack__list {
+    display: flex;
+    column-gap: var(--ptrack-gap);
+    /* stretch, not start: equal card heights are what line the five
+       bottom rules up into a second horizontal line. */
+    align-items: stretch;
+  }
+
+  .ptrack[data-ptrack-pin="true"] .ptrack__card {
+    display: flex;
+    flex-direction: column;
+    flex: 0 0 auto;
+    width: var(--ptrack-card);
+    min-height: clamp(15rem, 26vh, 20rem);
+    border-bottom: 0;
+    border-left: 1px solid var(--color-rule);
+    padding: 2.25rem var(--ptrack-pad) 0;
+  }
+  /* The first card carries no rule and no inset, so its text starts on
+     the heading's own left edge. Same device as Philosophy's xl:pl-0. */
+  .ptrack[data-ptrack-pin="true"] .ptrack__card:first-child {
+    border-left: 0;
+    padding-left: 0;
+  }
+
+  .ptrack[data-ptrack-pin="true"] .ptrack__node {
+    display: block;
+    position: absolute;
+    top: -3px;
+    left: -3px;
+    width: 7px;
+    height: 7px;
+    border-radius: 999px;
+    background-color: var(--color-rule-strong);
+    transition:
+      background-color 600ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .ptrack[data-ptrack-pin="true"] .ptrack__card[data-on="true"] .ptrack__node {
+    background-color: var(--color-teal);
+    transform: scale(1.3);
+  }
+  .ptrack[data-ptrack-pin="true"] .ptrack__card[data-on="true"] .ptrack__n {
+    color: var(--color-teal);
+  }
+
+  /* margin-top:auto drops it to the card's foot; all five sit on one
+     line because the cards stretch to equal height. */
+  .ptrack[data-ptrack-pin="true"] .ptrack__cardrule {
+    display: block;
+    position: relative;
+    margin-top: auto;
+    height: 1px;
+    background-color: var(--color-rule);
+  }
+  .ptrack[data-ptrack-pin="true"] .ptrack__cardrule-fill {
+    position: absolute;
+    inset: 0;
+    background-color: var(--color-teal);
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 900ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .ptrack[data-ptrack-pin="true"]
+    .ptrack__card[data-on="true"]
+    .ptrack__cardrule-fill {
+    transform: scaleX(1);
+  }
+
+  /* ---- the custom scrollbar ---- */
+  .ptrack[data-ptrack-pin="true"] .ptrack__bar {
+    display: block;
+    padding-inline: var(--ptrack-edge);
+  }
+  .ptrack__bar-head {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 0.9375rem;
+  }
+  .ptrack__bar-rail {
+    position: relative;
+    height: 1px;
+    background-color: var(--color-rule);
+  }
+  /* 24px tall so the drag target clears WCAG 2.2 SC 2.5.8; the visible
+     mark is the 2px bar drawn by ::after. width and x are written by
+     the component, min-width keeps it grabbable on a very wide track. */
+  .ptrack__thumb {
+    position: absolute;
+    left: 0;
+    top: -12px;
+    height: 24px;
+    min-width: 3rem;
+    touch-action: none;
+    will-change: transform;
+  }
+  .ptrack__thumb::after {
+    content: "";
+    position: absolute;
+    inset-block: 11px;
+    inset-inline: 0;
+    background-color: var(--color-teal);
+  }
+  @media (pointer: fine) {
+    .ptrack__thumb {
+      cursor: grab;
+    }
+    .ptrack__thumb:active {
+      cursor: grabbing;
+    }
+  }
+}
+
+@media (min-width: 1280px) {
+  .ptrack[data-ptrack-pin="true"] {
+    --ptrack-edge: 5rem;
+  }
+}
