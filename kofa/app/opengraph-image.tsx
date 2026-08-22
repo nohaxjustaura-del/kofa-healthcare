@@ -75,7 +75,7 @@ export default function OpengraphImage() {
             width={44}
             height={38}
             viewBox={KOFA_GLYPH_VIEWBOX}
-            fill={BRAND.ink}
+            fill={BRAND.kofaRed}
             style={{ marginRight: 22 }}
           >
             <path fillRule="evenodd" d={KOFA_GLYPH_PATH} />

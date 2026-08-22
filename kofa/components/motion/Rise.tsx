@@ -7,7 +7,12 @@ import {
   type Variants,
 } from "framer-motion";
 import { useMotionOff } from "@/components/motion/MotionPreference";
-import { useCallback, useRef, type ReactNode } from "react";
+import {
+  useCallback,
+  useRef,
+  type CSSProperties,
+  type ReactNode,
+} from "react";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -227,12 +232,17 @@ export function RiseGroup({
   className,
   amount = 0.15,
   as = "div",
+  style,
 }: {
   children: ReactNode;
   className?: string;
   /** Fraction of the group that must be in view before it fires. */
   amount?: number;
   as?: "div" | "ul" | "section";
+  /** For custom properties a Tailwind class cannot carry, e.g. a column count
+   *  computed from data. Layout only, never transform: the variants below own
+   *  `transform`, and a style prop that set it would be silently overwritten. */
+  style?: CSSProperties;
 }) {
   const reduced = useMotionOff();
   const Tag = motion[as] as typeof motion.div;
@@ -241,6 +251,7 @@ export function RiseGroup({
     <Tag
       data-reveal
       className={className}
+      style={style}
       variants={reduced ? undefined : groupParent}
       initial="hidden"
       {...(reduced

@@ -7,7 +7,6 @@ import { useMotionOff } from "@/components/motion/MotionPreference";
 import { useEffect, useRef, useState } from "react";
 import { nav, site } from "@/data/site";
 import { LogoMark } from "@/components/ui/LogoMark";
-import { Arrow } from "@/components/ui/Arrow";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -284,8 +283,16 @@ export function Navigation() {
         >
           <LogoMark size={scrolled ? 20 : 22} />
 
-          {/* --- desktop --- */}
-          <nav aria-label="Primary" className="hidden items-center gap-1 lg:flex">
+          {/* --- desktop ---
+              `-mr-4` cancels the last link's own px-4 so the final label's
+              RIGHT EDGE lands on the container gutter, level with the logo's
+              left edge. Without it the row sits 16px shy of the measure and
+              reads as accidentally indented — the padding is a hit area, and
+              a hit area should not be visible as alignment. */}
+          <nav
+            aria-label="Primary"
+            className="-mr-4 hidden items-center gap-1 lg:flex"
+          >
             {nav.map((item) => {
               const active = isActive(item.href);
               return (
@@ -313,26 +320,19 @@ export function Navigation() {
               );
             })}
 
-            <span aria-hidden className="mx-5 h-4 w-px bg-rule" />
+            {/* A divider and a second "Connect →" link used to sit here, and
+                it pointed at /contact — the same place the "Contact" item two
+                pixels to its left already went. Two controls, one destination,
+                differing only in wording, which asks the reader to work out
+                whether they are different (they were not) and gives a screen
+                reader two identically-targeted links to announce.
 
-            <Link
-              href="/contact"
-              // py-2/-my-2 matches the 24px minimum target the sibling nav
-              // links already get from their px-4 py-2.
-              className="group/connect -my-2 inline-flex items-center gap-2 py-2 text-[0.8125rem] font-medium tracking-[-0.005em] text-ink transition-colors duration-300 ease-kofa hover:text-teal"
-            >
-              <span className="relative">
-                Connect
-                <span
-                  aria-hidden
-                  className="absolute -bottom-[3px] left-0 h-px w-full origin-left scale-x-0 bg-current transition-transform duration-[420ms] ease-kofa group-hover/connect:scale-x-100"
-                />
-              </span>
-              <Arrow
-                size={14}
-                className="transition-transform duration-300 ease-kofa group-hover/connect:translate-x-1"
-              />
-            </Link>
+                The nav item is the one that survived: it is the one that
+                matches the page it leads to, it is the one the mobile menu and
+                the footer already use, and it is the one that takes the active
+                underline when you are on /contact — which the CTA never could,
+                so on the contact page the header used to show one link lit and
+                an identical unlit one beside it. */}
           </nav>
 
           {/* --- mobile trigger --- */}

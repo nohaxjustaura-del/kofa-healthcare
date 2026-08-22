@@ -29,6 +29,12 @@
   --color-ink-mute: #636d69;
 
   /* --- Accent ----------------------------------------------- */
+  /* KOFA's own mark is red, and the mark is the one place it belongs. The
+     palette below is the SITE's; this token exists so the brand red is
+     stated once and cannot drift, not so it can be used as an accent. Sampled
+     from the supplied artwork (public/brand/kofa-mark.png), not guessed. */
+  --color-kofa-red: #d61319;
+
   --color-teal: #176d67;
   --color-teal-deep: #0f524d;
   --color-sage: #b8cdc4;
@@ -398,8 +404,12 @@ html[data-motion="off"] [data-lag] {
   }
 }
 
+/* Two marquees now run on this rule at two different speeds, the thin
+   portfolio strip and the partner plates, so the duration is a custom property
+   set at the call site rather than a number buried here. Callers that set
+   nothing keep the original 78s. */
 .animate-marquee {
-  animation: kofa-marquee 78s linear infinite;
+  animation: kofa-marquee var(--marquee-duration, 78s) linear infinite;
   will-change: transform;
 }
 .marquee-host:hover .animate-marquee,
@@ -409,6 +419,55 @@ html[data-motion="off"] [data-lag] {
 
 html[data-motion="off"] .animate-marquee {
   animation: none !important;
+}
+
+/* ============================================================
+   TEAM NUMERALS
+   ------------------------------------------------------------
+   The counted columns in components/home/TeamNumbers.tsx. The
+   numeral is the largest thing in the section and the lightest:
+   an outline at rest that fills on hover, so a column is mostly
+   air until you point at it.
+
+   THE @supports IS LOAD-BEARING. The outline is a transparent
+   fill plus a text stroke, so a browser that ignores
+   -webkit-text-stroke would paint transparent text on ivory. The
+   numerals would not be faint, they would be GONE, and the
+   section would lose its only picture. Guarding the transparent
+   fill behind support for the stroke makes the fallback a pale
+   solid numeral, which is merely less interesting.
+
+   Every property that moves on hover is declared at rest here
+   too, otherwise there is nothing for the transition to run
+   from. The hover itself is keyed off the column's named group,
+   so focusing the name link lights the column exactly as
+   pointing at it does.
+   ============================================================ */
+.team-numeral {
+  display: block;
+  font-family: var(--font-sans);
+  font-weight: 200;
+  font-size: clamp(5rem, 10.5vw, 11rem);
+  line-height: 0.82;
+  letter-spacing: -0.045em;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-rule-strong);
+  transition:
+    color 700ms cubic-bezier(0.22, 1, 0.36, 1),
+    -webkit-text-stroke-color 700ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@supports (-webkit-text-stroke: 1px currentColor) {
+  .team-numeral {
+    color: transparent;
+    -webkit-text-stroke: 1.25px var(--color-rule-strong);
+  }
+}
+
+.group\/col:hover .team-numeral,
+.group\/col:focus-within .team-numeral {
+  color: var(--color-teal);
+  -webkit-text-stroke-color: transparent;
 }
 
 /* Slow morph for the translucent cellular form */

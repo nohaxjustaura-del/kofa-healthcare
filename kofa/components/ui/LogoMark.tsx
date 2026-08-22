@@ -1,15 +1,27 @@
 import Link from "next/link";
 
 /**
- * KOFA's existing hexagonal mark, vectorised from the artwork on
- * kofahealthcare.com (traced to 99.7% of the original at 389 path characters,
- * so it stays crisp at any size and inherits `currentColor`).
+ * KOFA's hexagonal mark, vectorised from the official artwork (traced to 99.7%
+ * of the original at 389 path characters, so it stays crisp at any size).
  *
- * It is presented monochrome here. The source artwork is red, which sits
- * outside the ivory / ink / teal system this redesign is built on. A
- * single-colour application is the standard way to carry an existing mark into
- * a new palette, and it is fully reversible: the original red renders by
- * passing `className="text-[#D61318]"`.
+ * IT IS RED, WHICH IS A REVERSAL. This was rendered monochrome for a while, on
+ * the argument that the source red sits outside the ivory / ink / teal system
+ * the rest of the redesign is built on and that a single-colour application is
+ * the normal way to carry an existing mark into a new palette. That argument
+ * is fine in the abstract and wrong here: a company's mark is not a design
+ * element the site gets to restyle, it is the company's identity, and KOFA's
+ * is red. The palette accommodates the mark, not the other way round.
+ *
+ * The red is `--color-kofa-red`, sampled from the supplied artwork at
+ * public/brand/kofa-mark.png rather than eyeballed. That PNG is kept as the
+ * reference original; nothing renders it, because a 161 KB bitmap with a baked
+ * white background is strictly worse than this path at every size and on every
+ * ground the site actually uses.
+ *
+ * The glyph no longer inherits `currentColor`. Nothing on the site is allowed
+ * to recolour a brand mark by accident, so the fill is stated outright and the
+ * old teal-on-hover was dropped with it: a mark that changes colour when you
+ * point at it is a button, and this is a logo.
  */
 export function LogoGlyph({
   className = "",
@@ -23,7 +35,7 @@ export function LogoGlyph({
       viewBox="0 0 1000 866.21"
       width={size}
       height={(size * 866.21) / 1000}
-      fill="currentColor"
+      fill="var(--color-kofa-red)"
       aria-hidden="true"
       focusable="false"
       className={className}
@@ -59,9 +71,11 @@ export function LogoMark({
         tone === "white" ? "text-white" : "text-ink"
       } ${className}`}
     >
+      {/* The hover lives on the wordmark's colour and on the mark's opacity,
+          never on the mark's hue. See the note on LogoGlyph above. */}
       <LogoGlyph
         size={size}
-        className="shrink-0 transition-colors duration-500 ease-kofa group-hover/logo:text-teal"
+        className="shrink-0 opacity-100 transition-opacity duration-500 ease-kofa group-hover/logo:opacity-80"
       />
       {label && (
         /* Optically centred, not baseline-aligned.

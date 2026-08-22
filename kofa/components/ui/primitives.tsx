@@ -132,17 +132,23 @@ export function DisplayHeading({
   );
 }
 
+/* `id` is forwarded so a section can point `aria-labelledby` at its own
+   heading without dropping down to a raw <h2>. Sections that name themselves
+   for assistive tech should not have to opt out of the type primitive to do
+   it, which is the same reasoning as the `...rest` on Section above. */
 export function SectionHeading({
   children,
   className = "",
+  id,
   as: Tag = "h2",
 }: {
   children: ReactNode;
   className?: string;
+  id?: string;
   as?: ElementType;
 }) {
   return (
-    <Tag className={`type-section text-balance text-ink ${className}`}>
+    <Tag id={id} className={`type-section text-balance text-ink ${className}`}>
       {children}
     </Tag>
   );

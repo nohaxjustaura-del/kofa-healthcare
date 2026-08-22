@@ -27,7 +27,7 @@ export function PortfolioNewsSection() {
         <div className="grid grid-cols-12 items-end gap-y-6">
           <div className="col-span-12 lg:col-span-7">
             <Reveal>
-              <Eyebrow index="04">Portfolio news</Eyebrow>
+              <Eyebrow index="05">Portfolio news</Eyebrow>
             </Reveal>
             <Reveal delay={0.06}>
               <SectionHeading className="mt-7">
@@ -87,7 +87,7 @@ export function KofaNewsSection() {
         <div className="grid grid-cols-12 items-baseline gap-y-6">
           <div className="col-span-12 lg:col-span-5">
             <Reveal>
-              <Eyebrow index="05">From KOFA</Eyebrow>
+              <Eyebrow index="06">From KOFA</Eyebrow>
             </Reveal>
           </div>
           <div className="col-span-12 lg:col-span-5">

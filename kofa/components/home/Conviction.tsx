@@ -70,7 +70,24 @@ export function Conviction() {
         {/* KOFA's own line, at the scale it deserves. */}
         <h2
           id="conviction-heading"
-          className="type-display mt-9 max-w-[15ch] text-ivory"
+          /* 18ch, not 15ch. At 15ch the measure is 973px and "Empower
+             innovations" — the longest of the three authored lines — is a
+             few pixels too wide for it, so it wrapped INSIDE its own
+             clip-line. That cost twice over: the line box doubled to 209px
+             against its siblings' 109px, putting a ragged 100px hole in the
+             middle of the section, and LineReveal translates each line by its
+             own height to hide it, so the wrapped line had twice as far to
+             travel and sat visibly blank while the two below it had already
+             arrived. The section read as a headline with its first line
+             missing.
+
+             LineReveal exists precisely so the breaks are authored rather
+             than discovered, so the measure's only job is to be wide enough
+             never to fight them. Measured: it stops wrapping at 17ch, and
+             18ch leaves a character of headroom for font-loading variance.
+             Narrower screens still wrap, which is correct — there the author's
+             breaks cannot be honoured anyway. */
+          className="type-display mt-9 max-w-[18ch] text-ivory"
         >
           <LineReveal
             lines={[

@@ -146,6 +146,8 @@ export const BRAND = {
   ink: "#121a18",
   inkSoft: "#59635f",
   teal: "#176d67",
+  /** The mark's own red. Sampled from public/brand/kofa-mark.png. */
+  kofaRed: "#d61319",
   rule: "rgba(18, 26, 24, 0.12)",
 };
 

@@ -13,11 +13,12 @@ import { BRAND, KOFA_GLYPH_PATH, KOFA_GLYPH_VIEWBOX } from "@/lib/metadata";
  * it reads as a different company's tab. The path lives in lib/metadata.ts,
  * with a note there about keeping the two copies together.
  *
- * Inverted on purpose. On the site the mark is ink on ivory, but a favicon is
+ * Red ground, white glyph, i.e. the mark exactly as KOFA draws it. A favicon is
  * 16px inside browser chrome that may be light or dark and is not ours to
- * predict. A filled ink ground with the glyph knocked out in ivory holds its
- * silhouette against either, where an ivory tile disappears into a light
- * toolbar and a bare ink glyph disappears into a dark one.
+ * predict, so the tile is filled rather than left transparent: a bare glyph on
+ * no ground disappears into a toolbar of the wrong tone, while a red tile is
+ * legible against both and is recognisably KOFA at a glance, which is the
+ * whole job of a favicon.
  *
  * Next serves this at /icon and emits the <link rel="icon"> itself, with a
  * content hash on the URL — no `icons` entry in any metadata export is needed,
@@ -37,7 +38,7 @@ export default function Icon() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          backgroundColor: BRAND.ink,
+          backgroundColor: BRAND.kofaRed,
         }}
       >
         {/* 23x20 keeps the mark's 1000:866.21 aspect and leaves roughly 4px of
@@ -48,7 +49,7 @@ export default function Icon() {
           width={23}
           height={20}
           viewBox={KOFA_GLYPH_VIEWBOX}
-          fill={BRAND.ivory}
+          fill="#ffffff"
         >
           <path fillRule="evenodd" d={KOFA_GLYPH_PATH} />
         </svg>

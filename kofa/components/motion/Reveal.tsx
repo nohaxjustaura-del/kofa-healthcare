@@ -241,6 +241,24 @@ export function ImageReveal({
    The site's principal section separator.
 --------------------------------------------------------------------------- */
 
+/**
+ * `className` lands on a WRAPPER, and the coloured rule is a separate element
+ * inside it. That split is not tidiness, it is a bug fix.
+ *
+ * The rule used to be a single element carrying `h-px w-full bg-rule` and the
+ * caller's className together. A caller that passed spacing — the footer
+ * passed `pt-[clamp(3.5rem,6vw,5.5rem)]` — therefore put 88px of padding on
+ * the element whose background IS the rule. Under `box-sizing: border-box` a
+ * 1px height cannot contain 88px of padding, so the border box grew to 88px,
+ * and a background paints the whole padding box: the hairline rendered as a
+ * container-wide slab of `rgba(18,26,24,0.12)` across the top of every footer
+ * on the site. It read as a grey bar someone had left in by accident, which is
+ * exactly what it was.
+ *
+ * With the split, spacing passed by a caller can only ever move the rule. It
+ * cannot inflate it. `data-reveal` stays on the inner element because that is
+ * the one the motion-off rules in app/globals.css need to reset.
+ */
 export function AnimatedDivider({
   className = "",
   delay = 0,
@@ -251,12 +269,16 @@ export function AnimatedDivider({
   const reduced = useMotionOff();
 
   return (
-    <motion.div
-      data-reveal
-      className={`h-px w-full origin-left bg-rule ${className}`}
-      initial={{ scaleX: 0 }}
-      {...revealProps(reduced, { scaleX: 1 })}
-      transition={reduced ? { duration: 0 } : { duration: 1.1, delay, ease: EASE }}
-    />
+    <div className={className}>
+      <motion.div
+        data-reveal
+        className="h-px w-full origin-left bg-rule"
+        initial={{ scaleX: 0 }}
+        {...revealProps(reduced, { scaleX: 1 })}
+        transition={
+          reduced ? { duration: 0 } : { duration: 1.1, delay, ease: EASE }
+        }
+      />
+    </div>
   );
 }

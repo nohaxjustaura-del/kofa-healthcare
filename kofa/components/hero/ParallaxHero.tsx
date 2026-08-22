@@ -79,19 +79,29 @@ export function ParallaxHero() {
     [0, 0.72],
     reduced ? [1, 1] : [1, 0],
   );
-  /** The scroll cue fades out over the first fifth of the hero. */
-  const cueOpacity = useTransform(scrollYProgress, [0, 0.18], [1, 0]);
-
   return (
     <ParallaxLayers depths={DEPTHS}>
       <section
         ref={ref}
-        /* The metadata rail is absolutely positioned at the bottom, so it is
+        /* FULL FIRST FRAME. This was 92svh, which left a sliver of the next
+           section showing under the metadata rail — enough to read as the page
+           having started scrolling before you touched it, and not enough to
+           show anything useful. A hero either fills the frame or it clearly
+           does not; 92% is the one value that looks like neither.
+
+           `svh` rather than `vh` or `dvh`, deliberately. On mobile `vh` is the
+           LARGEST viewport (browser chrome hidden), so a 100vh hero overflows
+           by the height of the chrome on first paint and the page starts life
+           scrollable-by-a-toolbar. `dvh` resolves correctly but CHANGES as the
+           chrome hides and shows, resizing the hero mid-scroll. `svh` is the
+           smallest viewport: the hero always fits, and never resizes.
+
+           The metadata rail is absolutely positioned at the bottom, so it is
            outside the flow the centred copy is balanced in and the two can
            collide. `pb` reserves the rail's own height plus clearance, which
            pushes the optical centre of the copy up and puts real air between
            the buttons and the rule. */
-        className="relative flex min-h-[92svh] items-center overflow-hidden pb-[clamp(6.5rem,9vw,8.5rem)] pt-[84px]"
+        className="relative flex min-h-svh items-center overflow-hidden pb-[clamp(6.5rem,9vw,8.5rem)] pt-[84px]"
       >
         {/* --- layer 1, farthest: the graph-paper substrate ----------------- */}
         {/* Oversized and offset upward so the plane can travel its full 52%
@@ -232,7 +242,13 @@ export function ParallaxHero() {
         >
           <Container>
             <div className="h-px w-full bg-rule" />
-            <div className="flex items-center justify-between py-5">
+            {/* A "Scroll" cue with an animated teal tick used to sit at the
+                right end of this row. It is gone: the hero now fills the frame
+                exactly, so the one thing a reader can do on arrival is scroll,
+                and a label telling them so is an instruction nobody needed.
+                It also cost a MotionValue and a permanently-repeating
+                animation for the privilege. */}
+            <div className="flex items-center py-5">
               <dl className="flex flex-wrap items-center gap-x-9 gap-y-2 sm:gap-x-14">
                 {RAIL.map((item, i) => (
                   <motion.div
@@ -253,27 +269,6 @@ export function ParallaxHero() {
                 ))}
               </dl>
 
-              <motion.div
-                className="hidden items-center gap-3 md:flex"
-                style={{ opacity: cueOpacity }}
-              >
-                <span className="type-eyebrow text-ink-mute">Scroll</span>
-                <span
-                  aria-hidden
-                  className="relative block h-8 w-px overflow-hidden bg-rule"
-                >
-                  <motion.span
-                    className="absolute inset-x-0 top-0 block h-3 bg-teal"
-                    animate={reduced ? undefined : { y: ["-100%", "320%"] }}
-                    transition={{
-                      duration: 2.6,
-                      ease: "easeInOut",
-                      repeat: Infinity,
-                      repeatDelay: 0.6,
-                    }}
-                  />
-                </span>
-              </motion.div>
             </div>
           </Container>
         </motion.div>

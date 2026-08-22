@@ -181,15 +181,15 @@ export function AreasAccordion() {
                           document, not under the copy it annotates.
 
                           `area.stated` itself stays in data/site.ts. This was
-                          the last place any code read it, but it is not dead
-                          data: it records which four areas KOFA names verbatim
-                          on kofahealthcare.com and which two were derived from
-                          the published portfolio, and that split is precisely
-                          what the hardcoded LAYOUT spans in
-                          components/home/AreasBento.tsx encode, wide cards for
-                          the four, narrow for the two. Delete the field and the
-                          next person to reorder investmentAreas has nothing
-                          left telling them why the spans fall where they do. */}
+                          the last place any code read it, and now the only
+                          one: the homepage bento that also read it has been
+                          removed. It is still not dead data. It records which
+                          four areas KOFA names verbatim on kofahealthcare.com
+                          and which two were derived from the published
+                          portfolio, which is the difference between a claim
+                          the client can point at and an inference this build
+                          made. Delete the field and the next person to reorder
+                          investmentAreas has no way to tell the two apart. */}
                     </div>
 
                     <div className="col-span-12 hidden lg:col-span-3 lg:col-start-9 lg:block">
