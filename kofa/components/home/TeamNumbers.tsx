@@ -168,10 +168,17 @@ function Column({
                 in the site's own voice, and keep the scaffolding in the code
                 where it belongs. A visitor does not need to know the field
                 names; they need to know the roster is not finished. */}
+            {/* Numbered, so two open columns are not byte-identical twins.
+                They previously printed the same three strings side by side at
+                equal width, which reads as a rendering fault rather than as
+                two distinct slots — and gave a screen reader two headings it
+                could not tell apart. /team already solves this the same way
+                (TeamGrid's "Team member 02"), so this is the house pattern,
+                not a new one. */}
             <h3 className="mt-7 text-[0.9375rem] font-medium uppercase tracking-[0.1em] text-ink-mute">
-              Profile to follow
+              Profile {String(index + 1).padStart(2, "0")}
             </h3>
-            <p className="type-meta mt-3 text-ink-mute">Being finalised</p>
+            <p className="type-meta mt-3 text-ink-mute">To follow</p>
             <p className="type-body-sm mt-6 max-w-[30ch] text-ink-mute">
               Further profiles are being finalised and will be published here.
             </p>

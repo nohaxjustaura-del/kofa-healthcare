@@ -82,7 +82,20 @@ export function KofaNewsSection() {
   if (!items.length) return null;
 
   return (
-    <Section space="tight" className="border-t border-rule bg-ivory pb-24">
+    /* sage-bg-deep, and pb-24 is gone.
+       This was the one seam on the homepage where the ground did not change:
+       PortfolioNews above is bg-ivory and this was bg-ivory too, so two full
+       sections ran together on identical #f7f8f4 with only a 0.67px rule
+       between them. Stepping to sage-bg-deep strengthens BOTH neighbouring
+       seams at once (measured contrast 1.000 -> 1.086 above, 1.032 -> 1.053
+       below) and warms the page toward the sage CTA and the footer instead of
+       stalling on pale for four thousand pixels.
+
+       pb-24 asked Section for the tight density and then silently overrode
+       half of it: tight emits padding-block clamp(2.75rem,4vw,4rem), pb-24
+       emits 6rem and wins the cascade, so the declared rhythm only applied to
+       the top edge. It was the only ad-hoc section padding on the page. */
+    <Section space="tight" className="border-t border-rule bg-sage-bg-deep">
       <Container>
         <div className="grid grid-cols-12 items-baseline gap-y-6">
           <div className="col-span-12 lg:col-span-5">

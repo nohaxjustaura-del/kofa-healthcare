@@ -421,6 +421,54 @@ html[data-motion="off"] .animate-marquee {
   animation: none !important;
 }
 
+/* THE MOTION-OFF MARQUEE, AND WHY IT IS A WRAP RATHER THAN A SCROLLER.
+   ------------------------------------------------------------
+   Cancelling the animation above is only half the job. The host clips its
+   overflow, and a clipped box offers no wheel, no touch pan, no drag and no
+   scrollbar — so a frozen track left twelve of the sixteen companies
+   permanently unreachable for exactly the visitors who had asked the page to
+   hold still. The component's own comment claimed the strip "becomes an
+   ordinary horizontally-scrollable row". It did not.
+
+   A horizontal scroller would fix reachability and introduce two new
+   problems: a persistent scrollbar across a full-bleed element, and a shelf
+   that shows the same sixteen logos twice, because the track is deliberately
+   rendered in duplicate to make the loop seamless.
+
+   So with motion off the strip stops pretending to be a strip: the duplicate
+   is dropped, the width constraint is released, and the plates wrap into a
+   centred grid. Everything is on screen at once, nothing needs to be dragged,
+   and the mask is removed because there is no longer an edge to dissolve. */
+html[data-motion="off"] .marquee-host {
+  overflow: visible;
+  mask-image: none;
+}
+html[data-motion="off"] .marquee-host .animate-marquee {
+  width: auto;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+html[data-motion="off"] .marquee-host .marquee-dupe {
+  display: none;
+}
+/* `width: 100%` and `flex-shrink: 1` are both load-bearing, and it does not
+   wrap without them. The track's <ul> carries `shrink-0` so that the marquee
+   can be wider than the viewport, which means that as a flex item it sizes to
+   max-content — about 3,400px for sixteen plates — and `flex-wrap: wrap` has
+   nothing to wrap against. Constraining it to the host is what turns the row
+   into a grid. `pr` is zeroed for the same reason the mask is: it existed to
+   make the loop seam invisible, and there is no seam any more. */
+html[data-motion="off"] .marquee-host ul {
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+  flex-shrink: 1;
+  padding-right: 0;
+  row-gap: clamp(0.75rem, 1.2vw, 1.25rem);
+}
+
+
+
 /* ============================================================
    TEAM NUMERALS
    ------------------------------------------------------------

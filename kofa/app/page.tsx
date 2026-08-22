@@ -44,19 +44,33 @@ export const metadata: Metadata = {
        /fund; a third telling in a bento was the most expensive of the three.
 --------------------------------------------------------------------------- */
 
-/* The chapter rail's single source of truth. Order here is the numbering
-   (01…08) and must match the order the sections appear below. The hero gets no
-   entry on purpose: you are already there, and it is not a chapter. The film
-   band gets none either, for the same reason the logo strip never did, it is a
-   breath between chapters rather than one of them. */
+/* The chapter rail's single source of truth. Order here must match the order
+   the sections appear below. The hero gets no entry on purpose: you are
+   already there, and it is not a chapter. The film band gets none either, for
+   the same reason the logo strip never did — it is a breath between chapters
+   rather than one of them.
+
+   `index` IS THE NUMBER THE SECTION ITSELF PRINTS, not the row's position.
+   The rail used to count its own rows 01..08 while the sections printed a
+   separate 01..06 in their eyebrows, and above 1280px both are on screen
+   together: the Portfolio section said 01 on the page and 02 in the gutter,
+   and every numbered row disagreed the same way. Now the gutter quotes the
+   page.
+
+   Purpose, Conviction and Contact carry no numeral, because their eyebrows
+   carry none either — the numbering is selective by design (see the note on
+   `index` in components/ui/primitives.tsx), and those rows render as a dash
+   plus their hover label. If you add a numeral to a section's Eyebrow, add
+   the matching one here; if the two ever drift apart again, this comment is
+   the reason they must not. */
 const chapters = [
   { id: "purpose", label: "Purpose" },
-  { id: "portfolio-preview", label: "Portfolio" },
-  { id: "approach", label: "Approach" },
+  { id: "portfolio-preview", label: "Portfolio", index: "01" },
+  { id: "approach", label: "Approach", index: "02" },
   { id: "conviction", label: "Conviction" },
-  { id: "story", label: "Story" },
-  { id: "team", label: "Team" },
-  { id: "news", label: "News" },
+  { id: "story", label: "Story", index: "03" },
+  { id: "team", label: "Team", index: "04" },
+  { id: "news", label: "News", index: "05" },
   { id: "contact", label: "Contact" },
 ];
 

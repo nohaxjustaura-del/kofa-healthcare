@@ -38,6 +38,23 @@ export interface Chapter {
   id: string;
   /** Short label, one or two words. Revealed on hover/focus. */
   label: string;
+  /**
+   * The printed numeral, e.g. "01". OPTIONAL, and deliberately so.
+   *
+   * This used to be derived as String(i + 1), which meant the rail counted its
+   * own eight chapters 01..08 while the sections themselves printed a
+   * different 01..06 in their eyebrows. Two numbering systems disagreeing on
+   * every row, both on screen at once above 1280px, so Portfolio read 02 in
+   * the gutter and 01 on the page.
+   *
+   * Numbering all eight would have fixed the disagreement by destroying the
+   * thing that makes it a device: primitives.tsx calls index "the site's
+   * selective-numbering device", and a number on everything is not selective.
+   * So the rail now prints only what a section actually prints, and a chapter
+   * with no eyebrow numeral is a dash plus its hover label, which already read
+   * correctly on its own.
+   */
+  index?: string;
 }
 
 export function ChapterRail({ sections }: { sections: Chapter[] }) {
@@ -123,7 +140,6 @@ export function ChapterRail({ sections }: { sections: Chapter[] }) {
       <ol className="flex flex-col items-end">
         {sections.map((section, i) => {
           const isActive = active === section.id;
-          const index = String(i + 1).padStart(2, "0");
 
           return (
             <li key={section.id}>
@@ -174,13 +190,15 @@ export function ChapterRail({ sections }: { sections: Chapter[] }) {
                   }`}
                 />
 
-                <span
-                  className={`type-eyebrow tabular-nums transition-colors duration-500 ease-kofa ${
-                    isActive ? "text-teal" : "text-ink-mute"
-                  }`}
-                >
-                  {index}
-                </span>
+                {section.index && (
+                  <span
+                    className={`type-eyebrow tabular-nums transition-colors duration-500 ease-kofa ${
+                      isActive ? "text-teal" : "text-ink-mute"
+                    }`}
+                  >
+                    {section.index}
+                  </span>
+                )}
               </a>
             </li>
           );

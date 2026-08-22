@@ -188,6 +188,10 @@ export function NewsBrowser() {
         tabIndex={-1}
         className="mt-[clamp(2rem,4vw,3.5rem)]"
       >
+        {/* Same heading-outline fix as /portfolio: NewsCard renders h3, which
+            is right on the homepage under HomeNews's h2 and wrong here, where
+            nothing sits between the page h1 and the cards. */}
+        <h2 className="sr-only">All news</h2>
         <p aria-live="polite" className="sr-only">
           {visible.length} articles shown.
         </p>

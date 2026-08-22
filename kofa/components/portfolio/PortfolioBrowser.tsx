@@ -162,6 +162,13 @@ export function PortfolioBrowser() {
         tabIndex={-1}
         className="mt-[clamp(3rem,5vw,4.5rem)]"
       >
+        {/* The cards inside are h3, which is correct on the homepage because
+            the marquee supplies an h2 above them. Standalone on /portfolio
+            there is no h2 anywhere between the page h1 and those h3s, so a
+            screen reader navigating by heading level jumps a rank and reads
+            the list as if a section title had been skipped. Naming the list
+            fixes the outline without changing a single card. */}
+        <h2 className="sr-only">All companies</h2>
         <p aria-live="polite" className="sr-only">
           {visible.length} companies shown
           {active ? ` in ${active}` : ""}.

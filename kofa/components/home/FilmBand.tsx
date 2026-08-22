@@ -52,6 +52,28 @@ import { useMotionOff } from "@/components/motion/MotionPreference";
  *  in the fraction of a second before the loop starts. */
 type Playback = "idle" | "playing" | "blocked";
 
+/**
+ * Where the loop starts, in seconds — NOT zero, and this is a content fix
+ * rather than a stylistic one.
+ *
+ * The source file opens on about 0.09s of a CDC public-service title card:
+ * navy pictogram figures and the words "Approximately 1,500 people are
+ * diagnosed and treated for malaria in the US", with the sentence cropped
+ * mid-phrase by the 21:9 letterbox. Three frames, but `loop` re-displays them
+ * at the top of every 18-second cycle, directly under a caption that reads
+ * "Hematology laboratory". A flashing statistic about malaria diagnoses is not
+ * a claim KOFA's site should be making at all, let alone by accident.
+ *
+ * The right fix is to trim the file, but that needs a transcoder this machine
+ * does not have. Seeking past the card costs nothing and cannot fail: 0.25s is
+ * comfortably clear of the card at any frame rate, and 18.1s of footage minus
+ * a quarter second is still 18s of loop.
+ *
+ * If the file is ever re-encoded with the head removed, set this to 0 and
+ * delete the `ended` handler; `loop` on the element is then enough on its own.
+ */
+const LOOP_START = 0.25;
+
 export function FilmBand() {
   const motionOff = useMotionOff();
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -71,9 +93,22 @@ export function FilmBand() {
       return;
     }
 
+    /* Restart at LOOP_START rather than 0. `loop` is off on the element for
+       exactly this reason — the browser's own loop always rewinds to zero,
+       which is the one frame we must never show. */
+    const onEnded = () => {
+      el.currentTime = LOOP_START;
+      void el.play().catch(() => setPlayback("blocked"));
+    };
+    el.addEventListener("ended", onEnded);
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
+          // Seek before the first play too: without this the title card is
+          // shown once per page view, which is the common case for a section
+          // most readers scroll past exactly once.
+          if (el.currentTime < LOOP_START) el.currentTime = LOOP_START;
           // play() rejects on any autoplay refusal. Nothing to recover from:
           // the poster is already showing the right frame.
           el.play().then(
@@ -90,7 +125,10 @@ export function FilmBand() {
     );
 
     observer.observe(el);
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      el.removeEventListener("ended", onEnded);
+    };
   }, [motionOff]);
 
   return (
@@ -131,11 +169,17 @@ export function FilmBand() {
           <div className="relative w-full overflow-hidden bg-[#0B2E2C]">
           <video
             ref={videoRef}
-            className="aspect-[16/9] w-full object-cover opacity-95 lg:aspect-[21/9]"
+            /* max-h is the ceiling the aspect ratios never had. 16:9 governs
+               everything from 360px to 1023px, so an iPad in landscape got a
+               band 74% of the viewport tall, and above lg the 21:9 height just
+               tracked viewport width forever — 1093px at 2560. Capping on the
+               <video> rather than the wrapper lets object-cover actually
+               centre-crop instead of growing the box. svh so it does not
+               resize as mobile chrome hides. */
+            className="aspect-[16/9] max-h-[62svh] w-full object-cover opacity-95 lg:aspect-[21/9]"
             poster="/media/lab-loop-poster.jpg"
             preload="none"
             muted
-            loop
             playsInline
             // Not focusable and not announced: it carries no information the
             // caption above does not already state, and a silent looping clip

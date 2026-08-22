@@ -96,7 +96,9 @@ export function ScientificBackground({
     let halo: HTMLCanvasElement | null = null;
 
     /* --- pointer ------------------------------------------------------- */
-    const ptr = { x: 0.5, y: 0.5, tx: 0.5, ty: 0.5, active: false };
+    // cx/cy are raw viewport coordinates straight off the event; tx/ty are
+    // the normalised target, resolved once per frame in draw(). See onPointer.
+    const ptr = { x: 0.5, y: 0.5, tx: 0.5, ty: 0.5, cx: 0, cy: 0, active: false };
     let lastMove = -1e9;
 
     /* --- lifecycle ----------------------------------------------------- */
@@ -186,6 +188,17 @@ export function ScientificBackground({
 
     function draw(dt: number) {
       t += dt;
+
+      // The layout read that used to sit in the pointermove handler. Once per
+      // frame, and only while a frame is actually being drawn — which the
+      // IntersectionObserver already gates on this field being on screen.
+      if (interactive && ptr.active) {
+        const rect = canvas!.getBoundingClientRect();
+        if (rect.width > 0 && rect.height > 0) {
+          ptr.tx = (ptr.cx - rect.left) / rect.width;
+          ptr.ty = (ptr.cy - rect.top) / rect.height;
+        }
+      }
 
       // Pointer easing + idle fade. `attention` is the whole conceit: the
       // field only fully resolves while someone is engaging with it.
@@ -332,11 +345,25 @@ export function ScientificBackground({
     }
 
     /* --- events --------------------------------------------------------- */
+    /* RECORD RAW COORDINATES ONLY. NO LAYOUT READ IN HERE.
+       This used to call canvas.getBoundingClientRect() on every pointermove,
+       which forces a synchronous layout. Two things made that worse than it
+       sounds: the listener is bound to `window` and is only detached on
+       unmount, so it kept firing — and kept forcing layout — for every mouse
+       movement over the news list, the team columns and the footer, long after
+       the IntersectionObserver had stopped this field's animation frame; and
+       it ran even for a visitor who had turned motion off, who is the one
+       person on the site explicitly asking for less of this.
+
+       Caching the rect instead would be wrong: the canvas moves under scroll
+       and under the parallax layers, so a cached rect desynchronises the
+       pointer from the field. The read belongs in the frame that already runs
+       at animation rate, where it costs one layout per frame instead of one
+       per event, and only while the field is actually drawing. */
     const onPointer = (e: PointerEvent) => {
       if (!interactive) return;
-      const rect = canvas.getBoundingClientRect();
-      ptr.tx = (e.clientX - rect.left) / rect.width;
-      ptr.ty = (e.clientY - rect.top) / rect.height;
+      ptr.cx = e.clientX;
+      ptr.cy = e.clientY;
       ptr.active = true;
       lastMove = performance.now();
     };
