@@ -64,7 +64,13 @@ export function Conviction() {
           {/* Hand-rolled rather than <Eyebrow>, because this section inverts
               and needs its own on-teal colours. The 5px square was dropped
               here at the same time as the one in the shared component. */}
-          <span className="type-eyebrow text-[#8FC0B8]">Our purpose</span>
+          {/* "Our conviction", not "Our purpose". FundIntro's eyebrow four
+              screens up is already "Our purpose", and this section was
+              repeating it verbatim — so the loudest frame on the page opened
+              by announcing itself as something the reader had already been
+              shown. The label now matches this section's own chapter in the
+              rail, which is what it should have been. */}
+          <span className="type-eyebrow text-[#8FC0B8]">Our conviction</span>
         </Reveal>
 
         {/* KOFA's own line, at the scale it deserves. */}
@@ -100,28 +106,33 @@ export function Conviction() {
           />
         </h2>
 
-        <div className="mt-14 grid grid-cols-12 gap-y-12">
-          {/* The two columns lean toward each other: copy in from the left,
-              figures in from the right, so the row closes on its own centre
-              line instead of both halves sliding the same way. The rule is
-              set out at the top of components/motion/Rise.tsx. */}
-          <Rise from="left" delay={0.12} className="col-span-12 lg:col-span-5">
-            <p className="max-w-[44ch] text-[1.0625rem] leading-[1.62] text-[rgba(247,248,244,0.72)]">
-              {site.intro}
-            </p>
-            <div className="mt-9">
-              <TextLink href="/fund" tone="white">
-                How we invest
-              </TextLink>
-            </div>
-          </Rise>
+        {/* THE REPEATED PARAGRAPH IS GONE.
+            A five-column block here used to carry `site.intro` — the exact
+            string FundIntro renders four screens earlier, word for word — with
+            a link to /fund beside it, which FundIntro also already offers.
+            This is the page's one inverted moment and its whole documented job
+            is "to stop talking and simply assert something"; opening it with a
+            paragraph the reader has already read is the opposite of that, and
+            it squeezed the four figures into six columns to do it.
 
+            With it gone the figures take the full measure, and the section is
+            the tagline plus the four checkable facts, which is all it ever
+            needed to be. The link moves below the figures so the section still
+            has a way out. */}
+        <div className="mt-14 grid grid-cols-12 gap-y-12">
           {/* Figures set light and large, the weight does the work, not size
               alone. Every one of these is checkable against the portfolio. */}
-          <div className="col-span-12 lg:col-span-6 lg:col-start-7">
-            <dl className="grid grid-cols-2 gap-x-8 gap-y-10">
+          <div className="col-span-12">
+            {/* Four across at lg, not two. At two columns on the full measure
+                each figure would sit under a 700px rule with a two-word label
+                under it, which reads as a table that lost its data. The lean
+                is neutral now: `from="right"` was there to close a pair
+                against the paragraph on the left, and there is no pair any
+                more — four peers read left to right, so they arrive that way,
+                on the stagger alone. */}
+            <dl className="grid grid-cols-2 gap-x-8 gap-y-10 lg:grid-cols-4">
               {FIGURES.map((f, i) => (
-                <Rise key={f.k} from="right" delay={0.16 + i * 0.06} as="div">
+                <Rise key={f.k} from="up" delay={0.16 + i * 0.06} as="div">
                   <div className="h-px w-full bg-[rgba(247,248,244,0.18)]" />
                   {/* The figure rises from behind its own rule, the same
                       masked reveal the display headlines use. Reusing that
@@ -139,6 +150,17 @@ export function Conviction() {
             </dl>
           </div>
         </div>
+
+        {/* The way out. It sat beside the deleted paragraph; on its own under
+            the figures it is the last thing in the section, which is where a
+            reader looks for it anyway. */}
+        <Rise from="up" delay={0.4}>
+          <div className="mt-14">
+            <TextLink href="/fund" tone="white">
+              How we invest
+            </TextLink>
+          </div>
+        </Rise>
       </Container>
     </Section>
   );

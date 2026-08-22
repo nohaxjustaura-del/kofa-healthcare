@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Container, Eyebrow, Meta } from "@/components/ui/primitives";
+import { Container, Eyebrow, Meta, Section } from "@/components/ui/primitives";
 import { Reveal } from "@/components/motion/Reveal";
 import { useMotionOff } from "@/components/motion/MotionPreference";
 
@@ -94,9 +94,14 @@ export function FilmBand() {
   }, [motionOff]);
 
   return (
-    <section
+    /* Section, not a hand-rolled <section> with its own py-[...]. This was
+       the only block on the homepage inventing its own vertical rhythm, which
+       is exactly how a page drifts out of step with itself one component at a
+       time. The primitive owns the scale; a caller picks a density. */
+    <Section
+      space="default"
       aria-labelledby="film-band-caption"
-      className="border-t border-rule bg-ivory py-[clamp(3.5rem,6vw,6rem)]"
+      className="border-t border-rule bg-ivory"
     >
       <Container>
         <div className="grid grid-cols-12 items-end gap-y-6">
@@ -166,6 +171,6 @@ export function FilmBand() {
           </figcaption>
         </figure>
       </Reveal>
-    </section>
+    </Section>
   );
 }

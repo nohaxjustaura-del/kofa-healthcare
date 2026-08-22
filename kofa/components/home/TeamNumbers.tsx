@@ -159,13 +159,21 @@ function Column({
           </>
         ) : (
           <>
+            {/* Written for a VISITOR, not for the client.
+                This used to read "Wired to the CMS. A name, a role and up to
+                five focus lines drop into this column the moment KOFA supplies
+                them." — which is a note from the build to the client, shipping
+                to every reader of the homepage. The fund page had exactly this
+                problem once and the fix there was the same: say the true thing
+                in the site's own voice, and keep the scaffolding in the code
+                where it belongs. A visitor does not need to know the field
+                names; they need to know the roster is not finished. */}
             <h3 className="mt-7 text-[0.9375rem] font-medium uppercase tracking-[0.1em] text-ink-mute">
               Profile to follow
             </h3>
-            <p className="type-meta mt-3 text-ink-mute">Open slot</p>
+            <p className="type-meta mt-3 text-ink-mute">Being finalised</p>
             <p className="type-body-sm mt-6 max-w-[30ch] text-ink-mute">
-              Wired to the CMS. A name, a role and up to five focus lines drop
-              into this column the moment KOFA supplies them.
+              Further profiles are being finalised and will be published here.
             </p>
           </>
         )}

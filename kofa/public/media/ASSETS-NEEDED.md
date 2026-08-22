@@ -66,16 +66,19 @@ that carries a face — if a larger original exists, it is worth swapping in.
 
 - **Ratio:** 4 : 5 portrait
 - **Size:** 1200 × 1500 px or larger
-- **Where:** the /team grid and its expanded panel
-- **Field:** `portrait` in `data/team.ts`
+- **Where:** TWO places, at very different sizes — the /team grid and its
+  expanded panel (~460 × 570), and a small plate inside that person's column
+  in the homepage team section (~110 × 137)
+- **Field:** `portrait` in `data/team.ts` — one file feeds both
 
-Until one lands, the plate carries the person's initials in the display serif
-over sage and says what belongs there, so an empty slot reads as designed
-rather than missing.
+Because the same file is cropped to ~110px on the homepage, a loose
+three-quarter crop that reads fine at /team size can turn into an unreadable
+smudge on the front page. Frame reasonably tight on the head and shoulders and
+keep the face off-centre-free, i.e. centred.
 
-The new homepage team section does **not** use portraits — its columns are
-built on numerals — so a portrait is only ever needed once per person, for
-/team.
+Until a portrait lands, /team carries the person's initials in the display
+serif over sage and says what belongs there, so an empty slot reads as designed
+rather than missing; the homepage column simply omits the plate.
 
 ---
 
