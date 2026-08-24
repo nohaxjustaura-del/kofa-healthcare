@@ -20,7 +20,9 @@ import { site } from "@/data/site";
 /* ---------------------------------------------------------------------------
    PURPOSE
    ---------------------------------------------------------------------------
-   The statement, and then a picture.
+   One compact editorial spread: image on the left, purpose and fund copy on
+   the right. The two halves share a baseline and a visual height, so neither
+   leaves an empty half-screen underneath it.
 
    THIS SECTION USED TO CARRY THE INVESTMENT AREAS. First as a hover list
    beside a sticky node panel that drew one cluster at a time, then as a
@@ -29,9 +31,9 @@ import { site } from "@/data/site";
    out at length on /fund (components/fund/AreasAccordion.tsx), and were being
    said a third time here, in a grid that cost most of a screen.
 
-   What is left is the shape the section always wanted, a claim and an image.
-   The claim is KOFA's own copy; the image is a plate, deliberately shallow,
-   sitting where the grid was. See the note at the plate itself.
+   The claim is KOFA's own copy; the image is a real laboratory scene rather
+   than a decorative stock block. On desktop they sit together in one spread;
+   on mobile the plate leads naturally into the statement.
 
    Still a server component. The entrance animations are client components
    imported into it, which is the normal arrangement and costs this file
@@ -40,15 +42,49 @@ import { site } from "@/data/site";
 
 export function FundIntro() {
   return (
-    <Section className="relative border-t border-rule bg-ivory" id="purpose">
+    <Section
+      space="tight"
+      className="relative border-y border-rule bg-sage-bg"
+      id="purpose"
+    >
       <Container>
-        {/* --- statement / description --- */}
-        <div className="grid grid-cols-12 gap-y-12">
-          <div className="col-span-12 lg:col-span-7">
+        <div className="grid grid-cols-12 gap-y-10 lg:items-stretch lg:gap-x-10 xl:gap-x-14">
+          {/* The photograph now occupies the same row as the writing. The old
+              layout put this seven-column plate on a second row, leaving the
+              entire right half blank beneath the copy. This single change
+              removes that false pause while preserving the asymmetric 7/5
+              editorial measure. */}
+          <figure className="col-span-12 flex flex-col lg:col-span-7">
+            <ImageReveal className="relative aspect-[4/3] w-full flex-1 overflow-hidden rounded-[14px] border border-rule-soft lg:aspect-auto lg:min-h-[34rem]">
+              <Parallax amount={0.08}>
+                <Image
+                  src="/media/home/researchers-lab.jpg"
+                  alt="Two researchers at the bench in a clean laboratory."
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 58vw"
+                  className="object-cover object-center"
+                />
+              </Parallax>
+
+              <div
+                aria-hidden
+                className="absolute left-5 top-5 z-10 rounded-full border border-white/40 bg-white/85 px-4 py-2 backdrop-blur-sm"
+              >
+                <span className="type-eyebrow text-teal">Science in practice</span>
+              </div>
+            </ImageReveal>
+
+            <figcaption className="mt-4 flex flex-wrap items-center justify-between gap-x-6 gap-y-2">
+              <Meta>Healthcare research</Meta>
+              <Meta>Library photography, pending KOFA&rsquo;s own</Meta>
+            </figcaption>
+          </figure>
+
+          <div className="col-span-12 flex flex-col lg:col-span-5 lg:py-2">
             <Reveal>
               <Eyebrow>Our purpose</Eyebrow>
             </Reveal>
-            <p className="type-display-sm mt-8 max-w-[19ch] text-ink">
+            <p className="type-display-sm mt-7 max-w-[15ch] text-ink">
               <LineReveal
                 lines={[
                   "We back healthcare",
@@ -60,78 +96,19 @@ export function FundIntro() {
                 ]}
               />
             </p>
-          </div>
 
-          <div className="col-span-12 lg:col-span-4 lg:col-start-9">
-            <Reveal delay={0.12} className="lg:pt-[6.5rem]">
+            <Reveal delay={0.12} className="mt-9">
               <AnimatedDivider />
-              <BodyCopy className="mt-7" size="lg">
+              <BodyCopy className="mt-6" size="lg">
                 {site.intro}
               </BodyCopy>
-              <BodyCopy className="mt-5">{site.about}</BodyCopy>
-              <div className="mt-8">
+              <BodyCopy className="mt-4">{site.about}</BodyCopy>
+              <div className="mt-7">
                 <TextLink href="/fund">Read our approach</TextLink>
               </div>
             </Reveal>
           </div>
         </div>
-
-        {/* --- the plate ---
-            What closes the section now that the areas grid has gone. A wide,
-            shallow crop rather than a square: this section's argument is the
-            sentence at the top, and a tall frame under it would turn the
-            sentence into a caption.
-
-            SEVEN COLUMNS, NOT TWELVE, AND THAT IS A RESOLUTION DECISION AS
-            MUCH AS A COMPOSITIONAL ONE. The source is 960px on its longest
-            edge, which is all the licence-free original offers. Across the
-            full measure it would be upscaled about 1.5x and would visibly
-            soften on a large display; at seven columns the 16:9 crop is being
-            scaled DOWN on every screen this site is designed for. The empty
-            columns beside it are the same device the portfolio grid uses,
-            whitespace doing work rather than whitespace left over.
-
-            ImageReveal uncovers it; Parallax moves the photograph inside the
-            frame as the page scrolls, so the plate has a rate of its own. The
-            nesting order matters: ImageReveal owns the clip, Parallax owns the
-            transform, and swapping them puts a travelling element inside a
-            static mask. */}
-        {/* The credit is a CAPTION, so it sits under the plate rather than in
-            a column of its own.
-
-            It used to occupy columns 9-11 with `self-end`, which aligned its
-            baseline to the bottom of a 525px-tall image four columns away. The
-            result was a 178px scrap of grey type stranded at the far right of
-            the row with ~355px of empty ivory between it and the picture it
-            described, and the eye read that gap as the section having ended.
-            A caption belongs to its image; the grid was separating the two to
-            satisfy a column rule that has no business overriding that. */}
-        <figure className="mt-[clamp(3rem,5vw,5rem)] grid grid-cols-12">
-          <div className="col-span-12 lg:col-span-7">
-            <ImageReveal className="relative aspect-[16/10] w-full overflow-hidden rounded-[12px] border border-rule-soft">
-              <Parallax amount={0.1}>
-                <Image
-                  src="/media/operating-theatre.jpg"
-                  alt="A surgical team at work under an operating theatre light."
-                  fill
-                  sizes="(max-width: 1024px) 100vw, 58vw"
-                  className="object-cover"
-                />
-              </Parallax>
-            </ImageReveal>
-
-            {/* Printed rather than assumed: a CC0 photograph needs no
-                attribution, but a reader is entitled to know that this is
-                library material and not KOFA's own theatre. Same reasoning as
-                the caption under the film band. See public/media/CREDITS.md. */}
-            <figcaption className="mt-4">
-              <Meta>
-                Operating theatre. Public-domain photography, CC0, pending
-                KOFA's own.
-              </Meta>
-            </figcaption>
-          </div>
-        </figure>
       </Container>
     </Section>
   );

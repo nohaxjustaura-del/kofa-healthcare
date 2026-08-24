@@ -200,13 +200,17 @@ export default async function CompanyPage({ params }: Params) {
           <CompanyVisual
             slug={company.slug}
             category={company.category}
+            media={company.media}
             featuredImage={company.featuredImage}
             name={company.name}
             reactive={false}
+            playable
+            priority
+            sizes="(max-width: 1280px) 100vw, 1200px"
           />
         </ImageReveal>
         </Lag>
-        {!company.featuredImage && (
+        {!company.media && !company.featuredImage && (
           <p className="type-meta mt-3 text-ink-mute">
             Abstract visualisation. Company imagery renders here when supplied.
           </p>

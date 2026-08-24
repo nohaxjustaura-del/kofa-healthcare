@@ -1,4 +1,5 @@
 import { Fragment } from "react";
+import Image from "next/image";
 import { Container, Section } from "@/components/ui/primitives";
 import { LineReveal, Reveal } from "@/components/motion/Reveal";
 import { Rise } from "@/components/motion/Rise";
@@ -23,6 +24,14 @@ import { activeCategories, portfolio } from "@/data/portfolio";
    The figures are the four facts that are independently checkable. No
    invented metrics, no counters animating up from zero.
 
+   THE CARDIOVASCULAR VISUAL BREAK. This is also where the page's first big
+   image lands: a 3D anatomical heart, glowing on the right of the dark ground
+   while the tagline and the figures sit on a near-opaque scrim to the left.
+   Cardiovascular is KOFA's largest cluster, so the one image the page stops
+   on is a heart — without captioning the section as "cardiovascular", which
+   would wrongly narrow the fund's remit. The render is composed with the heart
+   opposite the copy, preserving a clean field behind the statement.
+
    Removing this section is a one-line change in app/page.tsx if KOFA would
    rather the site stay light throughout.
 =========================================================================== */
@@ -39,24 +48,40 @@ export function Conviction() {
     <Section
       space="roomy"
       id="conviction"
-      className="relative overflow-hidden bg-[#0B2E2C]"
+      className="relative overflow-hidden bg-[#0B2220]"
       aria-labelledby="conviction-heading"
     >
-      {/* The same living network, drawn pale on the dark ground. */}
+      {/* The heart, glowing off the right edge and composed opposite the copy;
+          kept soft and dark so it reads as atmosphere behind the statement
+          rather than as a diagram to be studied. */}
+      <div aria-hidden className="absolute inset-0">
+        <Image
+          src="/media/home/heart-cinematic.jpg"
+          alt=""
+          fill
+          sizes="100vw"
+          className="object-cover object-right opacity-95"
+        />
+      </div>
+
+      {/* The same living network, drawn pale, held quiet so it does not fight
+          the heart behind it. */}
       <div aria-hidden className="absolute inset-0">
         <ScientificBackground
-          density={0.8}
-          intensity={0.55}
+          density={0.7}
+          intensity={0.32}
           linkDistance={190}
           tone="onDark"
           interactive={false}
         />
       </div>
 
-      {/* Keeps the type off the brightest part of the field. */}
+      {/* Holds the type on the dark left while the heart stays legible on the
+          right. Darker and wider than the old radial: it now has to carry text
+          over a lit photograph, not over a pale network. */}
       <div
         aria-hidden
-        className="absolute inset-0 bg-[radial-gradient(120%_100%_at_15%_50%,rgba(11,46,44,0.94)_0%,rgba(11,46,44,0.72)_45%,rgba(11,46,44,0.3)_100%)]"
+        className="absolute inset-0 bg-[linear-gradient(to_right,#0B2220_0%,rgba(11,34,32,0.92)_34%,rgba(11,34,32,0.58)_58%,rgba(11,34,32,0.2)_100%)]"
       />
 
       <Container className="relative">

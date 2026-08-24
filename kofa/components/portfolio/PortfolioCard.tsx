@@ -55,6 +55,7 @@ export function PortfolioCard({
             <CompanyVisual
               slug={company.slug}
               category={company.category}
+              media={company.media}
               featuredImage={company.featuredImage}
               name={company.name}
               priority={priority}

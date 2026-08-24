@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useRef } from "react";
+import { Fragment, useEffect, useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useMotionOff } from "@/components/motion/MotionPreference";
 import { Container, Eyebrow } from "@/components/ui/primitives";
@@ -61,6 +61,34 @@ const RAIL = [
 export function ParallaxHero() {
   const reduced = useMotionOff();
   const ref = useRef<HTMLElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  /* The hero footage. It is muted, looping and decorative, so it plays on its
+     own — but only while motion is on and the hero is on screen, and it always
+     falls back to its poster (the same still, so there is no visible swap) when
+     autoplay is refused. The markup never branches on any of this; see the
+     hydration note in components/motion/Reveal.tsx. */
+  useEffect(() => {
+    const el = videoRef.current;
+    if (!el) return;
+
+    if (reduced) {
+      el.pause();
+      el.currentTime = 0;
+      return;
+    }
+
+    el.play().catch(() => {});
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) el.play().catch(() => {});
+        else el.pause();
+      },
+      { threshold: 0 },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [reduced]);
 
   /* Opacity only. The travel is GSAP's job now; this is the one thing left
      that has to be a MotionValue, because it is read by two different
@@ -103,6 +131,36 @@ export function ParallaxHero() {
            the buttons and the rule. */
         className="relative flex min-h-svh items-center overflow-hidden pb-[clamp(6.5rem,9vw,8.5rem)] pt-[84px]"
       >
+        {/* --- deepest, non-parallax: the living hero ------------------------
+            A slow, seamless drift across a field of red blood cells — the one
+            moving picture on the page's first frame. It is graded back toward
+            ivory so the section still reads as the clean, light ground the
+            brand asks for: the cells are revealed on the right, the copy sits
+            on quiet ivory to the left. Deliberately NOT a parallax layer — a
+            background that drifted against its own grade would read as a
+            mistake — so it sits behind the four planes rather than among them.
+            The poster is the same still, so reduced motion and autoplay
+            refusals lose nothing. */}
+        <div aria-hidden className="absolute inset-0 -z-40 overflow-hidden bg-ivory">
+          <video
+            ref={videoRef}
+            className="h-full w-full object-cover"
+            poster="/media/home/blood-cells.jpg"
+            preload="auto"
+            muted
+            loop
+            playsInline
+            tabIndex={-1}
+          >
+            <source src="/media/home/hero-blood-cells.mp4" type="video/mp4" />
+          </video>
+          {/* Lifts the whole frame toward ivory so the saturated red never
+              takes the section over, and fades the foot of the hero into the
+              ivory of the section below it. */}
+          <div className="absolute inset-0 bg-ivory/20" />
+          <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(247,248,244,0.34)_0%,rgba(247,248,244,0)_26%,rgba(247,248,244,0)_58%,var(--color-ivory)_100%)]" />
+        </div>
+
         {/* --- layer 1, farthest: the graph-paper substrate ----------------- */}
         {/* Oversized and offset upward so the plane can travel its full 52%
             without ever pulling its own bottom edge into frame. */}
@@ -115,7 +173,13 @@ export function ParallaxHero() {
           <div className="bg-grid absolute inset-0 opacity-70 [mask-image:linear-gradient(to_bottom,transparent_0%,black_22%,black_78%,transparent_96%)]" />
         </div>
 
-        {/* --- layer 2: the living network, and the far cell ---------------- */}
+        {/* --- layer 2: the living network ----------------------------------
+            The teal network is kept, but quiet: at full intensity its hairlines
+            fought the red footage behind it. Held low, it reads as a thin layer
+            of structure over the cells rather than a second competing field,
+            and the pointer still wakes it — the one interactive flourish in the
+            hero. The large teal membrane that used to sit here is gone: a teal
+            cell over a field of red cells was one motif too many. */}
         <div
           data-parallax-layer="2"
           data-lag
@@ -123,17 +187,21 @@ export function ParallaxHero() {
           className="pointer-events-none absolute inset-x-0 -top-[18%] -z-20 h-[136%]"
         >
           <div className="absolute inset-0">
-            <ScientificBackground />
+            <ScientificBackground
+              density={0.7}
+              intensity={0.4}
+              linkDistance={150}
+            />
           </div>
-          <CellularForm className="absolute -right-[38%] top-1/2 hidden h-[132vh] w-[132vh] -translate-y-1/2 md:block lg:-right-[26%]" />
         </div>
 
-        {/* Keeps text contrast honest over the animation. Deliberately NOT a
-            parallax layer: it is a correction applied to the viewport, not an
-            object in the scene, so it must not move with anything. */}
+        {/* Keeps text contrast honest over the footage. Stronger than it was —
+            it now holds dark type over live red cells rather than over a pale
+            network — and deliberately NOT a parallax layer: it is a correction
+            applied to the viewport, not an object in the scene. */}
         <div
           aria-hidden
-          className="absolute inset-0 -z-10 bg-[linear-gradient(to_right,rgba(247,248,244,0.92)_0%,rgba(247,248,244,0.62)_46%,rgba(247,248,244,0)_78%)]"
+          className="absolute inset-0 -z-10 bg-[linear-gradient(to_right,rgba(247,248,244,0.96)_0%,rgba(247,248,244,0.86)_38%,rgba(247,248,244,0.5)_60%,rgba(247,248,244,0)_84%)]"
         />
 
         {/* --- layer 3: the reader's plane ---------------------------------- */}

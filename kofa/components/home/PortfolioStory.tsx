@@ -21,7 +21,7 @@ import { getCompany } from "@/data/portfolio";
    directory. Which company appears is a single CMS value.
 --------------------------------------------------------------------------- */
 
-export function PortfolioStory({ slug = "axena-health" }: { slug?: string }) {
+export function PortfolioStory({ slug = "raydiant-oximetry" }: { slug?: string }) {
   const company = getCompany(slug);
   if (!company) return null;
 
@@ -48,9 +48,12 @@ export function PortfolioStory({ slug = "axena-health" }: { slug?: string }) {
                 <CompanyVisual
                   slug={company.slug}
                   category={company.category}
+                  media={company.media}
                   featuredImage={company.featuredImage}
                   name={company.name}
                   reactive={false}
+                  playable
+                  sizes="(max-width: 1024px) 100vw, 50vw"
                 />
               </Parallax>
             </ImageReveal>
