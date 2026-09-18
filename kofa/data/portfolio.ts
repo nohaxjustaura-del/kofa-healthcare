@@ -18,6 +18,9 @@ export type HealthcareCategory =
   | "Orthopedics"
   | "Digital Health";
 
+/** Whether KOFA currently holds the investment or has exited it. */
+export type PortfolioStatus = "Active" | "Exits";
+
 /**
  * COMPANY MEDIA
  * ---------------------------------------------------------------------------
@@ -68,6 +71,8 @@ export interface PortfolioCompany {
   website: string;
   /** cms: field_healthcare_category, taxonomy term */
   category: HealthcareCategory;
+  /** cms: field_portfolio_status, taxonomy term */
+  portfolioStatus: PortfolioStatus;
   /** cms: field_status, e.g. "Acquired by Organon". Omit when unknown. */
   status?: string;
   /** cms: field_location, omit when unknown */
@@ -102,6 +107,7 @@ export const portfolio: PortfolioCompany[] = [
     focus: "Heart failure",
     website: "https://axontherapies.com/",
     category: "Cardiovascular",
+    portfolioStatus: "Active",
     featured: true,
     sortOrder: 1,
     media: {
@@ -124,6 +130,7 @@ export const portfolio: PortfolioCompany[] = [
     focus: "Vascular access",
     website: "https://venovamedical.com/",
     category: "Cardiovascular",
+    portfolioStatus: "Active",
     featured: true,
     sortOrder: 2,
     media: {
@@ -146,6 +153,7 @@ export const portfolio: PortfolioCompany[] = [
     focus: "Microvascular obstruction",
     website: "https://corflow.com/",
     category: "Cardiovascular",
+    portfolioStatus: "Active",
     featured: false,
     sortOrder: 3,
     media: {
@@ -169,6 +177,7 @@ export const portfolio: PortfolioCompany[] = [
     focus: "Cell analysis",
     website: "https://www.zafrens.com/",
     category: "Diagnostics",
+    portfolioStatus: "Active",
     featured: false,
     sortOrder: 4,
     media: {
@@ -191,6 +200,7 @@ export const portfolio: PortfolioCompany[] = [
     focus: "Fertility assessment",
     website: "https://www.illumicell.ai/",
     category: "Women's Health",
+    portfolioStatus: "Active",
     featured: false,
     sortOrder: 5,
     media: {
@@ -214,6 +224,7 @@ export const portfolio: PortfolioCompany[] = [
     focus: "Pulmonary arterial hypertension",
     website: "https://ariacv.com/",
     category: "Cardiovascular",
+    portfolioStatus: "Exits",
     featured: false,
     sortOrder: 6,
     media: {
@@ -236,6 +247,7 @@ export const portfolio: PortfolioCompany[] = [
     focus: "Pelvic floor disorders",
     website: "https://www.levatherapy.com/",
     category: "Women's Health",
+    portfolioStatus: "Active",
     featured: true,
     sortOrder: 7,
     media: {
@@ -258,6 +270,7 @@ export const portfolio: PortfolioCompany[] = [
     focus: "Blood pressure management",
     website: "https://biospectal.com/",
     category: "Digital Health",
+    portfolioStatus: "Active",
     featured: false,
     sortOrder: 8,
     media: {
@@ -280,6 +293,7 @@ export const portfolio: PortfolioCompany[] = [
     focus: "Diabetic retinopathy",
     website: "https://www.eyenuk.com/us-en/",
     category: "Diagnostics",
+    portfolioStatus: "Active",
     featured: true,
     sortOrder: 9,
     media: {
@@ -302,6 +316,7 @@ export const portfolio: PortfolioCompany[] = [
     focus: "Fetal monitoring",
     website: "https://www.raydiantoximetry.com/",
     category: "Women's Health",
+    portfolioStatus: "Active",
     featured: true,
     sortOrder: 10,
     media: {
@@ -324,6 +339,7 @@ export const portfolio: PortfolioCompany[] = [
     focus: "Orthopedic biologics",
     website: "https://marrowaccess.com/",
     category: "Orthopedics",
+    portfolioStatus: "Active",
     featured: false,
     sortOrder: 11,
     media: {
@@ -346,6 +362,7 @@ export const portfolio: PortfolioCompany[] = [
     focus: "Vital signs monitoring",
     website: "https://caretakermedical.net/",
     category: "Digital Health",
+    portfolioStatus: "Active",
     featured: false,
     sortOrder: 12,
     media: {
@@ -368,6 +385,7 @@ export const portfolio: PortfolioCompany[] = [
     focus: "Abdominal aortic aneurysm",
     website: "https://necteromedical.com/",
     category: "Cardiovascular",
+    portfolioStatus: "Active",
     featured: false,
     sortOrder: 13,
     media: {
@@ -392,6 +410,7 @@ export const portfolio: PortfolioCompany[] = [
     website:
       "https://www.merck.com/news/merck-announces-acquisition-of-alydia-health-on-behalf-of-its-planned-spinoff-of-organon/",
     category: "Women's Health",
+    portfolioStatus: "Exits",
     status: "Acquired by Organon",
     featured: false,
     sortOrder: 14,
@@ -415,6 +434,7 @@ export const portfolio: PortfolioCompany[] = [
     focus: "Imaging guidance",
     website: "https://rivannamedical.com/",
     category: "Diagnostics",
+    portfolioStatus: "Active",
     featured: false,
     sortOrder: 15,
     media: {
@@ -437,6 +457,7 @@ export const portfolio: PortfolioCompany[] = [
     focus: "Bone repair",
     website: "https://cerapedics.com/i-factor-and-p-15",
     category: "Orthopedics",
+    portfolioStatus: "Active",
     featured: true,
     sortOrder: 16,
     media: {
@@ -468,8 +489,35 @@ export const activeCategories: HealthcareCategory[] =
     portfolio.some((c) => c.category === cat),
   );
 
+export const PORTFOLIO_STATUSES: PortfolioStatus[] = ["Active", "Exits"];
+
+export type PortfolioFilter = PortfolioStatus | HealthcareCategory;
+
+/** Status filters lead, followed by the existing healthcare taxonomy. */
+export const portfolioFilters: PortfolioFilter[] = [
+  ...PORTFOLIO_STATUSES,
+  ...activeCategories,
+];
+
 export function categoryCount(cat: HealthcareCategory): number {
   return portfolio.filter((c) => c.category === cat).length;
+}
+
+export function portfolioFilterCount(filter: PortfolioFilter): number {
+  return portfolio.filter((company) =>
+    PORTFOLIO_STATUSES.includes(filter as PortfolioStatus)
+      ? company.portfolioStatus === filter
+      : company.category === filter,
+  ).length;
+}
+
+export function matchesPortfolioFilter(
+  company: PortfolioCompany,
+  filter: PortfolioFilter,
+): boolean {
+  return PORTFOLIO_STATUSES.includes(filter as PortfolioStatus)
+    ? company.portfolioStatus === filter
+    : company.category === filter;
 }
 
 /** Neighbours for the prev / next footer on a company page. */

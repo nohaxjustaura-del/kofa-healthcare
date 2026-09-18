@@ -1,346 +1,44 @@
-"use client";
-
-import { Fragment, useEffect, useRef } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
-import { useMotionOff } from "@/components/motion/MotionPreference";
-import { Container, Eyebrow } from "@/components/ui/primitives";
+import { Container } from "@/components/ui/primitives";
 import { Button, TextLink } from "@/components/ui/Button";
-import { ScientificBackground } from "@/components/motion/ScientificBackground";
-import { CellularForm } from "@/components/motion/CellularForm";
-import { LineReveal } from "@/components/motion/Reveal";
-import { ParallaxLayers } from "@/components/ui/parallax-scrolling";
 
-/* ===========================================================================
-   PARALLAX HERO
-   ---------------------------------------------------------------------------
-   The same hero, given depth. Four planes separate as the section scrolls
-   past, driven by the scrubbed stage in components/ui/parallax-scrolling.tsx:
-
-     1  the scientific grid              farthest, barely moves
-     2  the network field + the far cell
-     3  the copy                         the reader's plane
-     4  a near cell, rising from the     nearest, overtakes everything
-        bottom-left corner
-
-   The effect the whole thing exists for is layer 4 passing IN FRONT of layer 3
-   on the way out. A near object crossing the reader's plane is the one cue
-   that cannot be faked with a fade, and it is what makes the hero read as a
-   space the page is moving through rather than a picture that scrolls away.
-
-   WHY THE COPY IS ON A MIDDLE PLANE. The obvious arrangement puts the copy in
-   front, but then nothing ever crosses it and the section is just three
-   backgrounds moving at three speeds. Sitting the copy at 14 and the near cell
-   at -16 gives 30 points of relative travel, which is enough for the crossing
-   to be legible without the copy itself appearing to slide.
-
-   DIVISION OF LABOUR WITH FRAMER MOTION. GSAP owns `transform` on the four
-   layer elements and nothing else. The copy's scroll fade and every entrance
-   animation stay with framer-motion, on DIFFERENT elements: the fade lives on
-   a wrapper INSIDE layer 3, never on the layer element itself, so the two
-   libraries never write the same property on the same node. Keep it that way.
-
-   This is a drop-in replacement for components/hero/Hero.tsx: same copy, same
-   metadata rail, same CTAs, same entrance choreography. Swap the import in
-   app/page.tsx to go back.
-=========================================================================== */
-
-const EASE = [0.22, 1, 0.36, 1] as const;
-
-/* Far to near. Tuned against a 92svh hero: at these values the near cell
-   clears the headline about two thirds of the way through the section, which
-   is where the reader's attention has already moved on. */
-const DEPTHS = [52, 34, 14, -16] as const;
-
-/** Small, factual, checkable. Not a statistic counter. */
 const RAIL = [
   { k: "Established", v: "2016" },
   { k: "Structure", v: "Evergreen fund" },
-  { k: "Portfolio", v: "16 companies" },
+  { k: "Focus", v: "Medical devices" },
 ];
 
 export function ParallaxHero() {
-  const reduced = useMotionOff();
-  const ref = useRef<HTMLElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
-
-  /* The hero footage. It is muted, looping and decorative, so it plays on its
-     own — but only while motion is on and the hero is on screen, and it always
-     falls back to its poster (the same still, so there is no visible swap) when
-     autoplay is refused. The markup never branches on any of this; see the
-     hydration note in components/motion/Reveal.tsx. */
-  useEffect(() => {
-    const el = videoRef.current;
-    if (!el) return;
-
-    if (reduced) {
-      el.pause();
-      el.currentTime = 0;
-      return;
-    }
-
-    el.play().catch(() => {});
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) el.play().catch(() => {});
-        else el.pause();
-      },
-      { threshold: 0 },
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [reduced]);
-
-  /* Opacity only. The travel is GSAP's job now; this is the one thing left
-     that has to be a MotionValue, because it is read by two different
-     elements at two different rates.
-
-     Reduced motion flattens the ranges rather than dropping the `style` prop.
-     Both variants evaluate identically at scroll progress 0, so the server and
-     the client emit the same markup: see the hydration note in
-     components/motion/Reveal.tsx. */
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start start", "end start"],
-  });
-  const copyOpacity = useTransform(
-    scrollYProgress,
-    [0, 0.72],
-    reduced ? [1, 1] : [1, 0],
-  );
   return (
-    <ParallaxLayers depths={DEPTHS}>
-      <section
-        ref={ref}
-        /* FULL FIRST FRAME. This was 92svh, which left a sliver of the next
-           section showing under the metadata rail — enough to read as the page
-           having started scrolling before you touched it, and not enough to
-           show anything useful. A hero either fills the frame or it clearly
-           does not; 92% is the one value that looks like neither.
+    <section className="relative flex min-h-svh items-center overflow-hidden pb-[clamp(7rem,10vw,9rem)] pt-[108px]">
+      <div aria-hidden className="absolute inset-0 -z-20">
+        <div className="bg-grid absolute inset-0 opacity-45 [mask-image:linear-gradient(to_bottom,black,transparent_92%)]" />
+        <div className="absolute -right-[18vw] top-[8%] h-[min(72vw,62rem)] w-[min(72vw,62rem)] rounded-full border border-rule-teal" />
+        <div className="absolute -right-[7vw] top-[23%] h-[min(48vw,40rem)] w-[min(48vw,40rem)] rounded-full border border-rule" />
+        <svg className="absolute inset-y-0 right-0 h-full w-[62%] text-teal/20" viewBox="0 0 900 900" preserveAspectRatio="none">
+          <path d="M900 78C650 164 755 324 502 420S252 690 86 865" fill="none" stroke="currentColor" strokeWidth="1" />
+          <path d="M900 224C704 300 758 444 548 520S342 704 250 900" fill="none" stroke="currentColor" strokeWidth="1" />
+        </svg>
+      </div>
 
-           `svh` rather than `vh` or `dvh`, deliberately. On mobile `vh` is the
-           LARGEST viewport (browser chrome hidden), so a 100vh hero overflows
-           by the height of the chrome on first paint and the page starts life
-           scrollable-by-a-toolbar. `dvh` resolves correctly but CHANGES as the
-           chrome hides and shows, resizing the hero mid-scroll. `svh` is the
-           smallest viewport: the hero always fits, and never resizes.
-
-           The metadata rail is absolutely positioned at the bottom, so it is
-           outside the flow the centred copy is balanced in and the two can
-           collide. `pb` reserves the rail's own height plus clearance, which
-           pushes the optical centre of the copy up and puts real air between
-           the buttons and the rule. */
-        className="relative flex min-h-svh items-center overflow-hidden pb-[clamp(6.5rem,9vw,8.5rem)] pt-[84px]"
-      >
-        {/* --- deepest, non-parallax: the living hero ------------------------
-            A slow, seamless drift across a field of red blood cells — the one
-            moving picture on the page's first frame. It is graded back toward
-            ivory so the section still reads as the clean, light ground the
-            brand asks for: the cells are revealed on the right, the copy sits
-            on quiet ivory to the left. Deliberately NOT a parallax layer — a
-            background that drifted against its own grade would read as a
-            mistake — so it sits behind the four planes rather than among them.
-            The poster is the same still, so reduced motion and autoplay
-            refusals lose nothing. */}
-        <div aria-hidden className="absolute inset-0 -z-40 overflow-hidden bg-ivory">
-          <video
-            ref={videoRef}
-            className="h-full w-full object-cover"
-            poster="/media/home/blood-cells.jpg"
-            preload="auto"
-            muted
-            loop
-            playsInline
-            tabIndex={-1}
-          >
-            <source src="/media/home/hero-blood-cells.mp4" type="video/mp4" />
-          </video>
-          {/* Lifts the whole frame toward ivory so the saturated red never
-              takes the section over, and fades the foot of the hero into the
-              ivory of the section below it. */}
-          <div className="absolute inset-0 bg-ivory/20" />
-          <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(247,248,244,0.34)_0%,rgba(247,248,244,0)_26%,rgba(247,248,244,0)_58%,var(--color-ivory)_100%)]" />
-        </div>
-
-        {/* --- layer 1, farthest: the graph-paper substrate ----------------- */}
-        {/* Oversized and offset upward so the plane can travel its full 52%
-            without ever pulling its own bottom edge into frame. */}
-        <div
-          data-parallax-layer="1"
-          data-lag
-          aria-hidden
-          className="pointer-events-none absolute inset-x-0 -top-[30%] -z-30 h-[160%]"
-        >
-          <div className="bg-grid absolute inset-0 opacity-70 [mask-image:linear-gradient(to_bottom,transparent_0%,black_22%,black_78%,transparent_96%)]" />
-        </div>
-
-        {/* --- layer 2: the living network ----------------------------------
-            The teal network is kept, but quiet: at full intensity its hairlines
-            fought the red footage behind it. Held low, it reads as a thin layer
-            of structure over the cells rather than a second competing field,
-            and the pointer still wakes it — the one interactive flourish in the
-            hero. The large teal membrane that used to sit here is gone: a teal
-            cell over a field of red cells was one motif too many. */}
-        <div
-          data-parallax-layer="2"
-          data-lag
-          aria-hidden
-          className="pointer-events-none absolute inset-x-0 -top-[18%] -z-20 h-[136%]"
-        >
-          <div className="absolute inset-0">
-            <ScientificBackground
-              density={0.7}
-              intensity={0.4}
-              linkDistance={150}
-            />
+      <Container className="relative">
+        <div className="max-w-[70rem]">
+          <h1 className="type-display max-w-[14ch] text-ink">Patient Capital for Transformative MedTech</h1>
+          <p className="type-body-lg mt-10 max-w-[60ch]">KOFA Healthcare is an evergreen investment fund that invests in early- to mid-stage medical device companies that solve a clear unmet need in high-growth clinical markets. We invest in companies, not single-product opportunities, with a market size typically exceeding $1 billion worldwide.</p>
+          <div className="mt-11 flex flex-col items-start gap-6 sm:flex-row sm:items-center sm:gap-9">
+            <Button href="/portfolio">Explore our portfolio</Button>
+            <TextLink href="/our-approach">Our approach</TextLink>
           </div>
         </div>
 
-        {/* Keeps text contrast honest over the footage. Stronger than it was —
-            it now holds dark type over live red cells rather than over a pale
-            network — and deliberately NOT a parallax layer: it is a correction
-            applied to the viewport, not an object in the scene. */}
-        <div
-          aria-hidden
-          className="absolute inset-0 -z-10 bg-[linear-gradient(to_right,rgba(247,248,244,0.96)_0%,rgba(247,248,244,0.86)_38%,rgba(247,248,244,0.5)_60%,rgba(247,248,244,0)_84%)]"
-        />
-
-        {/* --- layer 3: the reader's plane ---------------------------------- */}
-        <div data-parallax-layer="3" data-lag className="relative w-full">
-          <Container>
-            {/* The fade sits here, one level inside the layer element, so
-                framer-motion writes `opacity` on a node GSAP never touches. */}
-            <motion.div
-              style={{ opacity: copyOpacity }}
-              className="grid grid-cols-12 gap-y-10"
-            >
-              <div className="col-span-12 lg:col-span-10 xl:col-span-9">
-                <motion.div
-                  data-reveal
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={
-                    reduced ? { duration: 0 } : { duration: 0.8, ease: EASE }
-                  }
-                >
-                  <Eyebrow>Evergreen healthcare venture fund</Eyebrow>
-                </motion.div>
-
-                <h1 className="type-display mt-7 text-ink">
-                  <LineReveal
-                    delay={0.12}
-                    lines={[
-                      "Investing in innovation",
-                      <Fragment key="moves">
-                        that <span className="accent-italic">moves</span>{" "}
-                        healthcare
-                      </Fragment>,
-                      "forward.",
-                    ]}
-                  />
-                </h1>
-
-                {/* Flush left, with the headline and the buttons. The original
-                    indented this to column 4 as a deliberate asymmetry, but the
-                    headline above it and the CTAs below it both start at the
-                    margin, so the paragraph was the only element in the hero
-                    off that line and read as a mistake rather than as a
-                    composition. One left edge for the whole block. */}
-                <div className="mt-10 grid grid-cols-12 lg:mt-14">
-                  <motion.p
-                    data-reveal
-                    initial={{ opacity: 0, y: 18 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={
-                      reduced
-                        ? { duration: 0 }
-                        : { duration: 0.8, delay: 0.5, ease: EASE }
-                    }
-                    className="type-body-lg col-span-12 max-w-[52ch] sm:col-span-11 lg:col-span-7"
-                  >
-                    KOFA Healthcare partners with innovators developing
-                    meaningful technologies for unmet clinical needs, from seed
-                    stage startups to commercial stage corporations.
-                  </motion.p>
-                </div>
-
-                <motion.div
-                  data-reveal
-                  initial={{ opacity: 0, y: 18 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={
-                    reduced
-                      ? { duration: 0 }
-                      : { duration: 0.8, delay: 0.62, ease: EASE }
-                  }
-                  className="mt-11 flex flex-col items-start gap-6 sm:flex-row sm:items-center sm:gap-9"
-                >
-                  <Button href="/portfolio">Explore our portfolio</Button>
-                  <TextLink href="/fund">Our investment approach</TextLink>
-                </motion.div>
-              </div>
-            </motion.div>
-          </Container>
-        </div>
-
-        {/* --- layer 4, nearest: the cell that crosses the copy -------------- */}
-        {/* Seated low and left, mostly outside the frame, so at rest it reads
-            as a soft weight in the corner rather than as an object. It becomes
-            an object only once it starts moving. `pointer-events-none` because
-            it passes directly over the CTAs. */}
-        <div
-          data-parallax-layer="4"
-          data-lag
-          aria-hidden
-          className="pointer-events-none absolute inset-0 z-10"
-        >
-          <CellularForm className="absolute -bottom-[58%] -left-[34%] h-[105vh] w-[105vh] opacity-[0.55] sm:-left-[24%] lg:-bottom-[52%] lg:-left-[12%]" />
-        </div>
-
-        {/* --- metadata rail ------------------------------------------------ */}
-        {/* Outside the parallax entirely: it is chrome for the section, and a
-            rail that drifted against its own rule would read as a mistake. */}
-        <motion.div
-          data-reveal
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={
-            reduced ? { duration: 0 } : { duration: 1, delay: 0.85, ease: EASE }
-          }
-          className="absolute inset-x-0 bottom-0 z-20"
-        >
-          <Container>
-            <div className="h-px w-full bg-rule" />
-            {/* A "Scroll" cue with an animated teal tick used to sit at the
-                right end of this row. It is gone: the hero now fills the frame
-                exactly, so the one thing a reader can do on arrival is scroll,
-                and a label telling them so is an instruction nobody needed.
-                It also cost a MotionValue and a permanently-repeating
-                animation for the privilege. */}
-            <div className="flex items-center py-5">
-              <dl className="flex flex-wrap items-center gap-x-9 gap-y-2 sm:gap-x-14">
-                {RAIL.map((item, i) => (
-                  <motion.div
-                    key={item.k}
-                    data-reveal
-                    className="flex items-baseline gap-2.5"
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={
-                      reduced
-                        ? { duration: 0 }
-                        : { duration: 0.7, delay: 0.95 + i * 0.09, ease: EASE }
-                    }
-                  >
-                    <dt className="type-eyebrow text-ink-mute">{item.k}</dt>
-                    <dd className="type-eyebrow text-ink">{item.v}</dd>
-                  </motion.div>
-                ))}
-              </dl>
-
+        <dl className="absolute inset-x-6 -bottom-[6.5rem] flex flex-wrap gap-x-12 gap-y-3 border-t border-rule pt-5 sm:inset-x-8 lg:inset-x-12 xl:inset-x-20">
+          {RAIL.map((item) => (
+            <div key={item.k} className="flex items-baseline gap-2.5">
+              <dt className="type-eyebrow text-ink-mute">{item.k}</dt>
+              <dd className="type-eyebrow text-ink">{item.v}</dd>
             </div>
-          </Container>
-        </motion.div>
-      </section>
-    </ParallaxLayers>
+          ))}
+        </dl>
+      </Container>
+    </section>
   );
 }

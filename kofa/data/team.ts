@@ -4,14 +4,10 @@
  * Maps 1:1 to a WordPress custom post type `team_member`.
  *
  * KOFA's current website has no team page, so nothing here is lifted from it.
- * The one filled entry is the founder, written from her own public
- * professional record; see the note on that entry for exactly which facts it
- * rests on and which were left out.
- *
- * The rest of the roster is still outstanding. Rather than invent people, the
- * count of unfilled profiles lives in `OPEN_TEAM_SLOTS` below and renders as
- * visibly marked empty columns, so KOFA can see what is missing instead of
- * seeing a shorter row that looks finished.
+ * Jing Lin's approved existing biography is retained below. KOFA has not
+ * supplied biographies for Renee Masi or Dr. Meng Deng, so those entries are
+ * visibly marked as editorial placeholders rather than filled with invented
+ * claims.
  *
  * `bioStatus: "placeholder"` remains on the interface for the same purpose:
  * set it on any entry whose copy has not been approved and it renders inside a
@@ -55,9 +51,17 @@ export interface TeamMember {
 
 export const team: TeamMember[] = [
   {
+    name: "Renee Masi",
+    slug: "renee-masi",
+    role: "Senior Managing Director",
+    biography: "Biography forthcoming.",
+    bioStatus: "placeholder",
+    sortOrder: 1,
+  },
+  {
     name: "Jing Lin",
     slug: "jing-lin",
-    role: "Founder & Managing Director",
+    role: "Managing Director",
     portrait: "/team/jing-lin.png",
     standfirst:
       "Founded KOFA Healthcare in 2016 to back medical technology addressing clinical unmet needs.",
@@ -80,7 +84,15 @@ export const team: TeamMember[] = [
       "Medical Technology",
     ],
     linkedin: "https://www.linkedin.com/in/jinglinhealthcarevc/",
-    sortOrder: 1,
+    sortOrder: 2,
+  },
+  {
+    name: "Dr. Meng Deng",
+    slug: "meng-deng",
+    role: "Managing Director",
+    biography: "Biography forthcoming.",
+    bioStatus: "placeholder",
+    sortOrder: 3,
   },
 ];
 
@@ -88,7 +100,7 @@ export const team: TeamMember[] = [
  * Number of additional, unfilled profile slots to render on /team.
  * Set to 0 once the real roster is loaded; the grid adapts automatically.
  */
-export const OPEN_TEAM_SLOTS = 2;
+export const OPEN_TEAM_SLOTS = 0;
 
 export function getTeamMember(slug: string): TeamMember | undefined {
   return team.find((m) => m.slug === slug);

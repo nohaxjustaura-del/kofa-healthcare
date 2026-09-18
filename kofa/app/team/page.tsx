@@ -4,7 +4,6 @@ import { PageHero } from "@/components/ui/PageHero";
 import { TeamGrid } from "@/components/team/TeamGrid";
 import { CTASection } from "@/components/ui/CTASection";
 import { pageMetadata } from "@/lib/metadata";
-import { site } from "@/data/site";
 
 /* See lib/metadata.ts: a hand-written page-level `openGraph` replaces the root
    layout's wholesale, taking og:site_name, og:locale, og:type and the share
@@ -12,7 +11,7 @@ import { site } from "@/data/site";
 export const metadata: Metadata = pageMetadata({
   title: "Team",
   description:
-    "The people behind KOFA Healthcare, an evergreen family office venture fund backing biotech and healthcare innovation since 2016.",
+    "Meet the KOFA Healthcare team investing in early- to mid-stage medical device companies.",
   path: "/team",
   socialDescription: "The people behind KOFA Healthcare.",
 });
@@ -22,12 +21,8 @@ export default function TeamPage() {
     <>
       <PageHero
         eyebrow="Team"
-        lines={["Built around healthcare,", "entrepreneurship and", "long-term partnership."]}
-        intro="KOFA is a family office fund. That structure lets the firm hold positions for as long as the science requires."
-        meta={[
-          { k: "Founded", v: String(site.founded) },
-          { k: "Structure", v: "Evergreen family office" },
-        ]}
+        lines={["Our Team"]}
+        intro="KOFA Healthcare’s investment team is supported by an accomplished network of clinical advisors and industry experts."
       />
 
       <Section space="tight" className="border-t border-rule pt-[clamp(3rem,5vw,4.5rem)]">

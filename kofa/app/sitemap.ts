@@ -9,7 +9,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const staticRoutes = [
     { path: "", priority: 1 },
-    { path: "/fund", priority: 0.9 },
+    { path: "/about", priority: 0.9 },
+    { path: "/our-approach", priority: 0.9 },
+    { path: "/focus-areas", priority: 0.9 },
     { path: "/portfolio", priority: 0.9 },
     { path: "/team", priority: 0.7 },
     { path: "/news", priority: 0.8 },

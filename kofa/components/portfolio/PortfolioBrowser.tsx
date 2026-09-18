@@ -2,213 +2,105 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { AnimatePresence, motion } from "framer-motion";
-import { useMotionOff } from "@/components/motion/MotionPreference";
-import { Rise } from "@/components/motion/Rise";
-import { PortfolioCard } from "./PortfolioCard";
 import { useTablist } from "@/components/ui/useTablist";
-import {
-  activeCategories,
-  categoryCount,
-  portfolioSorted,
-  type HealthcareCategory,
-} from "@/data/portfolio";
+import { PortfolioCard } from "./PortfolioCard";
+import { portfolioSorted, type PortfolioStatus } from "@/data/portfolio";
 
-const EASE = [0.22, 1, 0.36, 1] as const;
+const STATUSES: PortfolioStatus[] = ["Active", "Exits"];
 
-/* ---------------------------------------------------------------------------
-   FILTER + GRID
-   ---------------------------------------------------------------------------
-   The taxonomy is a row of text, not pills, with a single underline that
-   travels between terms. Filtering is client-side and URL-synced, so a
-   category is linkable and the back button behaves.
-
-   Grid spans cycle 7/5 then 4/4/4 so no two rows read the same, but collapse
-   to equal thirds when a filter leaves only a few companies, variation is
-   there to create rhythm, not to make a short list look ragged.
---------------------------------------------------------------------------- */
-
-const CYCLE = [
-  "lg:col-span-7",
-  "lg:col-span-5",
-  "lg:col-span-4",
-  "lg:col-span-4",
-  "lg:col-span-4",
-] as const;
-
-const SIZE_FOR_SPAN: Record<string, "feature" | "standard" | "compact"> = {
-  "lg:col-span-7": "feature",
-  "lg:col-span-5": "standard",
-  "lg:col-span-4": "compact",
-};
-
-export function PortfolioBrowser() {
+/*
+ * KOFA's existing useTablist supplies WAI-ARIA automatic activation, roving
+ * tabindex, arrow keys, Home and End. The quiet underline convention was
+ * informed by Origin UI's public Tabs component (https://21st.dev/@originui/
+ * components/tabs, MIT; reviewed 2026-09-15). No Origin UI source or package
+ * is included here.
+ */
+export function PortfolioBrowser({ compact = false }: { compact?: boolean }) {
   const router = useRouter();
-  const reduced = useMotionOff();
-
-  /* Deliberately NOT useSearchParams().
-     On a statically prerendered route that hook forces its whole Suspense
-     boundary to be client-rendered, which shipped /portfolio with zero
-     companies in the HTML: the grid existed only after JS ran. The brief
-     requires crawlable content, and a portfolio is the last thing that should
-     depend on JavaScript to exist.
-
-     Instead the full grid server-renders, and a deep link like
-     ?category=Diagnostics is applied one tick after mount. */
-  const [active, setActive] = useState<HealthcareCategory | null>(null);
+  const [active, setActive] = useState<PortfolioStatus>("Active");
 
   useEffect(() => {
-    const raw = new URLSearchParams(window.location.search).get("category");
-    if (raw && activeCategories.includes(raw as HealthcareCategory)) {
-      setActive(raw as HealthcareCategory);
+    if (compact) return;
+    const requested = new URLSearchParams(window.location.search).get("status");
+    if (STATUSES.includes(requested as PortfolioStatus)) {
+      setActive(requested as PortfolioStatus);
     }
-  }, []);
+  }, [compact]);
 
   const select = useCallback(
-    (cat: HealthcareCategory | null) => {
-      setActive(cat);
-      const url = cat
-        ? `/portfolio?category=${encodeURIComponent(cat)}`
-        : "/portfolio";
-      router.replace(url, { scroll: false });
+    (status: PortfolioStatus) => {
+      setActive(status);
+      if (!compact) {
+        router.replace(`/portfolio?status=${encodeURIComponent(status)}`, {
+          scroll: false,
+        });
+      }
     },
-    [router],
+    [compact, router],
   );
 
   const visible = useMemo(
-    () =>
-      active
-        ? portfolioSorted.filter((c) => c.category === active)
-        : portfolioSorted,
+    () => portfolioSorted.filter((company) => company.portfolioStatus === active),
     [active],
   );
-
-  const uniform = visible.length <= 3;
-
-  const tabs = useMemo<(HealthcareCategory | null)[]>(
-    () => [null, ...activeCategories],
-    [],
-  );
-  const { register, onKeyDown } = useTablist(tabs, select);
+  const { register, onKeyDown } = useTablist(STATUSES, select);
 
   return (
-    <>
-      {/* --- taxonomy ---
-          The Rise goes on the outer strip, outside the tablist's own
-          overflow-x-auto, which would shear a skewed child off at the scroll
-          edge. from="up" because a rule-to-rule strip spanning the whole
-          measure has no side to come from, and because "up" is the one lean
-          that carries no skew: the underline below is a layoutId animation
-          measuring against this box, and framer's projection maths understands
-          an ancestor's translate and scale but not its shear. */}
-      <Rise from="up" as="div" className="border-y border-rule">
+    <section aria-labelledby="portfolio-companies-heading">
+      <div className="border-b border-[#c8d7df]">
         <div
           role="tablist"
-          aria-label="Filter portfolio by category"
-          className="-mx-6 flex gap-1 overflow-x-auto px-6 sm:mx-0 sm:px-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          aria-label="Portfolio status"
+          className="flex gap-8 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
-          {tabs.map((cat, i) => {
-            const on = active === cat;
-            const label = cat ?? "All";
-            const count = cat ? categoryCount(cat) : portfolioSorted.length;
+          {STATUSES.map((status, index) => {
+            const selected = status === active;
+            const count = portfolioSorted.filter(
+              (company) => company.portfolioStatus === status,
+            ).length;
             return (
               <button
-                key={label}
-                ref={register(i)}
+                key={status}
+                ref={register(index)}
+                id={`portfolio-tab-${status.toLowerCase()}`}
                 role="tab"
-                id={`portfolio-tab-${i}`}
-                aria-selected={on}
+                aria-selected={selected}
                 aria-controls="portfolio-panel"
-                // Roving tabindex: the set is one Tab stop, arrows move inside.
-                tabIndex={on ? 0 : -1}
-                onKeyDown={(e) => onKeyDown(e, i)}
-                onClick={() => select(cat)}
-                className={`group relative shrink-0 whitespace-nowrap px-4 py-5 text-[0.875rem] font-medium tracking-[-0.005em] transition-colors duration-300 ease-kofa first:pl-0 ${
-                  on ? "text-ink" : "text-ink-soft hover:text-ink"
+                tabIndex={selected ? 0 : -1}
+                onKeyDown={(event) => onKeyDown(event, index)}
+                onClick={() => select(status)}
+                className={`relative shrink-0 py-4 text-sm font-medium transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-[#007265] ${
+                  selected
+                    ? "text-[#12394b] after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:bg-[#008979]"
+                    : "text-[#4d626c] hover:text-[#12394b]"
                 }`}
               >
-                {label}
-                <span className="type-eyebrow ml-2 align-super text-[9px] tabular-nums text-ink-mute">
-                  {count}
-                </span>
-                {on && (
-                  <motion.span
-                    layoutId="filter-underline"
-                    className="absolute inset-x-0 -bottom-px h-px bg-teal"
-                    transition={
-                      reduced ? { duration: 0 } : { duration: 0.45, ease: EASE }
-                    }
-                  />
-                )}
+                {status} <span className="ml-1 tabular-nums text-[#657c87]">({count})</span>
               </button>
             );
           })}
         </div>
-      </Rise>
+      </div>
 
-      {/* --- grid ---
-          Deliberately no Rise from here down. Every card is already an
-          AnimatePresence child animating its own layout, and layout projection
-          drives the same transform Rise would: two systems writing one matrix
-          is one too many, and projection cannot account for shear at all.
-          A Rise on the panel wrapper is no safer, because a deep-linked
-          ?category= filters the list one tick after mount, which lands the
-          re-projection squarely inside the entrance. The cards already arrive
-          on their own; the furniture above them is what was missing one. */}
       <div
         id="portfolio-panel"
         role="tabpanel"
-        aria-labelledby={`portfolio-tab-${tabs.indexOf(active)}`}
+        aria-labelledby={`portfolio-tab-${active.toLowerCase()}`}
         tabIndex={-1}
-        className="mt-[clamp(3rem,5vw,4.5rem)]"
+        className="pt-10 sm:pt-12"
       >
-        {/* The cards inside are h3, which is correct on the homepage because
-            the marquee supplies an h2 above them. Standalone on /portfolio
-            there is no h2 anywhere between the page h1 and those h3s, so a
-            screen reader navigating by heading level jumps a rank and reads
-            the list as if a section title had been skipped. Naming the list
-            fixes the outline without changing a single card. */}
-        <h2 className="sr-only">All companies</h2>
+        <h2 id="portfolio-companies-heading" className="sr-only">
+          {active} portfolio companies
+        </h2>
         <p aria-live="polite" className="sr-only">
-          {visible.length} companies shown
-          {active ? ` in ${active}` : ""}.
+          Showing {visible.length} {active.toLowerCase()} companies.
         </p>
-
-        <motion.div
-          layout={!reduced}
-          className="grid grid-cols-12 gap-x-0 sm:gap-x-8 gap-y-[clamp(3.5rem,6vw,5.5rem)]"
-        >
-          <AnimatePresence mode="popLayout" initial={false}>
-            {visible.map((company, i) => {
-              const span = uniform ? "lg:col-span-4" : CYCLE[i % CYCLE.length];
-              return (
-                <motion.div
-                  data-reveal
-                  key={company.slug}
-                  layout={!reduced}
-                  initial={{ opacity: 0, y: 14 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={reduced ? undefined : { opacity: 0, y: -10 }}
-                  transition={{
-                    duration: reduced ? 0.15 : 0.5,
-                    delay: reduced ? 0 : Math.min(i * 0.035, 0.25),
-                    ease: EASE,
-                  }}
-                  className={`col-span-12 sm:col-span-6 ${span}`}
-                >
-                  <PortfolioCard
-                    company={company}
-                    size={uniform ? "compact" : SIZE_FOR_SPAN[span]}
-                    index={i}
-                    total={visible.length}
-                    priority={i < 2}
-                  />
-                </motion.div>
-              );
-            })}
-          </AnimatePresence>
-        </motion.div>
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4 lg:gap-5">
+          {visible.map((company) => (
+            <PortfolioCard key={company.slug} company={company} />
+          ))}
+        </div>
       </div>
-    </>
+    </section>
   );
 }

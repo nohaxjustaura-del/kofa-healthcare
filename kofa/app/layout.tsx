@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Fraunces } from "next/font/google";
 import { GeistSans } from "geist/font/sans";
 import "./globals.css";
 import { Navigation } from "@/components/navigation/Navigation";
@@ -9,9 +8,6 @@ import {
   MotionPreferenceProvider,
   MOTION_PREFERENCE_SCRIPT,
 } from "@/components/motion/MotionPreference";
-import { SmoothScroll } from "@/components/motion/SmoothScroll";
-import { Arrival } from "@/components/motion/Arrival";
-import { ScrollProgress } from "@/components/ui/ScrollProgress";
 import { socialMetadata, siteUrl } from "@/lib/metadata";
 import { site } from "@/data/site";
 
@@ -40,14 +36,6 @@ import { site } from "@/data/site";
  * display sizes can sit at 400 and card titles at 500 without a second
  * download.
  */
-const serif = Fraunces({
-  subsets: ["latin"],
-  style: ["normal", "italic"],
-  axes: ["SOFT", "WONK"],
-  variable: "--font-display-serif",
-  display: "swap",
-});
-
 /**
  * Geist for navigation, body, buttons, labels and metadata; Fraunces
  * kept selective, for display headlines and editorial statements only. Geist
@@ -99,7 +87,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${serif.variable} ${sans.variable}`}
+      className={sans.variable}
       /*
         Two of the scripts below stamp attributes onto document.documentElement
         before <body> renders: the arrival guard writes data-arrival-seen, and
@@ -159,7 +147,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: MOTION_PREFERENCE_SCRIPT }}
         />
       </head>
-      <body className="min-h-dvh bg-ivory antialiased">
+      <body className="min-h-dvh bg-white antialiased">
         <script
           type="application/ld+json"
           // Static, author-controlled object, no user input reaches this.
@@ -170,9 +158,6 @@ export default function RootLayout({
             {/* SmoothScroll first: its mount effect constructs Lenis and puts the
               "lenis" class on <html> before any scroll consumer subscribes, so
               nobody measures a pre-Lenis frame and is then contradicted. */}
-            <SmoothScroll />
-            <ScrollProgress />
-            <Arrival />
             <Navigation />
             <main id="main">{children}</main>
             <Footer />

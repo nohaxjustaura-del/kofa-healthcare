@@ -1,230 +1,124 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { AnimatePresence, motion } from "framer-motion";
-import { useMotionOff } from "@/components/motion/MotionPreference";
-import { Rise } from "@/components/motion/Rise";
-import { NewsCard } from "./NewsCard";
 import { useTablist } from "@/components/ui/useTablist";
-import { companiesWithNews, newsSorted, type NewsType } from "@/data/news";
+import { formatNewsDate, newsSorted, type NewsType } from "@/data/news";
 import { getCompany } from "@/data/portfolio";
 
-const EASE = [0.22, 1, 0.36, 1] as const;
 const TYPES: (NewsType | null)[] = [null, "KOFA News", "Portfolio News"];
 
+/** A concise, article-first index. The actual filter controls remain keyboard tabs. */
 export function NewsBrowser() {
   const router = useRouter();
-  const reduced = useMotionOff();
-
-  /* Deliberately NOT useSearchParams(), see the note in
-     components/portfolio/PortfolioBrowser.tsx. That hook made this whole list
-     client-only, so all 60 articles were absent from the server HTML. Now the
-     full list is prerendered and a ?type= / ?company= deep link is applied
-     one tick after mount. */
   const [type, setType] = useState<NewsType | null>(null);
-  const [company, setCompany] = useState<string | null>(null);
 
   useEffect(() => {
-    const q = new URLSearchParams(window.location.search);
-    const t = q.get("type");
-    if (t && TYPES.includes(t as NewsType)) setType(t as NewsType);
-    const c = q.get("company");
-    if (c) setCompany(c);
+    const requested = new URLSearchParams(window.location.search).get("type");
+    if (TYPES.includes(requested as NewsType)) {
+      setType(requested as NewsType);
+    }
   }, []);
 
-  const sync = useCallback(
-    (t: NewsType | null, c: string | null) => {
-      const q = new URLSearchParams();
-      if (t) q.set("type", t);
-      if (c) q.set("company", c);
-      const s = q.toString();
-      router.replace(s ? `/news?${s}` : "/news", { scroll: false });
+  const select = useCallback(
+    (next: NewsType | null) => {
+      setType(next);
+      router.replace(next ? `/news?type=${encodeURIComponent(next)}` : "/news", {
+        scroll: false,
+      });
     },
     [router],
   );
 
-  const pickType = (t: NewsType | null) => {
-    setType(t);
-    // The company filter only makes sense against portfolio news.
-    const c = t === "KOFA News" ? null : company;
-    setCompany(c);
-    sync(t, c);
-  };
-
-  const pickCompany = (c: string | null) => {
-    setCompany(c);
-    sync(type, c);
-  };
-
   const visible = useMemo(
-    () =>
-      newsSorted.filter(
-        (n) =>
-          (!type || n.type === type) && (!company || n.company === company),
-      ),
-    [type, company],
+    () => newsSorted.filter((item) => !type || item.type === type),
+    [type],
   );
-
-  const companyOptions = useMemo(() => {
-    const slugs = companiesWithNews();
-    return slugs
-      .map((s) => getCompany(s))
-      .filter(Boolean)
-      .sort((a, b) => a!.name.localeCompare(b!.name)) as NonNullable<
-      ReturnType<typeof getCompany>
-    >[];
-  }, []);
-
-  const count = (t: NewsType | null) =>
-    newsSorted.filter((n) => !t || n.type === t).length;
-
-  const { register, onKeyDown } = useTablist(TYPES, pickType);
+  const { register, onKeyDown } = useTablist(TYPES, select);
 
   return (
-    <>
-      {/* --- primary: news type ---
-          Outside the tablist's overflow-x-auto and leaning from "up", for the
-          reasons written out over the same strip in
-          components/portfolio/PortfolioBrowser.tsx. */}
-      <Rise from="up" as="div" className="border-y border-rule">
+    <section aria-labelledby="news-list-heading" className="mx-auto max-w-[76rem]">
+      <div className="border-b border-[#c8d7df]">
         <div
           role="tablist"
-          aria-label="Filter by news type"
-          className="-mx-6 flex gap-1 overflow-x-auto px-6 sm:mx-0 sm:px-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          aria-label="Filter news"
+          className="flex gap-5 sm:gap-8 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
-          {TYPES.map((t, i) => {
-            const on = type === t;
+          {TYPES.map((itemType, index) => {
+            const selected = type === itemType;
+            const label = itemType ?? "All";
+            const count = newsSorted.filter(
+              (item) => !itemType || item.type === itemType,
+            ).length;
             return (
               <button
-                key={t ?? "all"}
-                ref={register(i)}
+                key={label}
+                ref={register(index)}
                 role="tab"
-                id={`news-tab-${i}`}
-                aria-selected={on}
+                id={`news-tab-${index}`}
+                aria-selected={selected}
                 aria-controls="news-panel"
-                // Roving tabindex: one Tab stop, arrows move within the set.
-                tabIndex={on ? 0 : -1}
-                onKeyDown={(e) => onKeyDown(e, i)}
-                onClick={() => pickType(t)}
-                className={`relative shrink-0 whitespace-nowrap px-4 py-5 text-[0.875rem] font-medium tracking-[-0.005em] transition-colors duration-300 ease-kofa first:pl-0 ${
-                  on ? "text-ink" : "text-ink-soft hover:text-ink"
+                tabIndex={selected ? 0 : -1}
+                onKeyDown={(event) => onKeyDown(event, index)}
+                onClick={() => select(itemType)}
+                className={`relative shrink-0 py-4 text-sm font-medium transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-[#007265] ${
+                  selected
+                    ? "text-[#12394b] after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:bg-[#008979]"
+                    : "text-[#4d626c] hover:text-[#12394b]"
                 }`}
               >
-                {t ?? "All news"}
-                <span className="type-eyebrow ml-2 align-super text-[9px] tabular-nums text-ink-mute">
-                  {count(t)}
-                </span>
-                {on && (
-                  <motion.span
-                    layoutId="news-underline"
-                    className="absolute inset-x-0 -bottom-px h-px bg-teal"
-                    transition={
-                      reduced ? { duration: 0 } : { duration: 0.45, ease: EASE }
-                    }
-                  />
-                )}
+                {label} <span className="ml-1 hidden tabular-nums text-[#657c87] sm:inline">({count})</span>
               </button>
             );
           })}
         </div>
-      </Rise>
+      </div>
 
-      {/* --- secondary: company (portfolio news only) ---
-          No Rise on this row: it is height-animated open and shut by the
-          AnimatePresence below, and the element doing that is necessarily
-          overflow-hidden, which is the one place a skew must never go. Its
-          entrance is the collapse itself. */}
-      <AnimatePresence initial={false}>
-        {type !== "KOFA News" && (
-          <motion.div
-            data-reveal
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={reduced ? undefined : { height: 0, opacity: 0 }}
-            transition={{ duration: reduced ? 0 : 0.45, ease: EASE }}
-            className="overflow-hidden border-b border-rule"
-          >
-            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 py-4">
-              <span className="type-eyebrow mr-3 text-ink-mute">Company</span>
-              <button
-                onClick={() => pickCompany(null)}
-                aria-pressed={company === null}
-                className={`link-draw px-2 py-1 text-[0.8125rem] transition-colors duration-300 ease-kofa ${
-                  company === null ? "text-teal" : "text-ink-soft hover:text-ink"
-                }`}
-              >
-                All companies
-              </button>
-              {companyOptions.map((c) => (
-                <button
-                  key={c.slug}
-                  onClick={() => pickCompany(c.slug)}
-                  aria-pressed={company === c.slug}
-                  className={`link-draw px-2 py-1 text-[0.8125rem] transition-colors duration-300 ease-kofa ${
-                    company === c.slug
-                      ? "text-teal"
-                      : "text-ink-soft hover:text-ink"
-                  }`}
-                >
-                  {c.name}
-                </button>
-              ))}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* --- list ---
-          And none below here either, same reasoning as the portfolio grid:
-          the rows are AnimatePresence children animating their own layout, and
-          a deep-linked ?type= / ?company= re-filters one tick after mount,
-          which would put the re-projection inside any entrance the panel had.
-          The rows already arrive; the filter furniture above them did not. */}
       <div
         id="news-panel"
         role="tabpanel"
         aria-labelledby={`news-tab-${TYPES.indexOf(type)}`}
         tabIndex={-1}
-        className="mt-[clamp(2rem,4vw,3.5rem)]"
+        className="pt-8 sm:pt-10"
       >
-        {/* Same heading-outline fix as /portfolio: NewsCard renders h3, which
-            is right on the homepage under HomeNews's h2 and wrong here, where
-            nothing sits between the page h1 and the cards. */}
-        <h2 className="sr-only">All news</h2>
+        <h2 id="news-list-heading" className="sr-only">
+          {type ?? "All news"}
+        </h2>
         <p aria-live="polite" className="sr-only">
           {visible.length} articles shown.
         </p>
-
-        {visible.length === 0 ? (
-          <p className="type-body py-20 text-center">
-            No articles match this combination yet.
-          </p>
-        ) : (
-          <motion.div layout={!reduced}>
-            <AnimatePresence mode="popLayout" initial={false}>
-              {visible.map((item, i) => (
-                <motion.div
-                  data-reveal
-                  key={item.slug}
-                  layout={!reduced}
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={reduced ? undefined : { opacity: 0, y: -8 }}
-                  transition={{
-                    duration: reduced ? 0.12 : 0.45,
-                    delay: reduced ? 0 : Math.min(i * 0.022, 0.22),
-                    ease: EASE,
-                  }}
+        <div className="border-t border-[#d6e1e6]">
+          {visible.map((item) => {
+            const company = item.company ? getCompany(item.company) : undefined;
+            return (
+              <Link
+                key={item.slug}
+                href={`/news/${item.slug}`}
+                className="group grid gap-3 border-b border-[#d6e1e6] py-7 outline-none transition-colors duration-200 hover:bg-[#edf6f7] focus-visible:bg-[#edf6f7] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-[#007265] sm:grid-cols-[10rem_minmax(0,1fr)_8rem] sm:items-start sm:gap-8 sm:px-5"
+              >
+                <div className="text-[0.72rem] font-medium uppercase tracking-[0.1em] text-[#007265]">
+                  {company?.name ?? item.type}
+                </div>
+                <div>
+                  <h3 className="max-w-[50ch] text-[1.125rem] font-medium leading-[1.38] tracking-[-0.015em] text-[#12394b] transition-colors duration-200 group-hover:text-[#007265] sm:text-[1.25rem]">
+                    {item.title}
+                  </h3>
+                  <p className="mt-3 max-w-[72ch] text-[0.9375rem] leading-6 text-[#4d626c]">
+                    {item.excerpt}
+                  </p>
+                </div>
+                <time
+                  dateTime={item.date}
+                  className="text-[0.8125rem] leading-5 text-[#4d626c] sm:text-right"
                 >
-                  <NewsCard item={item} variant="row" />
-                </motion.div>
-              ))}
-            </AnimatePresence>
-            <div className="h-px w-full bg-rule" />
-          </motion.div>
-        )}
+                  {formatNewsDate(item.date)}
+                </time>
+              </Link>
+            );
+          })}
+        </div>
       </div>
-    </>
+    </section>
   );
 }

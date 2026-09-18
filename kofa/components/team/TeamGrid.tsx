@@ -7,7 +7,7 @@ import { useMotionOff } from "@/components/motion/MotionPreference";
 import { RiseGroup, RiseItem } from "@/components/motion/Rise";
 import { Arrow } from "@/components/ui/Arrow";
 import { Eyebrow } from "@/components/ui/primitives";
-import { OPEN_TEAM_SLOTS, teamSorted, type TeamMember } from "@/data/team";
+import { teamSorted, type TeamMember } from "@/data/team";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -50,6 +50,7 @@ function Portrait({ member }: { member: TeamMember }) {
   }
 
   const initials = member.name
+    .replace(/^Dr\.\s+/i, "")
     .split(" ")
     .map((w) => w[0])
     .join("")
@@ -248,7 +249,7 @@ export function TeamGrid() {
 
               <div className="mt-7 flex items-start justify-between gap-6">
                 <div>
-                  <h2 className="font-serif text-[1.5rem] leading-tight tracking-[-0.017em] text-ink transition-colors duration-[400ms] ease-kofa group-hover/member:text-teal">
+                  <h2 className="text-[1.5rem] font-medium leading-tight tracking-[-0.017em] text-ink transition-colors duration-[400ms] ease-kofa group-hover/member:text-teal">
                     {member.name}
                   </h2>
                   <p className="type-eyebrow mt-3 text-ink-soft transition-colors duration-[400ms] ease-kofa group-hover/member:text-teal">
@@ -280,13 +281,6 @@ export function TeamGrid() {
           </RiseItem>
         ))}
 
-        {Array.from({ length: OPEN_TEAM_SLOTS }, (_, i) => (
-          // The open slots sit in the same flow as the filled cards, so their
-          // lean continues that count rather than restarting at zero.
-          <RiseItem key={i} from={COLUMN_LEAN[(teamSorted.length + i) % 3]}>
-            <OpenSlot n={teamSorted.length + i + 1} />
-          </RiseItem>
-        ))}
       </RiseGroup>
 
       {/* ---------- side panel ----------
@@ -357,9 +351,6 @@ export function TeamGrid() {
 
                 {open.bioStatus === "placeholder" ? (
                   <div className="mt-8 border-l-2 border-dashed border-sage pl-6">
-                    <p className="type-eyebrow text-ink-mute">
-                      CMS placeholder
-                    </p>
                     <p className="type-body-sm mt-3">
                       {open.biography}
                     </p>

@@ -7,10 +7,12 @@
 
 @theme {
   /* --- Surfaces --------------------------------------------- */
-  --color-ivory: #f7f8f4;
-  --color-ivory-deep: #f2f3ee;
-  --color-sage-bg: #f1f5f2;
-  --color-sage-bg-deep: #e9f0eb;
+  --color-ivory: #ffffff;
+  --color-ivory-deep: #edf6f7;
+  --color-sage-bg: #edf6f7;
+  --color-sage-bg-deep: #e4f0f1;
+  --color-ice: #edf6f7;
+  --color-navy: #12394b;
   --color-white: #ffffff;
 
   /* --- Ink --------------------------------------------------
@@ -24,9 +26,9 @@
                            #E9F0EB, where it makes 4.6:1), not just ivory.
                            Hierarchy here comes from size, case and
                            tracking, not from washing the colour out.    */
-  --color-ink: #121a18;
-  --color-ink-soft: #59635f;
-  --color-ink-mute: #636d69;
+  --color-ink: #12394b;
+  --color-ink-soft: #4d626c;
+  --color-ink-mute: #60747c;
 
   /* --- Accent ----------------------------------------------- */
   /* KOFA's own mark is red, and the mark is the one place it belongs. The
@@ -35,10 +37,10 @@
      from the supplied artwork (public/brand/kofa-mark.png), not guessed. */
   --color-kofa-red: #d61319;
 
-  --color-teal: #176d67;
-  --color-teal-deep: #0f524d;
-  --color-sage: #b8cdc4;
-  --color-aqua: #4da9a0;
+  --color-teal: #008e95;
+  --color-teal-deep: #006a70;
+  --color-sage: #b9dadd;
+  --color-aqua: #5bb9bd;
 
   /* Semantic. The only non-neutral, non-accent colour on the site, form
      validation. 5.2:1 on ivory, so it carries at 12px. */
@@ -51,7 +53,7 @@
   --color-rule-teal: rgba(23, 109, 103, 0.35);
 
   /* --- Type ------------------------------------------------- */
-  --font-serif: var(--font-display-serif), "Iowan Old Style", Georgia, serif;
+  --font-serif: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, sans-serif;
 
   /* --- Motion ----------------------------------------------- */
@@ -87,7 +89,7 @@
   }
 
   ::selection {
-    background-color: rgba(23, 109, 103, 0.16);
+    background-color: rgba(0, 142, 149, 0.18);
     color: var(--color-ink);
   }
 
@@ -120,39 +122,7 @@
    ============================================================ */
 
 @layer components {
-  /* ---------------------------------------------------------------------
-     Editorial display, Fraunces.
-
-     Named here because this line read "Instrument Serif" for as long as the
-     RETUNED FOR FRAUNCES note fourteen lines below read what it says. The
-     block contradicted itself across a single screen, and the wrong face was
-     the one you hit first when skimming for the display font — which is the
-     one you would then go and set a new class in. app/layout.tsx is the
-     authority: it constructs Fraunces as `--font-display-serif`, and
-     `--font-serif` below resolves to that.
-
-     OPTICAL SIZING. Tracking and leading are clamped alongside font-size
-     rather than fixed per class. A serif set at 100px wants noticeably
-     tighter letterfit and tighter leading than the same face at 46px; a
-     single em value cannot serve both ends of a 46→100px range, it is
-     either loose at the top or cramped at the bottom.
-
-     Each clamp below is solved so the ratio lands where it should at both
-     extremes, e.g. for .type-display:
-        46px  →  -0.008em tracking, 1.08 leading
-       100px  →  -0.019em tracking, 1.00 leading
-     with a linear ramp between. Verified by measurement, not by eye.
-
-     RETUNED FOR FRAUNCES. The numbers above are ~35% less negative than the
-     set that preceded them, which were solved for Instrument Serif. That face
-     is narrow and closely fitted, and wanted the letterfit pulled hard at
-     display sizes. Fraunces is wider, rounder and carries an `opsz` axis that
-     is already tightening the fit as the size grows, so the old tracking
-     applied a second helping of the same correction and collided the
-     descenders of one line with the caps of the next. Leading is opened for
-     the same reason: Fraunces has the taller x-height of the two, so 0.96
-     that merely looked tight before now genuinely overlaps.
-  --------------------------------------------------------------------- */
+  /* Shared Geist display scales retained for interior page compatibility. */
   .type-display {
     font-family: var(--font-serif);
     font-weight: 400;
@@ -252,12 +222,7 @@
   }
 
   /* Faint scientific grid, the "graph paper" substrate */
-  .bg-grid {
-    background-image:
-      linear-gradient(to right, rgba(23, 109, 103, 0.055) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(23, 109, 103, 0.055) 1px, transparent 1px);
-    background-size: 88px 88px;
-  }
+  .bg-grid { background-image: none; }
 
   /* Masked reveal container for line-by-line headline animation */
   .clip-line {
@@ -995,5 +960,68 @@ html[data-motion="off"] [data-arrival] {
 @media (min-width: 1280px) {
   .ptrack[data-ptrack-pin="true"] {
     --ptrack-edge: 5rem;
+  }
+}
+
+@layer components {
+  .focus-area-panel {
+    display: flex;
+    min-height: 24rem;
+    flex-direction: column;
+    border: 1px solid rgba(0, 142, 149, 0.28);
+    border-radius: 12px;
+    background-color: var(--color-white);
+    padding: clamp(1.75rem, 2.8vw, 2.5rem);
+  }
+
+  .focus-area-panel__visual {
+    position: relative;
+    display: grid;
+    width: 9rem;
+    height: 9rem;
+    place-items: center;
+  }
+
+  .focus-area-panel__visual::before {
+    position: absolute;
+    inset: 0.5rem;
+    border: 1px solid rgba(0, 142, 149, 0.24);
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    content: "";
+    transform: rotate(-28deg);
+  }
+
+  .focus-area-panel__icon {
+    position: relative;
+    z-index: 1;
+    width: 5.5rem;
+    height: 5.5rem;
+  }
+
+  .focus-area-panel[data-focus="heart"] .focus-area-panel__visual::before {
+    inset: 0.35rem 0.85rem 1.05rem 0.35rem;
+    transform: rotate(-48deg);
+  }
+
+  .focus-area-panel[data-focus="care"] .focus-area-panel__visual::before {
+    inset: 0.15rem;
+    border-bottom-color: rgba(0, 142, 149, 0.24);
+    border-right-color: transparent;
+    transform: rotate(28deg);
+  }
+
+  .focus-area-panel[data-focus="path"] .focus-area-panel__visual::before {
+    inset: 0.9rem 0.2rem 0.2rem 0.9rem;
+    border-left-color: transparent;
+    transform: rotate(-12deg);
+  }
+
+  .focus-area-panel__rule {
+    display: block;
+    width: 2.5rem;
+    height: 2px;
+    margin-top: 1.75rem;
+    background-color: var(--color-teal);
   }
 }

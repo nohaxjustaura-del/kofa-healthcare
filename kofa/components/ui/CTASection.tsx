@@ -1,7 +1,6 @@
 import { Container, Section } from "@/components/ui/primitives";
 import { Button, TextLink } from "@/components/ui/Button";
 import { Magnetic } from "@/components/ui/Magnetic";
-import { LineReveal } from "@/components/motion/Reveal";
 import { Rise } from "@/components/motion/Rise";
 import { ScientificBackground } from "@/components/motion/ScientificBackground";
 import { site } from "@/data/site";
@@ -53,7 +52,13 @@ export function CTASection({
         <div className="grid grid-cols-12">
           <div className="col-span-12 lg:col-span-9 xl:col-span-8">
             <h2 className="type-display-sm max-w-[18ch] text-ink">
-              {lines ? <LineReveal lines={lines} /> : heading}
+              {lines
+                ? lines.map((line, index) => (
+                    <span key={index} className="block">
+                      {line}
+                    </span>
+                  ))
+                : heading}
             </h2>
 
             {/* Lateral entrance rather than a straight fade-up: the heading

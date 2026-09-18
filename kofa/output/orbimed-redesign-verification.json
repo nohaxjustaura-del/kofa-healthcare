@@ -1,0 +1,46 @@
+{
+  "revision": "OrbiMed reference redesign",
+  "date": "2026-09-15",
+  "build": "npm run build: exit 0; 94 static pages; TypeScript validation passed",
+  "diffCheck": "git diff --check: exit 0",
+  "artifacts": {
+    "homeFourSections": true,
+    "removedHomeSections": true,
+    "originalHeroArt": true,
+    "teamOrder": true,
+    "sitemap_about": true,
+    "sitemap_focus-areas": true,
+    "sitemap_team": true,
+    "sitemap_portfolio": true,
+    "sitemap_our-approach": true,
+    "sitemap_news": true
+  },
+  "browser": {
+    "activeCompanies": 14,
+    "contactValidation": "Empty submission reports name/email/message errors and focuses name; no message sent",
+    "desktop": "1280x720",
+    "mobile": "390x844",
+    "portfolioKeyboardArrowNavigation": "passed",
+    "horizontalOverflow": false,
+    "teamProfile": "Renee placeholder opens, Escape closes",
+    "missingHomepageImages": 0,
+    "exits": [
+      "Aria CV",
+      "Alydia Health"
+    ],
+    "news": {
+      "portfolio": 56,
+      "kofa": 4,
+      "keyboardArrowNavigation": "passed",
+      "all": 60
+    },
+    "homepageSections": 4,
+    "mobileNavigation": "Team link navigates and menu closes"
+  },
+  "thirdPartyComponents": "21st.dev Origin UI Tabs reviewed as a reference; no third-party source or dependencies copied; v0 unavailable",
+  "pending": [
+    "Renee Masi biography and portrait",
+    "Dr. Meng Deng biography and portrait"
+  ],
+  "deployment": "Local preview only"
+}

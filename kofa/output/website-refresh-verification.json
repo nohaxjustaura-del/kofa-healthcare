@@ -1,0 +1,42 @@
+{
+  "passed": 27,
+  "total": 27,
+  "checks": {
+    "index: one headline": true,
+    "index: canonical": true,
+    "homepage four sections": true,
+    "homepage active selected": true,
+    "homepage 14 active companies": true,
+    "removed homepage sections": true,
+    "homepage supplied headline": true,
+    "about: one headline": true,
+    "about: canonical": true,
+    "about title static": true,
+    "about source location": true,
+    "our-approach: one headline": true,
+    "our-approach: canonical": true,
+    "focus-areas: one headline": true,
+    "focus-areas: canonical": true,
+    "portfolio: one headline": true,
+    "portfolio: canonical": true,
+    "no decorative lab image": true,
+    "team: one headline": true,
+    "team: canonical": true,
+    "team order": true,
+    "news: one headline": true,
+    "news: canonical": true,
+    "contact: one headline": true,
+    "contact: canonical": true,
+    "CTA titles static": true,
+    "six search pages in sitemap": true
+  },
+  "browser_checks": [
+    "1280px desktop and 390px phone: no horizontal page overflow",
+    "Homepage Exits stays on homepage and shows Aria CV and Alydia Health",
+    "ArrowLeft returns to Active tab",
+    "Mobile menu opens and navigates to Team",
+    "Team placeholders and order verified",
+    "KOFA News filter displays four KOFA articles",
+    "Contact empty-form validation shows field errors and focuses name; no message sent"
+  ]
+}

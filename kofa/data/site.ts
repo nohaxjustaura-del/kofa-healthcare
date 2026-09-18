@@ -8,13 +8,13 @@
 export const site = {
   name: "KOFA Healthcare",
   /** Verbatim from the current site's <h1>. */
-  tagline: "Empower Innovations to Advance Global Health",
+  tagline: "Patient Capital for Transformative MedTech",
   /** Verbatim from the current site's hero paragraph. */
   intro:
-    "KOFA Healthcare is an evergreen family office venture fund supporting biotech and healthcare innovations. We actively invest in groundbreaking technologies that address clinical unmet needs.",
+    "KOFA Healthcare is an evergreen investment fund for early- to mid-stage medical device companies solving clear unmet needs in high-growth clinical markets.",
   /** Verbatim from the current site's About section. */
   about:
-    "We invest in women’s health, orthopedics, diagnostics, cardiovascular, and more. Our previous successful investment stories range from seed stage startups to commercial stage corporations.",
+    "We invest globally in transformative medical devices across cardiovascular innovation, women’s health and other clinical specialties.",
   /** Verbatim from the current site's footer. */
   footerLead: "Have a Great Idea?",
   footerSub: "We want to hear about your innovations.",
@@ -25,9 +25,11 @@ export const site = {
 } as const;
 
 export const nav = [
-  { label: "Fund", href: "/fund" },
-  { label: "Team", href: "/team" },
+  { label: "About", href: "/about" },
+  { label: "Our Approach", href: "/our-approach" },
+  { label: "Focus Areas", href: "/focus-areas" },
   { label: "Portfolio", href: "/portfolio" },
+  { label: "Team", href: "/team" },
   { label: "News", href: "/news" },
   { label: "Contact", href: "/contact" },
 ] as const;
@@ -100,7 +102,7 @@ export const investmentProcess = [
   {
     n: "03",
     title: "Partnership",
-    body: "We invest from seed through commercial stage, and stay engaged well past the round that introduced us.",
+    body: "We invest early and stay engaged as the clinical, regulatory and company-building work advances.",
   },
   {
     n: "04",
