@@ -6,7 +6,7 @@ import { pageMetadata } from "@/lib/metadata";
 import { site } from "@/data/site";
 
 /* Noindex, but still built through the shared helper. This page declared no
-   openGraph at all, so it inherited the root layout's — meaning a pasted
+   openGraph at all, so it inherited the root layout's, meaning a pasted
    /privacy link rendered a card titled "KOFA Healthcare · Empower Innovations
    …" and pointing at the homepage. Inheriting the wrong card is quieter than
    having none, and no less wrong. */

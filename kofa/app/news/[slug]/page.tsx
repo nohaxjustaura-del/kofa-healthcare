@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 
   /* socialTitle is the headline on its own, with no "· KOFA Healthcare"
      suffix: og:title is rendered as the card's headline, and an article
-     already says whose site it is through og:site_name — which this route was
+     already says whose site it is through og:site_name, which this route was
      losing, along with the image, by hand-writing its own openGraph. See
      lib/metadata.ts. */
   return pageMetadata({
@@ -84,7 +84,7 @@ export default async function ArticlePage({ params }: Params) {
               <Link
                 href="/news"
                 // -my-1.5/py-1.5 lifts the 19.5px line box past the 24px minimum.
-              className="group/link -my-1.5 inline-flex items-center gap-2.5 py-1.5 text-[0.8125rem] font-medium text-ink-soft transition-colors duration-300 ease-kofa hover:text-teal"
+              className="group/link -my-1.5 inline-flex items-center gap-2.5 py-1.5 text-[0.8125rem] font-medium text-ink-soft transition-colors duration-300 ease-kofa hover:text-teal-deep"
               >
                 <Arrow
                   size={14}
@@ -103,14 +103,14 @@ export default async function ArticlePage({ params }: Params) {
                   <span aria-hidden className="h-3 w-px bg-rule" />
                   <time
                     dateTime={item.date}
-                    className="type-eyebrow text-ink-mute"
+                    className="type-eyebrow text-ink-soft"
                   >
                     {formatNewsDate(item.date)}
                   </time>
                   {item.source && (
                     <>
                       <span aria-hidden className="h-3 w-px bg-rule" />
-                      <span className="type-eyebrow text-ink-mute">
+                      <span className="type-eyebrow text-ink-soft">
                         {item.source}
                       </span>
                     </>
@@ -156,7 +156,7 @@ export default async function ArticlePage({ params }: Params) {
 
                   {item.externalUrl && (
                     <div className="mt-12 border-l-2 border-teal pl-6">
-                      <p className="type-eyebrow text-ink-mute">
+                      <p className="type-eyebrow text-ink-soft">
                         Published by {item.source}
                       </p>
                       <p className="type-body-sm mt-3 max-w-[52ch]">
@@ -197,14 +197,14 @@ export default async function ArticlePage({ params }: Params) {
                           className="logo-mono object-contain object-left"
                         />
                       </div>
-                      <h2 className="mt-5 font-serif text-[1.375rem] tracking-[-0.017em] text-ink transition-colors duration-300 ease-kofa group-hover/co:text-teal">
+                      <h2 className="mt-5 font-serif text-[1.375rem] tracking-[-0.017em] text-ink transition-colors duration-300 ease-kofa group-hover/co:text-teal-deep">
                         {company.name}
                       </h2>
                       <p className="type-body-sm mt-2.5 max-w-[46ch]">
                         {company.shortDescription}
                       </p>
                     </div>
-                    <span className="mt-1 shrink-0 text-ink-mute transition-all duration-300 ease-kofa group-hover/co:translate-x-1 group-hover/co:-translate-y-1 group-hover/co:text-teal">
+                    <span className="mt-1 shrink-0 text-ink-mute transition-all duration-300 ease-kofa group-hover/co:translate-x-1 group-hover/co:-translate-y-1 group-hover/co:text-teal-deep">
                       <Arrow size={17} dir="up-right" />
                     </span>
                   </Link>

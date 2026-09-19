@@ -16,8 +16,8 @@ Use the same composed institutional vocabulary with KOFA's prominent red logo an
 - Accent: teal `#008979`, with a darker accessible foreground variant for small text.
 - Hero surface: deep navy `#073449` with white foreground.
 - Brand red: supplied logo artwork, unchanged.
-- Typography: clean sans-serif throughout; existing Geist is self-hosted. Display 40–60px, weight 400, generous 1.1–1.2 line height. Section titles around 32–42px. Body 16–20px, line height at least 1.55. No decorative serif, exaggerated tracking, or tiny navigation.
-- Layout: centered content about 1200px wide, 24px mobile gutters, 40–64px desktop gutters; section spacing roughly 72–104px.
+- Typography: clean sans-serif throughout; existing Geist is self-hosted. Display 40 to 60px, weight 400, generous 1.1 to 1.2 line height. Section titles around 32 to 42px. Body 16 to 20px, line height at least 1.55. No decorative serif, exaggerated tracking, or tiny navigation.
+- Layout: centered content about 1200px wide, 24px mobile gutters, 40 to 64px desktop gutters; section spacing roughly 72 to 104px.
 - Rules: subtle cool gray. Cards use one quiet border or a very soft shadow, not both. Buttons have modest radii and visible focus.
 
 ## Composition

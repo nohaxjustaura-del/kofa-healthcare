@@ -1,8 +1,16 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { HomePortfolio } from "@/components/home/HomePortfolio";
-import { site } from "@/data/site";
+import { CTASection } from "@/components/ui/CTASection";
+import { Button, TextLink } from "@/components/ui/Button";
+import { Container, Section } from "@/components/ui/primitives";
+import {
+  FlowPlate,
+  FocusGlyph,
+  LatticePlate,
+  LongevityPlate,
+} from "@/components/visuals/plates";
+import { focusAreas, site } from "@/data/site";
 
 export const metadata: Metadata = {
   title: `${site.name} · ${site.tagline}`,
@@ -10,84 +18,201 @@ export const metadata: Metadata = {
   alternates: { canonical: "/" },
 };
 
-const focusAreas = [
-  { title: "Cardiovascular Innovation", body: "We invest in differentiated technologies across structural heart, electrophysiology, minimally invasive intervention and other high-growth areas.", icon: "heart" },
-  { title: "Advancing Women’s Health", body: "We invest across gynecology, maternal health, reproductive care and conditions that uniquely or disproportionately affect women.", icon: "care" },
-  { title: "Beyond Our Core", body: "The most important innovations do not always fit neatly into a category. We remain open to exceptional opportunities across other clinical specialties.", icon: "path" },
-] as const;
+/* ---------------------------------------------------------------------------
+   HOMEPAGE
+   ---------------------------------------------------------------------------
+   Four sections, in this order: Home, Portfolio, Focus Areas, Contact. That
+   is the shape the September brief fixes
+   (docs/website-refresh-2026-09-15.md), and the same brief records that Our
+   Conviction and Portfolio Stories were taken OFF this page. So nothing new
+   is bolted on here — no latest-news strip, no statistics band, no team
+   teaser. Anything that wants to be on the homepage has to displace one of
+   the four, which is the client's call and not a build decision.
 
-function FocusIcon({ type }: { type: (typeof focusAreas)[number]["icon"] }) {
-  if (type === "heart") return <svg viewBox="0 0 72 72" aria-hidden className="focus-area-panel__icon fill-none stroke-teal stroke-[1.5]"><path d="M12 39h14l6-16 9 31 7-15h12" /><path d="M20 18c8-8 19 1 16 10-3-9 8-18 16-10 8 9-16 28-16 28S12 27 20 18Z" /></svg>;
-  if (type === "care") return <svg viewBox="0 0 72 72" aria-hidden className="focus-area-panel__icon fill-none stroke-teal stroke-[1.5]"><path d="M36 13v46M13 36h46" /><circle cx="36" cy="36" r="20" /><path d="M27 42c5-11 13-11 18 0" /></svg>;
-  return <svg viewBox="0 0 72 72" aria-hidden className="focus-area-panel__icon fill-none stroke-teal stroke-[1.5]"><path d="M13 55 29 39l10 8 20-23" /><path d="M46 24h13v13" /><circle cx="18" cy="55" r="4" /><circle cx="59" cy="24" r="4" /></svg>;
-}
+   Two things did change.
+
+   1. IMAGERY. Three decorative photographs (clinical-collaboration.png,
+      device-research.png, healthy-longevity.png) are gone, replaced by the
+      drawn plates in components/visuals/plates.tsx. The brief asks for
+      "restrained geometric linework" in place of hospital and laboratory
+      photography, and the plates are original to this repo, so there is no
+      licence to re-clear if the site moves.
+
+   2. THE TYPE SCALE. This page used to set every heading with its own
+      one-off `text-[clamp(...)]` while the other eight pages used the scale
+      in app/globals.css. Two type systems on one site read as two templates
+      stitched together, and the homepage is the page most people judge it
+      by. Headings here are now .type-display-sm and .type-section, which is
+      the same ladder CTASection and PageHero sit on.
+--------------------------------------------------------------------------- */
 
 export default function Home() {
   return (
     <>
-      <section className="relative mt-[104px] overflow-hidden bg-navy pb-24 text-white lg:min-h-[560px] lg:pt-20">
-        <div className="relative h-[260px] sm:h-[360px] lg:absolute lg:inset-0 lg:h-auto">
-          <Image src="/media/home/clinical-collaboration.png" alt="Illustrative scene of two clinicians reviewing a laptop" fill priority sizes="100vw" className="pointer-events-none object-cover object-right-top lg:object-top" />
+      {/* --- Home ---------------------------------------------------------
+          mt-[104px] clears the fixed header. That height is load-bearing and
+          is declared in components/navigation/Navigation.tsx; the interior
+          pages clear the same band with padding instead, because their teal
+          ground runs up behind it. */}
+      <section className="relative isolate mt-[104px] overflow-hidden bg-navy text-white">
+        {/* The plate bleeds off the right edge rather than sitting in a box.
+            Colour comes from this wrapper: every plate strokes currentColor,
+            so a text-* class and an opacity are the whole treatment and
+            there is no light/dark variant to maintain. Hidden below lg,
+            where there is no room for it to be anything but noise. */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-y-0 right-[-6%] -z-10 hidden w-[58%] text-white opacity-45 lg:block"
+        >
+          <FlowPlate className="h-full w-full" />
         </div>
-        <div className="absolute inset-0 hidden bg-[linear-gradient(90deg,rgba(7,52,73,.96)_0%,rgba(7,52,73,.86)_40%,rgba(7,52,73,.18)_62%,transparent_100%)] lg:block" />
-        <div className="relative mx-auto grid max-w-[1500px] px-6 pt-9 sm:px-10 lg:grid-cols-[1.05fr_.95fr] lg:px-14 lg:pt-0">
-          <div className="max-w-[650px]">
-            <h1 className="text-balance text-[clamp(2.85rem,4.25vw,3.5rem)] font-normal leading-[1.1] tracking-[-0.035em]">Patient Capital for Transformative MedTech</h1>
-            <p className="mt-7 max-w-[560px] border-l-2 border-teal pl-6 text-[1.125rem] leading-8 text-white/90">KOFA Healthcare is an evergreen investment fund that invests in early- to mid-stage medical device companies that solve a clear unmet need in high growth clinical markets. We invest in companies, not single product opportunities with a market size typically $1B + worldwide.</p>
+
+        <Container className="relative py-[clamp(3.5rem,7vw,6.5rem)]">
+          <div className="max-w-[54rem] lg:max-w-[38rem] xl:max-w-[44rem]">
+            <h1 className="type-display-sm text-balance">{site.tagline}</h1>
+
+            {/* The rule is the one piece of ornament in the hero, and it is
+                the same gesture the interior page headers use to set off
+                their standfirst.
+
+                aqua, not teal. --color-teal is the site accent and is tuned
+                against the pale grounds it sits on everywhere else; on this
+                navy it measures 3.1:1 and the gesture all but disappears.
+                --color-aqua is the palette's light teal and makes 5.3:1 on
+                the same ground, which is what the interior headers get from
+                white-on-teal. Same gesture, legible on a dark field. */}
+            <p className="mt-8 max-w-[52ch] border-l-2 border-aqua pl-6 text-[1.125rem] leading-8 text-white/90">
+              KOFA Healthcare is an evergreen investment fund that invests in
+              early- to mid-stage medical device companies that solve a clear
+              unmet need in high growth clinical markets. We invest in
+              companies, not single product opportunities with a market size
+              typically $1B + worldwide.
+            </p>
+
+            {/* The hero shipped with no action of any kind: the first screen
+                of the site asked the reader to do nothing and offered nowhere
+                to go. Two routes, weighted — the portfolio is the evidence
+                most visitors came for, the approach is for the founder who
+                wants to know how the fund behaves before they write in. */}
+            <div className="mt-11 flex flex-col items-start gap-6 sm:flex-row sm:items-center sm:gap-9">
+              <Button href="/portfolio" variant="onDark">
+                View the portfolio
+              </Button>
+              <TextLink href="/our-approach" tone="white">
+                How we invest
+              </TextLink>
+            </div>
           </div>
-        </div>
-        <div aria-hidden className="absolute -bottom-10 left-[-6%] h-20 w-[75%] rounded-[50%] border-t border-white bg-white" />
-        <div aria-hidden className="absolute -bottom-7 left-[35%] h-14 w-[70%] rounded-[50%] border-t border-teal bg-white" />
+        </Container>
+
+        {/* The site's one soft gesture, shared with PageHero: two overlapping
+            ellipses rather than an image, so it costs nothing and scales. */}
+        <div
+          aria-hidden
+          className="absolute -bottom-10 left-[-6%] h-20 w-[75%] rounded-[50%] border-t border-white bg-white"
+        />
+        <div
+          aria-hidden
+          className="absolute -bottom-7 left-[35%] h-14 w-[70%] rounded-[50%] bg-white"
+        />
       </section>
 
-      <section id="portfolio" className="bg-white py-20 sm:py-24">
-        <div className="mx-auto max-w-[1200px] px-6 sm:px-10">
-          <div className="grid gap-10 border-b border-slate-200 pb-14 lg:grid-cols-[.95fr_1fr] lg:items-center lg:gap-20">
-            <div className="relative mx-auto aspect-square w-full max-w-[380px] overflow-hidden rounded-full border border-teal/30 p-2">
-              <div className="relative h-full w-full overflow-hidden rounded-full">
-                <Image src="/media/home/device-research.png" alt="Illustrative scene of a researcher examining a precision device" fill sizes="(min-width: 640px) 380px, 85vw" className="object-cover object-center" />
+      {/* --- Portfolio ---------------------------------------------------- */}
+      <Section id="portfolio" className="bg-white">
+        <Container>
+          <div className="grid gap-10 border-b border-rule pb-14 lg:grid-cols-[.95fr_1fr] lg:items-center lg:gap-20">
+            <div className="relative mx-auto aspect-square w-full max-w-[380px] overflow-hidden rounded-full border border-teal/30 p-3">
+              <div className="grid h-full w-full place-items-center rounded-full bg-ice text-teal">
+                <LatticePlate className="h-[88%] w-[88%]" />
               </div>
             </div>
             <div>
-            <h2 className="text-[clamp(2rem,3.1vw,2.5rem)] font-normal leading-tight tracking-[-0.028em] text-navy">Backing the Devices That Change Care</h2>
-            <p className="mt-7 max-w-[53ch] text-base leading-7 text-slate-600">We strive to invest in companies with proven medtech founders that have experienced teams in technologies that will both improve patient outcomes and reduce healthcare costs.</p>
+              <h2 className="type-section max-w-[18ch]">
+                Backing the Devices That Change Care
+              </h2>
+              <p className="type-body-lg mt-7 max-w-[53ch]">
+                We strive to invest in companies with proven medtech founders
+                that have experienced teams in technologies that will both
+                improve patient outcomes and reduce healthcare costs.
+              </p>
             </div>
           </div>
-          <div className="mt-10"><HomePortfolio /></div>
-          <Link href="/portfolio" className="mt-8 inline-flex border-b border-teal pb-1 text-sm font-medium text-teal-deep">View all portfolio companies</Link>
-        </div>
-      </section>
 
-      <section id="focus-areas" className="bg-ice py-20 sm:py-24">
-        <div className="mx-auto max-w-[1200px] px-6 sm:px-10">
-          <div className="flex flex-wrap items-center justify-between gap-8 border-b border-slate-300 pb-10">
+          <div className="mt-12">
+            <HomePortfolio />
+          </div>
+
+          <div className="mt-10">
+            <TextLink href="/portfolio">View all portfolio companies</TextLink>
+          </div>
+        </Container>
+      </Section>
+
+      {/* --- Focus Areas -------------------------------------------------- */}
+      <Section id="focus-areas" className="bg-ice">
+        <Container>
+          <div className="flex flex-wrap items-center justify-between gap-8 border-b border-rule-strong pb-10">
             <div>
-            <h2 className="text-[clamp(2rem,3.1vw,2.5rem)] font-normal leading-tight tracking-[-0.028em] text-navy">Focus Areas</h2>
-              <Link href="/focus-areas" className="mt-6 inline-flex border-b border-teal pb-1 text-sm font-medium text-teal-deep">Explore our focus areas</Link>
+              <h2 className="type-section">Focus Areas</h2>
+              <div className="mt-6">
+                <TextLink href="/focus-areas">
+                  Explore our focus areas
+                </TextLink>
+              </div>
             </div>
-            <div className="relative mx-auto aspect-square w-56 shrink-0 overflow-hidden rounded-full border border-teal/30 p-2 sm:mx-0">
-              <div className="relative h-full w-full overflow-hidden rounded-full">
-                <Image src="/media/home/healthy-longevity.png" alt="Illustrative scene of two older women enjoying a walk outdoors" fill sizes="224px" className="object-cover object-center" />
+            <div className="relative mx-auto aspect-square w-56 shrink-0 overflow-hidden rounded-full border border-teal/30 p-3 sm:mx-0">
+              <div className="grid h-full w-full place-items-center rounded-full bg-white text-teal">
+                <LongevityPlate className="h-[86%] w-[86%]" />
               </div>
             </div>
           </div>
+
+          {/* One array, shared with /focus-areas. These three used to be
+              hardcoded in both places, which meant a copy correction had to be
+              made twice and never was. See data/site.ts. */}
           <div className="mt-10 grid gap-5 md:grid-cols-3 md:gap-6">
-            {focusAreas.map((area) => <article key={area.title} data-focus={area.icon} className="focus-area-panel">
-              <div className="focus-area-panel__visual"><FocusIcon type={area.icon} /></div>
-              <span aria-hidden className="focus-area-panel__rule" />
-              <h3 className="mt-6 text-xl font-medium tracking-[-0.02em] text-navy">{area.title}</h3>
-              <p className="mt-4 text-[0.95rem] leading-7 text-slate-600">{area.body}</p>
-            </article>)}
+            {focusAreas.map((area, i) => (
+              <article key={area.title} className="focus-area-panel">
+                <div className="focus-area-panel__head">
+                  <span className="focus-area-panel__badge">
+                    <FocusGlyph
+                      kind={area.glyph}
+                      className="focus-area-panel__glyph"
+                    />
+                  </span>
+                  <span aria-hidden className="focus-area-panel__index">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                </div>
+                <h3 className="focus-area-panel__title">{area.title}</h3>
+                <p className="focus-area-panel__body">{area.body}</p>
+              </article>
+            ))}
           </div>
-        </div>
-      </section>
+        </Container>
+      </Section>
 
-      <section id="contact" className="bg-teal py-20 text-white sm:py-24">
-        <div className="mx-auto grid max-w-[1200px] gap-10 px-6 sm:px-10 lg:grid-cols-[1.2fr_.8fr] lg:items-end">
-          <div><h2 className="max-w-[17ch] text-[clamp(2.4rem,4vw,3.5rem)] font-normal leading-[1.1] tracking-[-0.032em]">Building the Next Breakthrough in MedTech?</h2><p className="mt-6 max-w-[52ch] text-[1.0625rem] leading-7 text-white/90">If you are developing a differentiated medical device for a significant unmet clinical need, let’s start a conversation.</p></div>
-          <div className="lg:justify-self-end"><a href={`mailto:${site.email}`} className="inline-flex border border-white px-6 py-3.5 text-sm font-medium text-white transition-colors hover:bg-white hover:text-teal">Connect With KOFA Healthcare</a><p className="mt-4 text-sm text-white/80">{site.email}</p></div>
-        </div>
-      </section>
+      {/* --- Contact -------------------------------------------------------
+          The shared closing section, not a local copy of it. What stood here
+          was a hand-rolled teal band whose only action was a mailto: link,
+          while every other page on the site closed with CTASection pointing
+          at /contact. That meant the homepage — the page most enquiries
+          start from — routed people away from the working contact form and
+          into whatever their browser does with a mail link, which on a
+          machine with no mail client configured is nothing at all. The copy
+          below is unchanged and still verbatim from the supplied document.
+
+          tone="teal" keeps the filled band the homepage had. The seven
+          interior pages stay on the default pale ground: a cold visitor
+          lands here, so the closing block earns the stronger treatment on
+          this page and would only shout on the others. */}
+      <CTASection
+        id="contact"
+        tone="teal"
+        lines={["Building the Next Breakthrough in MedTech?"]}
+        body="If you are developing a differentiated medical device for a significant unmet clinical need, let’s start a conversation."
+        action={{ label: "Connect With KOFA Healthcare", href: "/contact" }}
+      />
     </>
   );
 }

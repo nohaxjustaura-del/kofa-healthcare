@@ -57,7 +57,7 @@ function Portrait({ member }: { member: TeamMember }) {
     .slice(0, 2);
 
   return (
-    <div className="absolute inset-0 flex flex-col items-center justify-center bg-[linear-gradient(150deg,#EEF3EF_0%,#E4EDE7_100%)]">
+    <div className="absolute inset-0 flex flex-col items-center justify-center bg-[linear-gradient(150deg,#edf6f7_0%,#E4EDE7_100%)]">
       <svg
         aria-hidden
         viewBox="0 0 100 100"
@@ -70,16 +70,16 @@ function Portrait({ member }: { member: TeamMember }) {
             cx="50"
             cy="46"
             r={r}
-            stroke="#176D67"
+            stroke="#006a70"
             strokeOpacity={0.1 - i * 0.02}
             strokeWidth="0.3"
           />
         ))}
       </svg>
-      <span className="relative font-serif text-[3.25rem] leading-none text-teal/45">
+      <span className="relative font-serif text-[3.25rem] leading-none text-teal">
         {initials}
       </span>
-      <span className="type-eyebrow relative mt-5 text-ink-mute">
+      <span className="type-eyebrow relative mt-5 text-ink-soft">
         Portrait to be supplied
       </span>
     </div>
@@ -91,12 +91,12 @@ function OpenSlot({ n }: { n: number }) {
     <div className="border-t border-dashed border-rule pt-8">
       <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[10px] border border-dashed border-rule">
         <div className="absolute inset-0 flex items-center justify-center bg-ivory-deep">
-          <span className="type-eyebrow text-ink-mute">
+          <span className="type-eyebrow text-ink-soft">
             Team member {String(n).padStart(2, "0")}
           </span>
         </div>
       </div>
-      <p className="type-eyebrow mt-6 text-ink-mute">Awaiting KOFA content</p>
+      <p className="type-eyebrow mt-6 text-ink-soft">Awaiting KOFA content</p>
       <p className="type-body-xs mt-3 max-w-[32ch]">
         Add a member in the CMS with name, role, portrait, biography and LinkedIn,
         and a profile renders here automatically.
@@ -123,12 +123,13 @@ export function TeamGrid() {
   const reduced = useMotionOff();
   const closeRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
+  const backdropRef = useRef<HTMLDivElement>(null);
   const lastTrigger = useRef<HTMLElement | null>(null);
 
   /* The single close path.
      Escape used to restore focus to the card that opened the panel while the
      backdrop click just cleared state, so dismissing by backdrop dropped focus
-     onto <body> and the next Tab restarted from the top of the document — a
+     onto <body> and the next Tab restarted from the top of the document, a
      keyboard user who opened a profile from the last card was thrown back to
      the skip link. Every dismissal now goes through here, so there is only one
      place that can ever get the restore wrong.
@@ -153,6 +154,11 @@ export function TeamGrid() {
        call below fail silently and drop the visitor into a dialog they cannot
        reach with the keyboard at all. */
     panelRef.current?.removeAttribute("inert");
+    /* Same reasoning for the backdrop: reopening inside the exit window
+       reuses the same node, so anything the cleanup put on it has to come
+       back off or the overlay stays click-through and un-dismissable. */
+    backdropRef.current?.removeAttribute("inert");
+    if (backdropRef.current) backdropRef.current.style.pointerEvents = "";
     closeRef.current?.focus();
 
     const onKey = (e: KeyboardEvent) => {
@@ -165,7 +171,7 @@ export function TeamGrid() {
          The panel claims aria-modal="true", which tells assistive tech the rest
          of the page is unavailable. Nothing outside is inert or aria-hidden, so
          without this trap Tab walked straight out of the panel and into the
-         card grid behind it — the claim was a lie, which is worse for a screen
+         card grid behind it, the claim was a lie, which is worse for a screen
          reader user than never having made it. The trap lives in the same
          effect as Escape so it is installed and torn down with the panel and
          cannot outlive it. */
@@ -182,7 +188,7 @@ export function TeamGrid() {
       ).filter((el) => el.getClientRects().length > 0);
 
       if (focusables.length === 0) {
-        // Should not happen — the close button is unconditional — but swallow
+        // Should not happen, the close button is unconditional, but swallow
         // the Tab rather than let it escape a dialog that says it is modal.
         e.preventDefault();
         return;
@@ -223,6 +229,29 @@ export function TeamGrid() {
          displaced here. Browsers without `inert` simply ignore the attribute
          and fall back to the old behaviour. */
       panelRef.current?.setAttribute("inert", "");
+
+      /* The backdrop needs the same treatment, and for a worse failure.
+         It is `fixed inset-0`, so while AnimatePresence holds it mounted for
+         its exit it covers the entire viewport and takes every click. That is
+         harmless when the exit completes in 400ms. It is not harmless if the
+         exit never completes: with the frame loop starved, the overlay stays
+         at whatever opacity it reached, which can be near zero, and the page
+         then looks completely normal while swallowing every click on it. The
+         keyboard path was already covered by the panel's `inert` above; this
+         is the pointer path, and it is the one a visitor would report as
+         "the site froze".
+
+         Two mechanisms because they cover different browsers. `inert` is the
+         correct declaration and also removes the subtree from the
+         accessibility tree; `pointerEvents` is the guarantee, since it is
+         universally supported and is exactly the property in question.
+         Neither touches layout, paint or the exit animation, so
+         AnimatePresence is unaffected. Both are undone on reopen above. */
+      const backdrop = backdropRef.current;
+      if (backdrop) {
+        backdrop.setAttribute("inert", "");
+        backdrop.style.pointerEvents = "none";
+      }
     };
   }, [open, closePanel]);
 
@@ -249,14 +278,14 @@ export function TeamGrid() {
 
               <div className="mt-7 flex items-start justify-between gap-6">
                 <div>
-                  <h2 className="text-[1.5rem] font-medium leading-tight tracking-[-0.017em] text-ink transition-colors duration-[400ms] ease-kofa group-hover/member:text-teal">
+                  <h2 className="text-[1.5rem] font-medium leading-tight tracking-[-0.017em] text-ink transition-colors duration-[400ms] ease-kofa group-hover/member:text-teal-deep">
                     {member.name}
                   </h2>
-                  <p className="type-eyebrow mt-3 text-ink-soft transition-colors duration-[400ms] ease-kofa group-hover/member:text-teal">
+                  <p className="type-eyebrow mt-3 text-ink-soft transition-colors duration-[400ms] ease-kofa group-hover/member:text-teal-deep">
                     {member.role}
                   </p>
                 </div>
-                <span className="mt-1.5 shrink-0 text-ink-mute transition-all duration-[400ms] ease-kofa group-hover/member:translate-x-1 group-hover/member:text-teal">
+                <span className="mt-1.5 shrink-0 text-ink-mute transition-all duration-[400ms] ease-kofa group-hover/member:translate-x-1 group-hover/member:text-teal-deep">
                   <Arrow size={16} />
                 </span>
               </div>
@@ -269,7 +298,7 @@ export function TeamGrid() {
 
               <span
                 data-hover-reveal
-                className="type-eyebrow mt-5 inline-block text-teal opacity-0 transition-opacity duration-[400ms] ease-kofa group-hover/member:opacity-100 group-focus-visible/member:opacity-100"
+                className="type-eyebrow mt-5 inline-block text-teal-deep opacity-0 transition-opacity duration-[400ms] ease-kofa group-hover/member:opacity-100 group-focus-visible/member:opacity-100"
               >
                 View profile
               </span>
@@ -292,6 +321,7 @@ export function TeamGrid() {
         {open && (
           <>
             <motion.div
+              ref={backdropRef}
               className="fixed inset-0 z-[70] bg-ink/25 backdrop-blur-[2px]"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -320,7 +350,7 @@ export function TeamGrid() {
                   ref={closeRef}
                   type="button"
                   onClick={closePanel}
-                  className="-mr-2 flex h-11 w-11 items-center justify-center text-ink-soft transition-colors duration-300 ease-kofa hover:text-teal"
+                  className="-mr-2 flex h-11 w-11 items-center justify-center text-ink-soft transition-colors duration-300 ease-kofa hover:text-teal-deep"
                 >
                   <span className="sr-only">Close profile</span>
                   <span aria-hidden className="relative block h-4 w-4">
@@ -341,7 +371,7 @@ export function TeamGrid() {
                 >
                   {open.name}
                 </h2>
-                <p className="type-eyebrow mt-4 text-teal">{open.role}</p>
+                <p className="type-eyebrow mt-4 text-teal-deep">{open.role}</p>
 
                 {open.standfirst && (
                   <p className="type-body-lg mt-7">{open.standfirst}</p>
@@ -370,7 +400,7 @@ export function TeamGrid() {
                     href={open.linkedin}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="group/link mt-9 inline-flex items-center gap-2.5 text-[0.875rem] font-medium text-ink transition-colors duration-300 ease-kofa hover:text-teal"
+                    className="group/link mt-9 inline-flex items-center gap-2.5 text-[0.875rem] font-medium text-ink transition-colors duration-300 ease-kofa hover:text-teal-deep"
                   >
                     LinkedIn
                     <Arrow

@@ -26,7 +26,14 @@ export default function ContactPage() {
         <Container>
           <div className="grid gap-14 lg:grid-cols-[0.72fr_1.28fr] lg:gap-24">
             <div>
-              <p className="type-eyebrow text-teal">Connect With KOFA Healthcare</p>
+              {/* teal-deep, not teal. .type-eyebrow is 11px, so it is small
+                  text and needs 4.5:1 under WCAG 1.4.3. --color-teal
+                  (#008E95) on white measures 3.96:1 and fails; --color-teal-deep
+                  (#006A70) makes 6.36:1. Every other eyebrow on the site
+                  already uses teal-deep — these were the two stragglers. */}
+              <p className="type-eyebrow text-teal-deep">
+                Connect With KOFA Healthcare
+              </p>
               <a
                 href={`mailto:${site.email}`}
                 className="mt-5 inline-block text-xl font-medium text-ink underline decoration-teal/40 underline-offset-8 transition-colors hover:text-teal"

@@ -12,7 +12,7 @@
  * reproducing article text, so `body` is empty on all of them; it exists for
  * posts KOFA writes itself, which will then render as full internal articles.
  *
- * Generated 2026-08-18. Dates are the publication
+ * Generated 2026-08-18, last swept 2026-09-18. Dates are the publication
  * or dateline date given by the source.
  */
 
@@ -45,6 +45,19 @@ export interface NewsItem {
 
 export const news: NewsItem[] = [
   {
+    slug: "cms-establishes-first-icd-10-pcs-code-for-computer-aided-neuraxial",
+    title:
+      "CMS establishes the first ICD-10-PCS code for computer-aided neuraxial guidance",
+    type: "Portfolio News",
+    date: "2026-09-16",
+    excerpt:
+      "The Centers for Medicare & Medicaid Services created ICD-10-PCS code XEZU3HC, covering computer-aided intraprocedural navigation in the spinal canal by ultrasound with continuous needle tracking. Effective for inpatient discharges from October 1, 2026, it is the first dedicated inpatient coding category for the procedure, which until now had no separate reportability. The code describes the procedural category rather than any one product; RIVANNA's Accuro 3S is the first FDA-cleared, AI-enabled real-time ultrasound guidance system built for neuraxial anesthesia.",
+    source: "RIVANNA Medical",
+    externalUrl:
+      "https://rivannamedical.com/rivanna-announces-new-cms-procedure-code-for-computer-aided-neuraxial-guidance/",
+    company: "rivanna-medical",
+  },
+  {
     slug: "illumicell-ai-closes-regulation-crowdfunding-raise-led-by-medtech",
     title:
       "IllumiCell AI closes Regulation Crowdfunding raise led by MedTech Syndicates",
@@ -69,6 +82,19 @@ export const news: NewsItem[] = [
     externalUrl:
       "https://www.einpresswire.com/article/920741182/illumicell-ai-places-second-on-meet-the-drapers-season-9-receives-500-000-investment-from-tim-draper",
     company: "illumicell-ai",
+  },
+  {
+    slug: "nectero-two-year-proximal-neck-dynamics-presented-at-vam-2026",
+    title:
+      "Two-year proximal neck data from Nectero's first-in-human AAA study presented at VAM 2026",
+    type: "Portfolio News",
+    date: "2026-06-25",
+    excerpt:
+      "Dr. Matthew Eagleton, Chief of Vascular and Endovascular Surgery at Mass General Brigham, presented two-year proximal neck dynamics from the 46-patient first-in-human study of the Nectero EAST System at the 2026 Vascular Annual Meeting in Boston. Forty-one patients completed two-year follow-up. Proximal neck diameters stayed stable and aortic anatomy was preserved, which matters because it keeps patients eligible for minimally invasive endovascular repair should they later need it.",
+    source: "Nectero Therapeutics",
+    externalUrl:
+      "https://necterotherapeutics.com/data-presented-on-two-year-proximal-neck-dynamicsfrom-first-in-human-study-of-abdominal-aortic-aneurysm-treatment/",
+    company: "nectero-medical",
   },
   {
     slug: "raydiant-oximetry-completes-enrollment-of-first-15-patients-in",

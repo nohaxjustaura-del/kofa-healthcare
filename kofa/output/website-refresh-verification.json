@@ -1,42 +1,110 @@
 {
-  "passed": 27,
-  "total": 27,
-  "checks": {
-    "index: one headline": true,
-    "index: canonical": true,
-    "homepage four sections": true,
-    "homepage active selected": true,
-    "homepage 14 active companies": true,
-    "removed homepage sections": true,
-    "homepage supplied headline": true,
-    "about: one headline": true,
-    "about: canonical": true,
-    "about title static": true,
-    "about source location": true,
-    "our-approach: one headline": true,
-    "our-approach: canonical": true,
-    "focus-areas: one headline": true,
-    "focus-areas: canonical": true,
-    "portfolio: one headline": true,
-    "portfolio: canonical": true,
-    "no decorative lab image": true,
-    "team: one headline": true,
-    "team: canonical": true,
-    "team order": true,
-    "news: one headline": true,
-    "news: canonical": true,
-    "contact: one headline": true,
-    "contact: canonical": true,
-    "CTA titles static": true,
-    "six search pages in sitemap": true
+  "run": "2026-09-18 UI/UX pass over the September 15 refresh",
+  "method": "Checks run against the prerendered production HTML in .next/server/app, plus live dev-server checks in Chrome for keyboard behaviour, contrast and responsive layout.",
+  "build": {
+    "typecheck": "pass",
+    "next build": "pass, 96/96 static pages",
+    "homepage first load JS": "117 kB, down from the canvas-field build"
   },
-  "browser_checks": [
-    "1280px desktop and 390px phone: no horizontal page overflow",
-    "Homepage Exits stays on homepage and shows Aria CV and Alydia Health",
-    "ArrowLeft returns to Active tab",
-    "Mobile menu opens and navigates to Team",
-    "Team placeholders and order verified",
-    "KOFA News filter displays four KOFA articles",
-    "Contact empty-form validation shows field errors and focuses name; no message sent"
+  "client_requests_2026_09_15": {
+    "homepage sections Home / Portfolio / Focus Areas / Contact in order": true,
+    "About, Our Approach, Team, News reachable from navigation": true,
+    "portfolio split Active and Exits": true,
+    "Alydia Health and Aria CV are the only exits": true,
+    "other fourteen companies active": true,
+    "no green checkmarks on company tiles": true,
+    "Our Conviction section removed": true,
+    "Portfolio Stories section removed": true,
+    "portfolio news and KOFA news combined with a filter": "All 62 / KOFA News 4 / Portfolio News 58",
+    "team order Renee Masi, Jing Lin, Dr. Meng Deng": true,
+    "logo larger on the front page": "84px mark height at desktop, clamped to 60px minimum on small screens; previously letterboxed inside a square box so it rendered at 92% of its stated size",
+    "photography replaced": "All of it. Zero references to the rejected images remain in any shipped page."
+  },
+  "illustration": {
+    "approach": "Original drawn technical plates in components/visuals/plates.tsx. No image files, no licences.",
+    "homepage inline SVG plates": 12,
+    "FlowPlate": "streamlines solved from the stream function for flow past a cylinder",
+    "LatticePlate": "projected cylindrical strut lattice, near wall over far wall",
+    "LongevityPlate": "growth rings with a radial sight line",
+    "FocusGlyph": "three marks, redrawn on a 64-unit box after the first set proved illegible at display size",
+    "FieldPlate": "page-header and CTA backdrop, replaces the canvas particle field"
+  },
+  "structure_all_pages": {
+    "pages checked": [
+      "/",
+      "/about",
+      "/our-approach",
+      "/focus-areas",
+      "/portfolio",
+      "/team",
+      "/news",
+      "/contact",
+      "/privacy",
+      "/portfolio/[slug]"
+    ],
+    "exactly one h1": true,
+    "canonical link present": true,
+    "skip link present": true,
+    "main landmark present": true,
+    "images missing alt": 0,
+    "references to deleted stock media": 0
+  },
+  "accessibility": {
+    "contrast": "Audited twice, by two methods with opposite blind spots. See contrast_method below.",
+    "contrast fixes": [
+      "Page header and filled CTA moved from #008e95 to #006a70. White text on the brighter teal was 3.96:1 and failed AA for the eyebrow, intro and metadata on all seven interior pages; on #006a70 it is 6.37:1.",
+      "type-eyebrow text-teal to text-teal-deep. 11px teal is 3.96:1 on white and 3.61:1 on ice.",
+      "text-ink-mute to text-ink-soft at 11-12px on the ice ground, where #60747c is 4.46:1.",
+      "Button primary hover bg-teal to bg-teal-deep.",
+      "Team placeholder initials text-teal/45 to text-teal, 1.8:1 at 52px against a 3:1 requirement.",
+      "SECOND PASS, states only: eight hover and group-hover targets still resolving to #008e95 on a light ground, in TeamGrid (3), news/[slug] (3), portfolio/[slug] (2) and the TextLink teal tone. All moved to teal-deep, or to ink where the resting colour was already teal-deep."
+    ],
+    "keyboard": [
+      "Homepage Active/Exits filter had role=tablist with none of the pattern implemented. Now uses the shared useTablist: roving tabindex, arrow keys, Home/End, aria-labelledby on the panel. Verified ArrowLeft from Exits returns to Active and repopulates 14 companies.",
+      "Mobile menu closes on Escape and returns focus to the toggle. Verified.",
+      "Mobile menu closes on route change. Previously it outlived the page it opened on.",
+      "Skip link added; moves focus to main, which now carries tabIndex -1."
+    ],
+    "responsive": "No horizontal overflow at 320, 360, 375, 430, 768, 1024 or 1440. Header verified at 320px: logo 180x60, wordmark not compressed, menu button 46px, 46px gap.",
+    "contrast_method": {
+      "live sweep": "Resolved every text colour and its effective background on a canvas across ten rendered pages. Catches real element/ground pairings. BLIND TO EVERY STATE: hover, focus, and anything that only exists after an interaction were never visited, because it samples resting computed styles.",
+      "static sweep": "Reads the built stylesheet and checks every emitted colour utility, including hover:, focus: and group-hover/x: variants, against each light ground. Catches states. OVER-REPORTS, because it does not know which ground a given class actually lands on.",
+      "why both": "The first pass used only the live sweep and reported zero failures. That was wrong. Eight hover-state failures were live at the time and the sweep could not see any of them by construction."
+    },
+    "contrast_result": {
+      "resting states": "0 failures across 10 pages",
+      "hover and focus states": "0 failures; every emitted colour utility that can land on a light ground clears 4.5:1, except the cases listed under exempt below",
+      "exempt, verified individually": [
+        "text-teal on the 52px team initials: large text, 3.96:1 against a 3:1 requirement",
+        "text-teal on the decorative plates and arrow glyphs: non-text, 3.96:1 against a 3:1 requirement",
+        "text-ink-mute: flagged by the static sweep against the ice ground, but all eleven call sites were enumerated and every one is either on white (4.90:1) or wraps an Arrow icon rather than text"
+      ]
+    }
+  },
+  "robustness": {
+    "RouteTransition": "Removed the whole-page opacity fade. Every page body was gated behind a JS-driven opacity animation, so a throttled frame loop left the site blank; reproduced during this pass. It also hid the LCP element for 520ms on first paint. The teal hairline sweep is kept.",
+    "ScientificBackground": "Deleted. A canvas particle field with its own rAF loop, ResizeObserver, IntersectionObserver and a window-level pointermove listener, running on six pages.",
+    "TeamGrid": "The close-cleanup put inert on the dialog but not on the backdrop. AnimatePresence holds both mounted for the exit, so with the frame loop starved the exit never completes and a fixed inset-0 overlay stays at opacity 0 across the whole viewport, swallowing every click while the page looks completely normal. Keyboard was already covered by the dialog inert; this was the pointer path. Fixed with inert plus pointerEvents none on the backdrop ref, both undone on reopen. REPRODUCED AND MEASURED: with rAF stubbed and the panel dismissed, elementFromPoint at three points returned the backdrop before the fix and the real page content after it."
+  },
+  "cleanup": {
+    "orphaned components deleted": 24,
+    "media deleted": "about 16 MB; public/media now holds only its two documents",
+    "hardcoded off-palette colours replaced with tokens": "#176D67, #4DA9A0, #F4F7F4, #E9F0EB and others, left over from a previous palette",
+    "horizontal measure unified": "Container, header and footer now share one 1200px measure; the logo and every heading start on the same left edge"
+  },
+  "known_gaps": [
+    "Renee Masi and Dr. Meng Deng have no biography or portrait. Placeholders are marked as such. Nothing invented.",
+    "public/logos/nectero-medical.png is still the old Nectero Medical wordmark; the company is now Nectero Therapeutics. Filename and slug deliberately unchanged, they are the live URL and the key six news items join on.",
+    "The supplied wordmark is approximated in Geist Bold beside the supplied mark. A vector of the official lockup would remove the approximation."
+  ],
+  "not_verified": [
+    "Screen-reader announcement in an actual screen reader. ARIA wiring is verified structurally, not aurally.",
+    "Real-device testing. All responsive checks were emulated viewports in Chrome.",
+    "Google sitelink selection. Crawlable URLs, titles and internal links are in place; selection is Google’s and cannot be guaranteed by site code.",
+    "Post-interaction contrast was not measured by the live sweep at all. The contact confirmation panel, the open team dialog and the form error and rate-limit alerts only exist after an interaction, so a crawl of prerendered HTML cannot reach them. The static sweep over the built stylesheet covers the colours those states use, which is why it was added, but their layout and composition were not audited.",
+    "The two remaining hover:text-teal instances at the time of writing were in app/contact/page.tsx and components/ui/ContactForm.tsx, outside this session’s file ownership. They were reported to the session that owns them rather than edited here."
+  ],
+  "corrections": [
+    "An earlier version of this record claimed zero contrast failures. It was produced by the live resting-state sweep only, and was wrong: eight hover-state failures were live, plus two in files owned by the parallel session. Both were found after a peer challenged the claim. The record now states the method and its blind spot rather than the bare result."
   ]
 }

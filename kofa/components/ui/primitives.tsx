@@ -6,9 +6,24 @@ import {
 
 /* ---------------------------------------------------------------------------
    Container, the single horizontal measure for the whole site.
-   Mobile gutter is 24px per the responsive brief; it opens to 80px at xl,
-   which is what gives large screens their air.
+
+   This was max-w-[100rem] (1600px) with gutters running out to 80px, while
+   the homepage laid its sections out at 1200px with 40px gutters and the
+   header and footer sat at 1500px with 56px. Three measures meant the logo,
+   the homepage headings and the interior page headings each started at a
+   different x on the same screen, and the eye reads that as three templates
+   stitched together.
+
+   One measure now, matched to the homepage, which is the page the reference
+   layout was set against: 1200px, 24px gutter on a phone opening to 40px.
+   The content column therefore caps at 1120px, which is also about as wide
+   as a line of this body size should ever be allowed to run.
+
+   MEASURE is exported so the header and the footer can sit on the same grid
+   without a Container wrapper forcing their full-bleed borders inwards.
 --------------------------------------------------------------------------- */
+
+export const MEASURE = "mx-auto w-full max-w-[1200px] px-6 sm:px-10";
 
 export function Container({
   children,
@@ -19,13 +34,7 @@ export function Container({
   className?: string;
   as?: ElementType;
 }) {
-  return (
-    <Tag
-      className={`mx-auto w-full max-w-[100rem] px-6 sm:px-8 lg:px-12 xl:px-20 ${className}`}
-    >
-      {children}
-    </Tag>
-  );
+  return <Tag className={`${MEASURE} ${className}`}>{children}</Tag>;
 }
 
 /* ---------------------------------------------------------------------------
@@ -99,11 +108,11 @@ export function Eyebrow({
   return (
     <div className={`flex items-center gap-3 ${className}`}>
       {index && (
-        <span className="type-eyebrow tabular-nums text-ink-mute">{index}</span>
+        <span className="type-eyebrow tabular-nums text-ink-soft">{index}</span>
       )}
       <span
         className={`type-eyebrow ${
-          tone === "teal" ? "text-teal" : "text-ink-mute"
+          tone === "teal" ? "text-teal-deep" : "text-ink-soft"
         }`}
       >
         {children}
@@ -203,7 +212,7 @@ export function Meta({
   className?: string;
 }) {
   return (
-    <span className={`type-eyebrow text-ink-mute ${className}`}>{children}</span>
+    <span className={`type-eyebrow text-ink-soft ${className}`}>{children}</span>
   );
 }
 

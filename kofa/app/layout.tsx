@@ -89,22 +89,20 @@ export default function RootLayout({
       lang="en"
       className={sans.variable}
       /*
-        Two of the scripts below stamp attributes onto document.documentElement
-        before <body> renders: the arrival guard writes data-arrival-seen, and
-        MOTION_PREFERENCE_SCRIPT writes data-motion. Both have to run pre-paint
-        to do their job, which means <html> already carries attributes React
-        never put there by the time hydration compares the two trees. React
-        reports that as "A tree hydrated but some attributes of the server
-        rendered HTML didn't match the client properties", pointing at <html>,
-        on every single page load.
+        MOTION_PREFERENCE_SCRIPT below stamps data-motion onto
+        document.documentElement before <body> renders. It has to run
+        pre-paint to do its job, which means <html> already carries an
+        attribute React never put there by the time hydration compares the
+        two trees. React reports that as "A tree hydrated but some attributes
+        of the server rendered HTML didn't match the client properties",
+        pointing at <html>, on every single page load.
 
         suppressHydrationWarning here silences exactly that, and nothing else:
         the flag covers this element's own attributes and does not propagate to
-        the tree below, so a genuine mismatch inside <body> — the class of bug
-        this warning exists to catch — still shouts. Deleting the scripts would
-        also silence it and would reintroduce the flash of motion and the
-        repeat-visit curtain flash they were added to prevent; this attribute
-        is the cheaper half of that trade.
+        the tree below, so a genuine mismatch inside <body>, the class of bug
+        this warning exists to catch, still shouts. Deleting the script would
+        also silence it and would reintroduce the flash of motion it was added
+        to prevent; this attribute is the cheaper half of that trade.
       */
       suppressHydrationWarning
     >
@@ -117,24 +115,18 @@ export default function RootLayout({
           un-hides everything carrying data-reveal in exactly that case.
         */}
         <noscript>
-          <style>{`[data-reveal],[data-lag]{opacity:1!important;transform:none!important;clip-path:none!important;height:auto!important}[data-arrival]{display:none!important}`}</style>
+          <style>{`[data-reveal],[data-lag]{opacity:1!important;transform:none!important;clip-path:none!important;height:auto!important}`}</style>
         </noscript>
 
         {/*
-          Repeat-visit flash guard for the arrival curtain. The curtain ships in
-          the server HTML and is only taken away once React hydrates, which on a
-          repeat visit is long enough after first paint to read as a flash. This
-          runs before <body> renders and stamps the decision onto <html>, so on
-          visits 2..n the curtain is display:none from the very first paint.
-          The session flag is *written* by components/motion/Arrival.tsx; this
-          only reads it, so a first visit is unaffected. The key string must stay
-          in sync with SESSION_KEY there.
+          The arrival curtain is gone, and so is its pre-paint flash guard.
+          components/motion/Arrival.tsx was the only thing that rendered
+          [data-arrival] or wrote the "kofa:arrival" session key, so the guard
+          had become an inline script blocking first paint to read a key
+          nothing writes, and a [data-arrival] clause in the noscript style
+          above matching an element that no longer exists. Both are removed.
+          The matching ARRIVAL block in app/globals.css goes with them.
         */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `try{if(sessionStorage.getItem("kofa:arrival")==="1")document.documentElement.setAttribute("data-arrival-seen","")}catch(e){}`,
-          }}
-        />
 
         {/*
           Motion preference, stamped on <html> before <body> renders so the
@@ -155,11 +147,36 @@ export default function RootLayout({
         />
         <MotionPreferenceProvider>
           <MotionProvider>
+            {/*
+              Skip link. The header puts seven navigation stops in front of
+              the content on every page, and a keyboard visitor had no way
+              past them. Off-screen until focused, then it lands over the
+              header as a normal control. WCAG 2.4.1.
+            */}
+            {/*
+              Held off-screen by a transform rather than by sr-only /
+              focus:not-sr-only. That pairing has to flip five properties at
+              once (position, size, clip, overflow, whitespace) and depends on
+              two utilities in the same group resolving in the right order;
+              this flips one, so there is nothing to get wrong. The element
+              stays `fixed`, so it never affects layout whether focused or
+              not, and it stays in the accessibility tree either way.
+            */}
+            <a
+              href="#main"
+              className="fixed left-6 top-6 z-[60] inline-flex min-h-11 -translate-y-[200%] items-center rounded-sm bg-navy px-5 text-sm font-medium text-white transition-transform duration-200 focus:translate-y-0"
+            >
+              Skip to content
+            </a>
             {/* SmoothScroll first: its mount effect constructs Lenis and puts the
               "lenis" class on <html> before any scroll consumer subscribes, so
               nobody measures a pre-Lenis frame and is then contradicted. */}
             <Navigation />
-            <main id="main">{children}</main>
+            {/* tabIndex -1 so the skip link actually moves focus here and not
+                just the scroll position; scroll-mt clears the fixed header. */}
+            <main id="main" tabIndex={-1} className="scroll-mt-[104px] focus:outline-none">
+              {children}
+            </main>
             <Footer />
             {/*
               The drawn cursor is OFF. It replaced the OS pointer with two

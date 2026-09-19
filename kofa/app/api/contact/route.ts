@@ -1,18 +1,28 @@
 import { NextResponse } from "next/server";
+import { site } from "@/data/site";
 
 /**
  * Contact endpoint.
  * ---------------------------------------------------------------------------
- * Validates and normalises the submission, then forwards it to whatever
- * destination the deployment has configured:
+ * Validates and normalises the submission, then delivers it through whichever
+ * channels the deployment has configured. Both are optional and both are
+ * attempted; the submission succeeds if *any* of them accepts it.
  *
- *   KOFA_CONTACT_WEBHOOK: any URL that accepts a JSON POST. This is the
- *   simplest bridge to WordPress (WPForms/Gravity Forms REST endpoint), to a
- *   transactional email provider, or to a CRM.
+ *   RESEND_API_KEY   Sends the enquiry as email through Resend's HTTP API.
+ *                    Needs CONTACT_FROM_EMAIL (a verified sender on the
+ *                    Resend domain) and optionally CONTACT_TO_EMAIL, which
+ *                    defaults to site.email. Plain fetch, no SDK: one HTTP
+ *                    POST does not justify a dependency.
  *
- * With nothing configured it returns 501, and the client falls back to opening
- * a pre-filled mail composer. That is deliberate: the form never reports
- * success for a message that was not actually delivered anywhere.
+ *   KOFA_CONTACT_WEBHOOK
+ *                    Any URL that accepts a JSON POST. The bridge to
+ *                    WordPress (WPForms/Gravity Forms REST), to a CRM, to
+ *                    Zapier, or to a Slack-style relay.
+ *
+ * Configure neither and the route returns 501, at which point the client
+ * opens a pre-filled mail composer instead. That is deliberate: the form
+ * never reports success for a message that was not actually delivered
+ * anywhere. See .env.example.
  */
 
 export const runtime = "nodejs";
@@ -28,7 +38,23 @@ interface Payload {
   company_url?: string;
 }
 
+/** A validated, normalised submission, as handed to the delivery channels. */
+interface Submission {
+  name: string;
+  email: string;
+  company: string;
+  website: string;
+  reason: string;
+  message: string;
+  receivedAt: string;
+}
+
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+/** Where enquiries go when CONTACT_TO_EMAIL is not set. The published
+ *  address, so a deployment that configures only RESEND_API_KEY and a sender
+ *  still delivers somewhere a person reads. */
+const FALLBACK_TO = site.email;
 
 /* ---------------------------------------------------------------------------
    Rate limiting.
@@ -44,8 +70,8 @@ const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
    stop a single script hammering the form from one address, which is the abuse
    that actually shows up. It is not a defence against anyone determined or
    distributed. If abuse ever materialises, the upgrade path is a durable
-   store keyed the same way — Upstash/Vercel KV, Redis, whatever is already in
-   the stack — not a bigger Map.
+   store keyed the same way, Upstash/Vercel KV, Redis, whatever is already in
+   the stack, not a bigger Map.
 
    The threshold is deliberately far above anything a real visitor reaches. A
    person writing to a fund sends one message, or two if the first bounced off a
@@ -116,7 +142,7 @@ export async function POST(request: Request) {
 
   if (body.company_url) {
     // Silently accept and drop obvious bots. This branch was unreachable for a
-    // long time — ContactForm never rendered or sent a company_url field, so
+    // long time, ContactForm never rendered or sent a company_url field, so
     // the honeypot was a comment rather than a defence. The form now ships the
     // field (off-screen, tabIndex={-1}, aria-hidden), so keep the two in step:
     // if you ever remove the input, remove this too rather than leaving the
@@ -140,7 +166,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ errors }, { status: 422 });
   }
 
-  const submission = {
+  const submission: Submission = {
     name,
     email,
     company: (body.company ?? "").trim().slice(0, 200),
@@ -151,20 +177,27 @@ export async function POST(request: Request) {
   };
 
   const webhook = process.env.KOFA_CONTACT_WEBHOOK;
-  if (!webhook) {
+  const resendKey = process.env.RESEND_API_KEY;
+  const from = process.env.CONTACT_FROM_EMAIL;
+  /* Resend needs a verified sender. Without one its API rejects the send, so
+     treat a half-configured Resend as not configured at all rather than
+     letting every submission fail at the provider. */
+  const emailConfigured = Boolean(resendKey && from);
+
+  if (!webhook && !emailConfigured) {
     return NextResponse.json(
       {
         error: "No delivery destination configured.",
-        hint: "Set KOFA_CONTACT_WEBHOOK to enable server-side delivery.",
+        hint: "Set RESEND_API_KEY + CONTACT_FROM_EMAIL, or KOFA_CONTACT_WEBHOOK. See .env.example.",
       },
       { status: 501 },
     );
   }
 
   /* Only submissions that would actually be relayed are counted, so the mailto
-     fallback path above stays open on deployments with no webhook configured.
-     Placed after validation for the same reason: a 422 relays nothing and
-     should not burn a visitor's allowance while they fix a typo. */
+     fallback path above stays open on deployments with no destination
+     configured. Placed after validation for the same reason: a 422 relays
+     nothing and should not burn a visitor's allowance while they fix a typo. */
   if (rateLimited(clientKey(request))) {
     return NextResponse.json(
       {
@@ -175,27 +208,117 @@ export async function POST(request: Request) {
     );
   }
 
-  try {
-    const res = await fetch(webhook, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(submission),
-      /* Without this, a webhook that accepts the connection and then hangs
-         holds the whole serverless invocation open until Vercel's function
-         timeout kills it, and the visitor sits watching a "Sending…" button
-         that never resolves. Eight seconds is generous for a JSON POST to a
-         CRM or mail provider; past that, the fallback below is a better answer
-         than an indefinite wait. The abort surfaces as a throw, which the catch
-         already turns into the 502 the client knows how to handle. */
-      signal: AbortSignal.timeout(8000),
-    });
-    if (!res.ok) throw new Error(`Webhook responded ${res.status}`);
-  } catch {
+  /* Both destinations are attempted, and the submission is a success if
+     either one accepts it. A fund that has wired up both email and a CRM
+     should not lose the enquiry because the CRM happened to be down, and the
+     visitor should not be told to try again when their message did in fact
+     arrive in someone's inbox.
+
+     Promise.allSettled rather than Promise.all: all() rejects on the first
+     failure and leaves the other request in flight with nobody reading it. */
+  const attempts: Promise<void>[] = [];
+  if (emailConfigured) attempts.push(deliverEmail(submission, resendKey!, from!));
+  if (webhook) attempts.push(deliverWebhook(submission, webhook));
+
+  const results = await Promise.allSettled(attempts);
+  if (results.every((r) => r.status === "rejected")) {
+    /* Server-side only. The reasons can carry provider detail, and an
+       unauthenticated caller has no business seeing it. */
+    console.error(
+      "[contact] every delivery channel failed:",
+      results.map((r) => (r as PromiseRejectedResult).reason),
+    );
     return NextResponse.json(
       { error: "Could not deliver the message." },
       { status: 502 },
     );
   }
 
+  /* A partial failure still reaches KOFA, so the visitor is told it worked , 
+     but it is a real operational fault and belongs in the logs. */
+  for (const r of results) {
+    if (r.status === "rejected") {
+      console.error("[contact] a delivery channel failed:", r.reason);
+    }
+  }
+
   return NextResponse.json({ ok: true });
+}
+
+/* ---------------------------------------------------------------------------
+   Delivery channels. Each rejects on failure; the caller decides what a
+   failure means.
+
+   DELIVERY_TIMEOUT_MS exists because a destination that accepts the
+   connection and then hangs would otherwise hold the whole serverless
+   invocation open until Vercel's function timeout kills it, with the visitor
+   watching a "Sending…" button that never resolves. Eight seconds is generous
+   for a JSON POST to a CRM or a mail provider; past that, the mailto fallback
+   is a better answer than an indefinite wait.
+--------------------------------------------------------------------------- */
+
+const DELIVERY_TIMEOUT_MS = 8000;
+
+async function deliverWebhook(submission: Submission, url: string) {
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(submission),
+    signal: AbortSignal.timeout(DELIVERY_TIMEOUT_MS),
+  });
+  if (!res.ok) throw new Error(`Webhook responded ${res.status}`);
+}
+
+async function deliverEmail(
+  submission: Submission,
+  apiKey: string,
+  from: string,
+) {
+  const to = process.env.CONTACT_TO_EMAIL || FALLBACK_TO;
+
+  const res = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      from,
+      to: [to],
+      /* So a reply in the mail client goes to the person who wrote in rather
+         than to the no-reply sender. The address is validated above. */
+      reply_to: submission.email,
+      subject: `${submission.reason}: ${submission.company || submission.name}`,
+      text: plainTextBody(submission),
+    }),
+    signal: AbortSignal.timeout(DELIVERY_TIMEOUT_MS),
+  });
+
+  if (!res.ok) {
+    const detail = await res.text().catch(() => "");
+    throw new Error(`Resend responded ${res.status} ${detail}`.trim());
+  }
+}
+
+/* Deliberately text/plain, not HTML. The body is visitor-supplied, and a
+   plain-text part needs no escaping to be safe, there is no markup context
+   for anything in it to break out of. An HTML email here would mean
+   hand-rolling entity escaping on every interpolation, which is exactly the
+   kind of thing that is correct on the day it is written and wrong six months
+   later. Mail clients render this perfectly well. */
+function plainTextBody(s: Submission): string {
+  return [
+    `Name:    ${s.name}`,
+    `Email:   ${s.email}`,
+    s.company ? `Company: ${s.company}` : null,
+    s.website ? `Website: ${s.website}` : null,
+    `Reason:  ${s.reason}`,
+    `Received: ${s.receivedAt}`,
+    "",
+    "---",
+    "",
+    s.message,
+  ]
+    .filter((line) => line !== null)
+    .join("\n");
 }

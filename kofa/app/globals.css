@@ -390,7 +390,7 @@ html[data-motion="off"] .animate-marquee {
    ------------------------------------------------------------
    Cancelling the animation above is only half the job. The host clips its
    overflow, and a clipped box offers no wheel, no touch pan, no drag and no
-   scrollbar — so a frozen track left twelve of the sixteen companies
+   scrollbar, so a frozen track left twelve of the sixteen companies
    permanently unreachable for exactly the visitors who had asked the page to
    hold still. The component's own comment claimed the strip "becomes an
    ordinary horizontally-scrollable row". It did not.
@@ -419,7 +419,7 @@ html[data-motion="off"] .marquee-host .marquee-dupe {
 /* `width: 100%` and `flex-shrink: 1` are both load-bearing, and it does not
    wrap without them. The track's <ul> carries `shrink-0` so that the marquee
    can be wider than the viewport, which means that as a flex item it sizes to
-   max-content — about 3,400px for sixteen plates — and `flex-wrap: wrap` has
+   max-content, about 3,400px for sixteen plates, and `flex-wrap: wrap` has
    nothing to wrap against. Constraining it to the host is what turns the row
    into a grid. `pr` is zeroed for the same reason the mask is: it existed to
    make the loop seam invisible, and there is no seam any more. */
@@ -601,40 +601,28 @@ html.lenis body {
 
 
 /* ==========================================================
-   ARRIVAL
+   ARRIVAL CURTAIN (REMOVED)
+   ----------------------------------------------------------
+   Two rules keyed to [data-arrival] stood here, escape hatches for a
+   full-viewport ivory layer that components/motion/Arrival.tsx rendered
+   into the server HTML and then took away on hydration.
+
+   Arrival.tsx has been deleted. Nothing renders [data-arrival] any more, so
+   both rules matched nothing, and the pre-paint <script> in app/layout.tsx
+   that set the [data-arrival-seen] half of the pair was reading a
+   sessionStorage key ("kofa:arrival") that no longer had a writer. That
+   script is gone too.
+
+   Left as a note rather than silently deleted because the comment that was
+   here described the mechanism in enough detail to look load-bearing.
+   Restoring the curtain means restoring Arrival.tsx, the pre-paint script,
+   the [data-arrival] clause in layout's <noscript> style, and these two
+   rules, together.
+
+   The data-motion="off" contract is unaffected and still live: see the
+   [data-reveal] / [data-lag] rules above, which are the ones that actually
+   enforce it.
    ========================================================== */
-
-/* ============================================================
-   ARRIVAL CURTAIN: the escape hatches
-   ------------------------------------------------------------
-   components/motion/Arrival.tsx renders a full-viewport ivory layer into
-   the server HTML and relies on JavaScript to take it away again. The two
-   cases where that JavaScript will not — or should not — run are handled
-   here rather than inside the component:
-
-     · data-motion="off". A ~1.5s choreographed load gate is the first thing
-       a visitor who asked the page to hold still should stop seeing. The
-       attribute is stamped before first paint, so, like a media query and
-       unlike a JS branch, it cannot cost us the SSR pass.
-
-     · data-arrival-seen, stamped on <html> by the pre-paint script in
-       app/layout.tsx when the session flag is already set. Without it the
-       curtain would sit on screen from first paint until hydration on every
-       repeat visit and then vanish — a flash, not a gate.
-
-   The third case, no JavaScript at all, is in the <noscript> block in
-   app/layout.tsx, for the same reason the [data-reveal] rules are: it is the
-   only mechanism that runs when nothing else does. Do not move any of these
-   three into a check inside the component.
-   ============================================================ */
-
-[data-arrival-seen] [data-arrival] {
-  display: none !important;
-}
-
-html[data-motion="off"] [data-arrival] {
-  display: none !important;
-}
 
 
 /* ==========================================================
@@ -962,66 +950,144 @@ html[data-motion="off"] [data-arrival] {
     --ptrack-edge: 5rem;
   }
 }
+/* ============================================================
+   FOCUS AREA PANELS
+   ------------------------------------------------------------
+   Three equal-height cards on the ice band. They are NOT links,
+   so the hover here stays decorative: a hairline that warms to
+   teal and an accent that runs out along the top edge. Nothing
+   moves, lifts or inverts, because none of that would survive
+   being clicked.
 
+   The resting shell is deliberately the same one the team and
+   news tiles use (10px, rule-soft, rule-teal on hover, 400ms
+   ease-kofa) so the three families read as one system.
+
+   The previous version framed each icon in a 9rem rotated arc
+   with one border side knocked out. At three different rotations
+   it read as a rendering fault rather than a motif, and it left
+   ~5rem of dead space above the title. The icon now sits in a
+   plain 3.25rem disc and the numeral carries the rhythm.
+   ============================================================ */
 @layer components {
   .focus-area-panel {
+    position: relative;
     display: flex;
-    min-height: 24rem;
     flex-direction: column;
-    border: 1px solid rgba(0, 142, 149, 0.28);
-    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--color-rule-soft);
+    border-radius: 10px;
     background-color: var(--color-white);
-    padding: clamp(1.75rem, 2.8vw, 2.5rem);
+    padding: clamp(1.75rem, 2.4vw, 2.25rem);
+    transition: border-color 400ms var(--ease-kofa);
   }
 
-  .focus-area-panel__visual {
-    position: relative;
-    display: grid;
-    width: 9rem;
-    height: 9rem;
-    place-items: center;
-  }
-
-  .focus-area-panel__visual::before {
+  /* Top-edge accent. 2.75rem at rest, full bleed on hover. */
+  .focus-area-panel::before {
     position: absolute;
-    inset: 0.5rem;
-    border: 1px solid rgba(0, 142, 149, 0.24);
-    border-bottom-color: transparent;
-    border-radius: 50%;
-    content: "";
-    transform: rotate(-28deg);
-  }
-
-  .focus-area-panel__icon {
-    position: relative;
-    z-index: 1;
-    width: 5.5rem;
-    height: 5.5rem;
-  }
-
-  .focus-area-panel[data-focus="heart"] .focus-area-panel__visual::before {
-    inset: 0.35rem 0.85rem 1.05rem 0.35rem;
-    transform: rotate(-48deg);
-  }
-
-  .focus-area-panel[data-focus="care"] .focus-area-panel__visual::before {
-    inset: 0.15rem;
-    border-bottom-color: rgba(0, 142, 149, 0.24);
-    border-right-color: transparent;
-    transform: rotate(28deg);
-  }
-
-  .focus-area-panel[data-focus="path"] .focus-area-panel__visual::before {
-    inset: 0.9rem 0.2rem 0.2rem 0.9rem;
-    border-left-color: transparent;
-    transform: rotate(-12deg);
-  }
-
-  .focus-area-panel__rule {
-    display: block;
-    width: 2.5rem;
+    top: 0;
+    left: 0;
     height: 2px;
-    margin-top: 1.75rem;
+    width: 2.75rem;
     background-color: var(--color-teal);
+    content: "";
+    transition: width 600ms var(--ease-kofa);
+  }
+
+  .focus-area-panel:hover {
+    border-color: var(--color-rule-teal);
+  }
+
+  .focus-area-panel:hover::before {
+    width: 100%;
+  }
+
+  .focus-area-panel__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .focus-area-panel__badge {
+    display: grid;
+    width: 3.5rem;
+    height: 3.5rem;
+    flex: none;
+    place-items: center;
+    border: 1px solid rgba(0, 142, 149, 0.22);
+    border-radius: 50%;
+    background-color: rgba(0, 142, 149, 0.06);
+    transition:
+      border-color 400ms var(--ease-kofa),
+      background-color 400ms var(--ease-kofa);
+  }
+
+  .focus-area-panel:hover .focus-area-panel__badge {
+    border-color: rgba(0, 142, 149, 0.45);
+    background-color: rgba(0, 142, 149, 0.1);
+  }
+
+  /* SIZE AND COLOUR ONLY.
+     ---------------------------------------------------------------------
+     The mark is now <FocusGlyph> from components/visuals/plates.tsx, shared
+     with /focus-areas, rather than three SVGs hand-written in app/page.tsx.
+     Each glyph carries its own per-path stroke-width and stroke-opacity, and
+     that variation IS the drawing: it is what makes a centreline read as
+     furniture and the pressure trace read as the subject.
+
+     The rule this replaces declared `stroke` and `stroke-width` here. Both
+     are CSS properties, and a CSS declaration beats an SVG presentation
+     attribute, so every path in the glyph would have been flattened to one
+     1.4 weight and the drawing would have collapsed into a uniform outline.
+     Set the colour with `color` and let currentColor carry it. Do not
+     reintroduce `stroke`, `stroke-width` or `fill` on this selector. */
+  .focus-area-panel__glyph {
+    width: 2rem;
+    height: 2rem;
+    color: var(--color-teal);
+  }
+
+  /* The team columns' outline numeral, two sizes down. */
+  .focus-area-panel__index {
+    font-family: var(--font-sans);
+    font-weight: 200;
+    font-size: 2rem;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-rule-strong);
+    transition:
+      color 600ms var(--ease-kofa),
+      -webkit-text-stroke-color 600ms var(--ease-kofa);
+  }
+
+  @supports (-webkit-text-stroke: 1px currentColor) {
+    .focus-area-panel__index {
+      color: transparent;
+      -webkit-text-stroke: 1px var(--color-rule-strong);
+    }
+  }
+
+  .focus-area-panel:hover .focus-area-panel__index {
+    color: var(--color-teal);
+    -webkit-text-stroke-color: transparent;
+  }
+
+  .focus-area-panel__title {
+    margin-top: 1.875rem;
+    font-size: 1.25rem;
+    font-weight: 500;
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+    color: var(--color-navy);
+  }
+
+  .focus-area-panel__body {
+    margin-top: 0.875rem;
+    max-width: 34ch;
+    font-size: 0.9375rem;
+    line-height: 1.7;
+    color: var(--color-ink-soft);
   }
 }

@@ -375,15 +375,20 @@ export const portfolio: PortfolioCompany[] = [
     },
   },
   {
-    name: "Nectero Medical",
+    /* The company now trades as Nectero Therapeutics; Nectero Medical, Inc.
+       remains the legal entity, which is why the slug, and therefore the
+       /portfolio/nectero-medical URL and every `company: "nectero-medical"`
+       key in data/news.ts, is deliberately left alone. Rename the slug and
+       you break inbound links and silently orphan six news items. */
+    name: "Nectero Therapeutics",
     slug: "nectero-medical",
     logo: "/logos/nectero-medical.png",
     description:
-      "Nectero Medical is developing a novel treatment to stabilize growth and prevent rupture of mid-sized abdominal aortic aneurysms (AAA). The Nectero EAST®, or Endovascular Aneurysm Stabilization Treatment System, delivers a compound with a proprietary molecule known as a Stabilizer Agent to the site of the aneurysm.",
+      "Nectero Therapeutics is developing a novel treatment to stabilize growth and prevent rupture of mid-sized abdominal aortic aneurysms (AAA). The Nectero EAST®, or Endovascular Aneurysm Stabilization Treatment System, delivers a compound with a proprietary molecule known as a Stabilizer Agent to the site of the aneurysm.",
     shortDescription:
       "The Nectero EAST® system, designed to stabilize mid-sized abdominal aortic aneurysms.",
     focus: "Abdominal aortic aneurysm",
-    website: "https://necteromedical.com/",
+    website: "https://necterotherapeutics.com/",
     category: "Cardiovascular",
     portfolioStatus: "Active",
     featured: false,

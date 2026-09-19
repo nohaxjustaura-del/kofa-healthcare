@@ -21,13 +21,13 @@ function Kicker({ item }: { item: NewsItem }) {
   const company = item.company ? getCompany(item.company) : undefined;
   return (
     <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-      <span className="type-eyebrow text-teal">
+      <span className="type-eyebrow text-teal-deep">
         {company ? company.name : "KOFA Healthcare"}
       </span>
       {item.source && (
         <>
           <span aria-hidden className="h-2.5 w-px bg-rule" />
-          <span className="type-eyebrow text-ink-mute">{item.source}</span>
+          <span className="type-eyebrow text-ink-soft">{item.source}</span>
         </>
       )}
     </div>
@@ -60,7 +60,7 @@ export function NewsCard({
                   sizes="(max-width: 1024px) 100vw, 58vw"
                 />
               ) : (
-                <div className="absolute inset-0 bg-[linear-gradient(140deg,#F4F7F4_0%,#E9F0EB_100%)]" />
+                <div className="absolute inset-0 bg-[linear-gradient(140deg,#ffffff_0%,#e4f0f1_100%)]" />
               )}
             </div>
           </div>
@@ -76,11 +76,11 @@ export function NewsCard({
             <div className="mt-6 flex items-center justify-between">
               <time
                 dateTime={item.date}
-                className="type-eyebrow text-ink-mute"
+                className="type-eyebrow text-ink-soft"
               >
                 {formatNewsDate(item.date)}
               </time>
-              <span className="text-ink-mute transition-all duration-[400ms] ease-kofa group-hover/news:translate-x-1 group-hover/news:-translate-y-1 group-hover/news:text-teal">
+              <span className="text-ink-mute transition-all duration-[400ms] ease-kofa group-hover/news:translate-x-1 group-hover/news:-translate-y-1 group-hover/news:text-teal-deep">
                 <Arrow size={16} dir="up-right" />
               </span>
             </div>
@@ -134,10 +134,10 @@ export function NewsCard({
                 : "mt-4 flex items-center justify-between"
             }
           >
-            <time dateTime={item.date} className="type-eyebrow text-ink-mute">
+            <time dateTime={item.date} className="type-eyebrow text-ink-soft">
               {formatNewsDate(item.date)}
             </time>
-            <span className="text-ink-mute transition-all duration-[400ms] ease-kofa group-hover/news:translate-x-1 group-hover/news:-translate-y-1 group-hover/news:text-teal">
+            <span className="text-ink-mute transition-all duration-[400ms] ease-kofa group-hover/news:translate-x-1 group-hover/news:-translate-y-1 group-hover/news:text-teal-deep">
               <Arrow size={15} dir="up-right" />
             </span>
           </div>

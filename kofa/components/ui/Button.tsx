@@ -19,7 +19,10 @@ const BASE =
   "disabled:cursor-not-allowed disabled:opacity-60";
 
 const VARIANTS: Record<Variant, string> = {
-  primary: "bg-ink text-ivory hover:bg-teal",
+  /* hover:bg-teal put 14px white on #008e95, which is 3.96:1 and below
+     AA. teal-deep takes it to 6.37:1 and is the same token the page
+     headers and the filled CTA now use. */
+  primary: "bg-ink text-ivory hover:bg-teal-deep",
   secondary:
     "border border-rule-strong bg-transparent text-ink hover:border-teal hover:bg-[rgba(23,109,103,0.05)]",
   onDark:
@@ -108,12 +111,18 @@ export function TextLink({
   dir?: "right" | "up-right" | "left";
   tone?: "ink" | "teal" | "white";
 }) {
+  /* Both halves of every pair below clear 4.5:1 on a light ground, because
+     these labels are 14px and a hover state is still text a person reads.
+     An earlier pass here fixed the resting colour and left the hover on
+     #008E95 at 3.96:1, which is the exact trap a contrast sweep that only
+     samples resting styles will miss. Hover darkens rather than brightens;
+     the underline draw is the affordance, the colour shift only confirms it. */
   const toneCls =
     tone === "teal"
-      ? "text-teal hover:text-teal-deep"
+      ? "text-teal-deep hover:text-ink"
       : tone === "white"
         ? "text-white/80 hover:text-white"
-        : "text-ink hover:text-teal";
+        : "text-ink hover:text-teal-deep";
 
   const inner = (
     <>

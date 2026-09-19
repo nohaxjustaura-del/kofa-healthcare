@@ -47,7 +47,7 @@ export function PortfolioBrowser({ compact = false }: { compact?: boolean }) {
 
   return (
     <section aria-labelledby="portfolio-companies-heading">
-      <div className="border-b border-[#c8d7df]">
+      <div className="border-b border-[#cfe0e3]">
         <div
           role="tablist"
           aria-label="Portfolio status"
@@ -69,13 +69,13 @@ export function PortfolioBrowser({ compact = false }: { compact?: boolean }) {
                 tabIndex={selected ? 0 : -1}
                 onKeyDown={(event) => onKeyDown(event, index)}
                 onClick={() => select(status)}
-                className={`relative shrink-0 py-4 text-sm font-medium transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-[#007265] ${
+                className={`relative shrink-0 py-4 text-sm font-medium transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-[#006a70] ${
                   selected
-                    ? "text-[#12394b] after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:bg-[#008979]"
+                    ? "text-[#12394b] after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:bg-[#008e95]"
                     : "text-[#4d626c] hover:text-[#12394b]"
                 }`}
               >
-                {status} <span className="ml-1 tabular-nums text-[#657c87]">({count})</span>
+                {status} <span className="ml-1 tabular-nums text-[#4d626c]">({count})</span>
               </button>
             );
           })}

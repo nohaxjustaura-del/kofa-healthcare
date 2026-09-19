@@ -35,8 +35,8 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const company = getCompany(slug);
   if (!company) return { title: "Not found" };
 
-  /* Company pages are the ones that actually get forwarded — a partner sends
-     one round rather than the fund's homepage — so this is the route where a
+  /* Company pages are the ones that actually get forwarded, a partner sends
+     one round rather than the fund's homepage, so this is the route where a
      blank card cost the most. It is also the route the shared helper matters
      most on: there are as many of these as there are portfolio companies, and
      the hand-written openGraph here was silently dropping og:site_name,
@@ -109,7 +109,7 @@ export default async function CompanyPage({ params }: Params) {
           <div>
             <Link
               href="/portfolio"
-              className="group/link -my-1.5 inline-flex items-center gap-2.5 py-1.5 text-[0.8125rem] font-medium text-ink-soft transition-colors duration-300 ease-kofa hover:text-teal"
+              className="group/link -my-1.5 inline-flex items-center gap-2.5 py-1.5 text-[0.8125rem] font-medium text-ink-soft transition-colors duration-300 ease-kofa hover:text-teal-deep"
             >
               <Arrow
                 size={14}
@@ -154,7 +154,7 @@ export default async function CompanyPage({ params }: Params) {
                       key={f.k}
                       className="flex items-baseline justify-between gap-6 border-b border-rule py-4"
                     >
-                      <dt className="type-eyebrow text-ink-mute">{f.k}</dt>
+                      <dt className="type-eyebrow text-ink-soft">{f.k}</dt>
                       <dd className="text-right text-[0.875rem] text-ink">
                         {f.v}
                       </dd>
@@ -195,7 +195,7 @@ export default async function CompanyPage({ params }: Params) {
         </div>
         </div>
         {!company.media && !company.featuredImage && (
-          <p className="type-meta mt-3 text-ink-mute">
+          <p className="type-meta mt-3 text-ink-soft">
             Abstract visualisation. Company imagery renders here when supplied.
           </p>
         )}
@@ -281,8 +281,8 @@ export default async function CompanyPage({ params }: Params) {
                   href={`/portfolio/${prev.slug}`}
                   className="group/link block min-w-0"
                 >
-                  <span className="type-eyebrow text-ink-mute">Previous</span>
-                  <span className="mt-2.5 flex items-center gap-3 text-[1.0625rem] font-sans text-ink transition-colors duration-300 ease-kofa group-hover/link:text-teal">
+                  <span className="type-eyebrow text-ink-soft">Previous</span>
+                  <span className="mt-2.5 flex items-center gap-3 text-[1.0625rem] font-sans text-ink transition-colors duration-300 ease-kofa group-hover/link:text-teal-deep">
                     <Arrow
                       size={15}
                       dir="left"
@@ -310,8 +310,8 @@ export default async function CompanyPage({ params }: Params) {
                   href={`/portfolio/${next.slug}`}
                   className="group/link block min-w-0 md:text-right"
                 >
-                  <span className="type-eyebrow text-ink-mute">Next</span>
-                  <span className="mt-2.5 flex items-center gap-3 text-[1.0625rem] font-sans text-ink transition-colors duration-300 ease-kofa group-hover/link:text-teal md:justify-end">
+                  <span className="type-eyebrow text-ink-soft">Next</span>
+                  <span className="mt-2.5 flex items-center gap-3 text-[1.0625rem] font-sans text-ink transition-colors duration-300 ease-kofa group-hover/link:text-teal-deep md:justify-end">
                     <span className="truncate">{next.name}</span>
                     <Arrow
                       size={15}

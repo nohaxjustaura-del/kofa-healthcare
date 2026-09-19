@@ -4,8 +4,8 @@ import { site } from "@/data/site";
 /**
  * THE ORIGIN THIS DEPLOYMENT IS ACTUALLY SERVED FROM
  * ---------------------------------------------------------------------------
- * Every absolute URL the site emits — og:image, og:url, canonical, the sitemap
- * entries, the sitemap reference in robots.txt — has to point at the host the
+ * Every absolute URL the site emits, og:image, og:url, canonical, the sitemap
+ * entries, the sitemap reference in robots.txt, has to point at the host the
  * visitor is really on, or it points somewhere that is not serving this build.
  *
  * `site.url` is the BRAND address (data/site.ts) and is the right answer once
@@ -18,15 +18,15 @@ import { site } from "@/data/site";
  *
  * Resolution order, first match wins:
  *
- *   1. NEXT_PUBLIC_SITE_URL — explicit override. Set this in the Vercel
+ *   1. NEXT_PUBLIC_SITE_URL, explicit override. Set this in the Vercel
  *      dashboard the moment the custom domain goes live and nothing else has
  *      to change.
- *   2. VERCEL_PROJECT_PRODUCTION_URL on a production deploy — the project's
+ *   2. VERCEL_PROJECT_PRODUCTION_URL on a production deploy, the project's
  *      canonical production host. Vercel updates this to the custom domain as
  *      soon as one is assigned, so this arrangement corrects itself.
- *   3. VERCEL_URL — the unique per-deployment host, which is what a preview
+ *   3. VERCEL_URL, the unique per-deployment host, which is what a preview
  *      build should describe itself as rather than claiming to be production.
- *   4. site.url — local development, and the honest fallback anywhere the
+ *   4. site.url, local development, and the honest fallback anywhere the
  *      platform variables are absent.
  *
  * Read at module scope, which on Vercel means build time for the statically
@@ -34,7 +34,7 @@ import { site } from "@/data/site";
  * so a value read later could not reach it anyway.
  *
  * Note this is deliberately NOT used for the domain printed on the OG card
- * artwork (app/opengraph-image.tsx). That is branding — it should read
+ * artwork (app/opengraph-image.tsx). That is branding, it should read
  * "kofahealthcare.com" whatever host happens to serve the image.
  */
 function resolveSiteUrl(): string {
@@ -69,7 +69,7 @@ export const siteUrl = resolveSiteUrl();
  * This helper exists because of a Next.js merging rule that is easy to get
  * wrong and silent when you do. Scalar metadata (title, description,
  * alternates) inherits down the segment tree, but `openGraph` and `twitter` do
- * NOT merge into their parent — in mergeMetadata()
+ * NOT merge into their parent, in mergeMetadata()
  * (next/dist/lib/metadata/resolve-metadata.js) the `openGraph` case is a
  * straight assignment:
  *
@@ -117,7 +117,7 @@ const OG_IMAGE_URL = "/opengraph-image?v=1";
 /** 1200x630 is the size Twitter/X, LinkedIn and Slack all crop cleanly to. */
 export const OG_IMAGE_SIZE = { width: 1200, height: 630 };
 
-export const OG_IMAGE_ALT = `${site.name} — ${site.tagline}`;
+export const OG_IMAGE_ALT = `${site.name}: ${site.tagline}`;
 
 /**
  * KOFA's hexagonal mark, copied verbatim from LogoGlyph in
@@ -235,8 +235,8 @@ type PageMetadataInput = {
   path: string;
   /**
    * og:title, when it should differ from `${title} · ${site.name}`. Open Graph
-   * has no equivalent of the title template — Next only applies one if the
-   * PARENT declared `openGraph.title` as a template object — so the suffix has
+   * has no equivalent of the title template, Next only applies one if the
+   * PARENT declared `openGraph.title` as a template object, so the suffix has
    * to be produced here, and the two dynamic routes that want a different
    * shape pass their own.
    */

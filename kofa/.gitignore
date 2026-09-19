@@ -1,5 +1,9 @@
 .vercel
 .env*
+# ...except the template, which carries no secrets and is the only record of
+# which variables the deployment actually reads. `.env*` above swallowed it,
+# so the file existed locally and was invisible to everyone who cloned.
+!.env.example
 
 # Scratch page dumps from debugging sessions
 home_dump.html

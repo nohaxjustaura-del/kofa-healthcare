@@ -246,8 +246,8 @@ export function ImageReveal({
  * inside it. That split is not tidiness, it is a bug fix.
  *
  * The rule used to be a single element carrying `h-px w-full bg-rule` and the
- * caller's className together. A caller that passed spacing — the footer
- * passed `pt-[clamp(3.5rem,6vw,5.5rem)]` — therefore put 88px of padding on
+ * caller's className together. A caller that passed spacing, the footer
+ * passed `pt-[clamp(3.5rem,6vw,5.5rem)]`, therefore put 88px of padding on
  * the element whose background IS the rule. Under `box-sizing: border-box` a
  * 1px height cannot contain 88px of padding, so the border box grew to 88px,
  * and a background paints the whole padding box: the hairline rendered as a

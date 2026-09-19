@@ -9,7 +9,7 @@ import { useMotionOff } from "@/components/motion/MotionPreference";
    A muted, looping company clip that behaves itself: it is never fetched on
    page load (`preload="none"`), only starts when it scrolls near the viewport,
    pauses when it leaves, and holds its poster frame whenever it is not
-   playing — which covers autoplay refusals (Low Power Mode, data savers) and
+   playing, which covers autoplay refusals (Low Power Mode, data savers) and
    the motion-off preference alike.
 
    The markup does NOT branch on the preference or on playback state, so the
@@ -20,7 +20,7 @@ import { useMotionOff } from "@/components/motion/MotionPreference";
    The poster still is what a portfolio CARD shows: cards render the poster as
    an ordinary image and never mount this component, so a grid of sixteen
    companies never loads a single video. This plays only where the visual is
-   the subject — the company detail hero and the homepage story. */
+   the subject, the company detail hero and the homepage story. */
 export function PortfolioVideo({
   src,
   poster,

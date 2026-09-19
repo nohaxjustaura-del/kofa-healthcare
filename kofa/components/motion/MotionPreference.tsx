@@ -72,7 +72,7 @@ const useIsomorphicLayoutEffect =
 /**
  * Is motion switched off right now?
  *
- * For use OUTSIDE React rendering — inside effects, rAF loops and class
+ * For use OUTSIDE React rendering, inside effects, rAF loops and class
  * constructors. Inside a component, use `useMotionOff()` instead so the
  * component re-renders when the preference changes.
  *
@@ -157,7 +157,7 @@ export function MotionPreferenceProvider({ children }: { children: ReactNode }) 
 /**
  * The replacement for framer-motion's `useReducedMotion()`.
  *
- * Same contract at every call site — "true means do not travel" — so the swap
+ * Same contract at every call site, "true means do not travel", so the swap
  * is a change of import and nothing else. Keep obeying the hydration rule:
  * this value may feed `transition`, `animate` and `whileInView`, and must
  * never feed `initial` or any other prop that reaches the DOM.
@@ -176,6 +176,6 @@ export function useMotionPreference(): MotionPreference {
  * name it depends on. Injected by app/layout.tsx.
  *
  * Motion defaults to ON. The OS `prefers-reduced-motion` preference is
- * deliberately NOT consulted — see the note at the top of this file.
+ * deliberately NOT consulted, see the note at the top of this file.
  */
 export const MOTION_PREFERENCE_SCRIPT = `try{var m=localStorage.getItem("${STORAGE_KEY}");document.documentElement.setAttribute("${ATTR}",m==="off"?"off":"on")}catch(e){document.documentElement.setAttribute("${ATTR}","on")}`;

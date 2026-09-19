@@ -25,15 +25,15 @@ import { site } from "@/data/site";
  *
  * TYPOGRAPHY, AND WHY IT LOOKS LIKE THIS
  * satori (what ImageResponse renders through) has no access to the machine's
- * fonts and no stylesheet. Next's ImageResponse registers exactly one face —
- * the bundled noto-sans-v27-latin-regular.ttf, declared at weight 700 — and
+ * fonts and no stylesheet. Next's ImageResponse registers exactly one face , 
+ * the bundled noto-sans-v27-latin-regular.ttf, declared at weight 700, and
  * every fontFamily and fontWeight in this file would resolve to it no matter
  * what we asked for. So there is no bold, no italic and no serif available:
  * asking for Fraunces here would not fail loudly, it would silently render
  * Noto Sans and look like a mistake.
  *
  * The composition therefore builds hierarchy the only ways that actually
- * survive that constraint — size, colour, letter-spacing and a rule — which is
+ * survive that constraint, size, colour, letter-spacing and a rule, which is
  * the same set of levers the ink-mute note in app/globals.css describes for
  * small type. Do not add fontWeight here expecting it to do anything.
  *

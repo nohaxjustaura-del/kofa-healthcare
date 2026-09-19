@@ -35,46 +35,43 @@ export const nav = [
 ] as const;
 
 /**
- * Investment areas. The first four are named explicitly on KOFA's site
- * ("women's health, orthopedics, diagnostics, cardiovascular, and more");
- * the remainder are the categories its published portfolio actually covers.
+ * FOCUS AREAS
+ * ---------------------------------------------------------------------------
+ * The three areas named in the supplied content document
+ * (output/website-content-source.txt, "Focus Areas section"). Titles and
+ * bodies are verbatim; nothing here is editorial.
+ *
+ * One array, read by both the homepage section and /focus-areas, because the
+ * two had drifted into separate hardcoded copies of the same three strings
+ * and only one of them would ever get corrected.
+ *
+ * Three is the number the client asked for. An earlier `investmentAreas`
+ * export listed six — the OLD site's taxonomy, plus Digital Health and
+ * Emerging Technologies — and it has been deleted rather than reconciled:
+ * nothing imported it, it duplicated the live portfolio taxonomy
+ * (HealthcareCategory in data/portfolio.ts), and rendering it would have put
+ * three areas on the page the document does not name. If KOFA later adds a
+ * focus area, it is added here, with copy they supply.
+ *
+ * `glyph` selects the drawn mark from components/visuals/plates.tsx; the
+ * values are its FocusGlyphKind union, so a typo is a type error rather than
+ * a blank space on the page.
  */
-export const investmentAreas = [
+export const focusAreas = [
   {
-    title: "Women's Health",
-    slug: "womens-health",
-    note: "Pelvic health, maternal safety, fertility and the long tail of conditions medicine has under-studied.",
-    stated: true,
+    title: "Cardiovascular Innovation",
+    glyph: "cardiovascular",
+    body: "We invest in differentiated technologies across structural heart, electrophysiology, minimally invasive intervention and other high-growth areas.",
   },
   {
-    title: "Orthopedics",
-    slug: "orthopedics",
-    note: "Biologics and devices that help bone and soft tissue heal faster, and at higher rates.",
-    stated: true,
+    title: "Advancing Women’s Health",
+    glyph: "womens-health",
+    body: "We invest across gynecology, maternal health, reproductive care and conditions that uniquely or disproportionately affect women.",
   },
   {
-    title: "Diagnostics",
-    slug: "diagnostics",
-    note: "Technologies that move detection earlier, closer to the patient, and further from guesswork.",
-    stated: true,
-  },
-  {
-    title: "Cardiovascular",
-    slug: "cardiovascular",
-    note: "Structural, vascular and hemodynamic interventions for conditions that remain leading causes of death.",
-    stated: true,
-  },
-  {
-    title: "Digital Health",
-    slug: "digital-health",
-    note: "Software and sensing that extend clinical-grade measurement beyond the hospital.",
-    stated: false,
-  },
-  {
-    title: "Emerging Technologies",
-    slug: "emerging-technologies",
-    note: "Platforms early enough that the clinical category has not been drawn around them yet.",
-    stated: false,
+    title: "Beyond Our Core",
+    glyph: "beyond",
+    body: "The most important innovations do not always fit neatly into a category. We remain open to exceptional opportunities across other clinical specialties.",
   },
 ] as const;
 
@@ -88,30 +85,14 @@ export const contactReasons = [
   "General Inquiry",
 ] as const;
 
-export const investmentProcess = [
-  {
-    n: "01",
-    title: "Clinical Need",
-    body: "The work starts with a problem clinicians actually have, measured in outcomes rather than addressable market.",
-  },
-  {
-    n: "02",
-    title: "Breakthrough Innovation",
-    body: "A technology credible enough to change the standard of care, not merely to compete inside it.",
-  },
-  {
-    n: "03",
-    title: "Partnership",
-    body: "We invest early and stay engaged as the clinical, regulatory and company-building work advances.",
-  },
-  {
-    n: "04",
-    title: "Growth",
-    body: "Evergreen capital means our horizon is set by the science and the regulatory path, not by a fund clock.",
-  },
-  {
-    n: "05",
-    title: "Patient Impact",
-    body: "The only result that finally counts: the technology reaches the people it was built for.",
-  },
-] as const;
+/* An `investmentProcess` export used to sit here: five numbered stages
+   (Clinical Need / Breakthrough Innovation / Partnership / Growth / Patient
+   Impact) with a sentence of copy each. It was deleted rather than wired up.
+
+   None of it appears in the supplied content document, which is the only
+   source of approved copy for this site; it was written during an earlier
+   pass and never imported by anything. Dead data that reads as finished copy
+   is the most likely thing on the page to get shipped by someone who assumes
+   it was signed off. The Our Approach narrative KOFA did supply is on
+   /our-approach, verbatim. If the firm wants a staged process rendered, the
+   stages come from them. */

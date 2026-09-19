@@ -37,7 +37,7 @@ export default function AboutPage() {
                 As an evergreen fund backed by a family office, we are not
                 constrained by traditional fundraising cycles or predetermined
                 exit timelines. We invest based on conviction in the
-                technology, clinical need and management team—and remain
+                technology, clinical need and management team, and remain
                 committed for the journey ahead.
               </BodyCopy>
             </div>

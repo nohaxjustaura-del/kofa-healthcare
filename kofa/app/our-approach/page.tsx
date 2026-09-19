@@ -7,7 +7,7 @@ import { pageMetadata } from "@/lib/metadata";
 export const metadata: Metadata = pageMetadata({
   title: "Our Approach",
   description:
-    "Backed by permanent family-office capital, we take a patient, founder-aligned approach—investing in exceptional technologies, clinical needs and teams rather than fixed fund timelines.",
+    "Backed by permanent family-office capital, we take a patient, founder-aligned approach: investing in exceptional technologies, clinical needs and teams rather than fixed fund timelines.",
   path: "/our-approach",
 });
 
@@ -24,7 +24,7 @@ export default function OurApproachPage() {
           <div className="grid grid-cols-12 gap-y-12">
             <p className="type-statement col-span-12 max-w-[30ch] text-ink lg:col-span-7">
               Backed by permanent family-office capital, we take a patient,
-              founder-aligned approach—investing in exceptional technologies,
+              founder-aligned approach: investing in exceptional technologies,
               clinical needs and teams rather than fixed fund timelines.
             </p>
             <div className="col-span-12 border-l border-rule pl-6 lg:col-span-6 lg:col-start-7 lg:pl-9">
@@ -38,7 +38,7 @@ export default function OurApproachPage() {
                 Beyond capital, we help founders shape clinical strategy,
                 design first-in-human studies, engage with the FDA and build
                 strong investor syndicates. Our medtech operating experience
-                and U.S.–China network can also connect portfolio companies
+                and U.S. to China network can also connect portfolio companies
                 with clinical, manufacturing and commercial partners.
               </BodyCopy>
             </div>

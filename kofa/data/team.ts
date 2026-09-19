@@ -76,7 +76,7 @@ export const team: TeamMember[] = [
        have to be invented, and a founder's biography is the last place on a
        site to start guessing. */
     biography:
-      "Jing Lin founded KOFA Healthcare in 2016 and has led it as Managing Director since, backing medical technology that addresses clinical unmet needs. She founded KOFA, LLC two years earlier, in 2014.\n\nShe holds a Ph.D., completed Harvard Business School's executive programme in Private Equity and Venture Capital in 2023, and was a Sloan Fellow on Stanford Graduate School of Business's MSx programme, graduating in 2025. She works from Palo Alto, California.\n\nHer stated focus is medical technology that advances women's health — from maternal health through to the cardiovascular conditions that disproportionately affect women — alongside the broader healthcare innovation KOFA backs.",
+      "Jing Lin founded KOFA Healthcare in 2016 and has led it as Managing Director since, backing medical technology that addresses clinical unmet needs. She founded KOFA, LLC two years earlier, in 2014.\n\nShe holds a Ph.D., completed Harvard Business School's executive programme in Private Equity and Venture Capital in 2023, and was a Sloan Fellow on Stanford Graduate School of Business's MSx programme, graduating in 2025. She works from Palo Alto, California.\n\nHer stated focus is medical technology that advances women's health (from maternal health through to the cardiovascular conditions that disproportionately affect women), alongside the broader healthcare innovation KOFA backs.",
     focusAreas: [
       "Women's Health",
       "Maternal Health",

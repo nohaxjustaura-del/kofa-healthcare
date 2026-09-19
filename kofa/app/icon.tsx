@@ -21,7 +21,7 @@ import { BRAND, KOFA_GLYPH_PATH, KOFA_GLYPH_VIEWBOX } from "@/lib/metadata";
  * whole job of a favicon.
  *
  * Next serves this at /icon and emits the <link rel="icon"> itself, with a
- * content hash on the URL — no `icons` entry in any metadata export is needed,
+ * content hash on the URL, no `icons` entry in any metadata export is needed,
  * and adding one would take over from this file rather than complement it.
  */
 

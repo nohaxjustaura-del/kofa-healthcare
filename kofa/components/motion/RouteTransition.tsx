@@ -7,38 +7,45 @@ import type { ReactNode } from "react";
 /* ===========================================================================
    ROUTE TRANSITION
    ---------------------------------------------------------------------------
-   Rendered from app/template.tsx, which Next.js re-mounts on every navigation.
-   That re-mount is the whole mechanism: `initial` → `animate` simply replays,
-   so there is no pathname listener, no AnimatePresence, and no exit animation
-   waiting to be interrupted.
+   Rendered from app/template.tsx, which Next.js re-mounts on every
+   navigation. That re-mount is the whole mechanism: `initial` → `animate`
+   simply replays, so there is no pathname listener, no AnimatePresence, and
+   no exit animation waiting to be interrupted.
 
-   Two things happen at once, and neither of them is a curtain:
+   WHAT CHANGED, AND WHY
+   ---------------------------------------------------------------------------
+   This used to do two things: sweep a teal hairline across the top of the
+   viewport, and fade the whole incoming page up from opacity 0 with a 14px
+   lift. The second one is gone.
 
-     · the incoming page arrives on opacity and a 14px lift, and
-     · a teal hairline sweeps left to right across the very top of the
-       viewport for the length of the transition.
+   Wrapping every page's entire contents in a JavaScript-driven opacity
+   animation means the site has exactly one failure mode: if that animation
+   does not run to completion, the page is blank. Not degraded, blank. The
+   <noscript> rule in app/layout.tsx covers the case where JavaScript is off,
+   but not the commoner one where JavaScript is on and the frame loop is
+   throttled, a backgrounded or occluded window, a browser under load, a
+   slow hydration on a phone. It was reproduced here during review: the
+   window lost focus mid-navigation and the body of the page stayed at
+   opacity 0 for as long as it stayed unpainted.
 
-   The hairline is the whole point. A cross-fade alone is invisible on a site
-   whose pages share a header and a ground colour — the reader clicks, the page
-   changes, and nothing acknowledges that anything happened. One 1px line
-   travelling the width of the screen is enough acknowledgement, and it costs a
-   single composited transform. It is deliberately NOT a progress bar: it does
-   not track anything, it is not tied to a request, and it never sits at 90%
-   waiting.
+   It also cost 520ms of deliberately invisible content on every navigation,
+   including the first paint, where the thing being hidden is the hero, i.e.
+   the Largest Contentful Paint element. Half a second of blank page is a
+   poor trade for a cross-fade nobody asked for.
 
-   SPEED IS THE CONSTRAINT. 520ms for the content, 720ms for the sweep, both
-   starting immediately. Navigation must never feel slower because of this; if
-   a future version of it cannot hold that line, it should be deleted rather
-   than lengthened.
+   The hairline stays, and it was always the part that did the work. A
+   cross-fade is invisible on a site whose pages share a header and a ground
+   colour; one 1px line travelling the width of the screen is enough to
+   acknowledge that something happened, and it costs a single composited
+   transform. If it never runs, nothing is lost but a sliver.
+
+   It is deliberately NOT a progress bar: it tracks nothing, it is not tied
+   to a request, and it never sits at 90% waiting.
 =========================================================================== */
 
-const EASE = [0.22, 1, 0.36, 1] as const;
-/** The site's symmetrical curve. A sweep wants to accelerate and decelerate;
-    --ease-kofa is an out-curve and would leave the band loitering on the
-    right-hand edge. */
+/** A sweep wants to accelerate and decelerate; --ease-kofa is an out-curve
+    and would leave the band loitering against the right-hand edge. */
 const EASE_SWEEP = [0.65, 0, 0.35, 1] as const;
-
-const CONTENT_DURATION = 0.52;
 const SWEEP_DURATION = 0.72;
 
 /* A narrow bright band inside a full-width element, rather than a short
@@ -57,18 +64,16 @@ export function RouteTransition({ children }: { children: ReactNode }) {
      expressed purely as `duration: 0`. */
   return (
     <>
-      {/* z-80 clears the navigation (z-50) and stays under the arrival
-          curtain (z-90), which owns the first load on its own, and under the
-          skip link (z-100).
+      {/* z-80 clears the navigation (z-50) and stays under the skip link.
 
           No `data-reveal` here, deliberately: the reduced-motion rule in
           globals.css pins [data-reveal] to `transform: none`, which would
           park this band across the middle of the screen permanently. Left
           alone it stays at translateX(-100%), i.e. outside its own
-          overflow-hidden track and invisible — which is also exactly what a
+          overflow-hidden track and invisible, which is also exactly what a
           no-JS visitor gets, since that is the `initial` style Framer Motion
           renders into the server HTML. Both failure modes resolve to
-          "nothing", which is the correct thing for a decorative sliver. */}
+          "nothing", which is the correct outcome for a decorative sliver. */}
       <div
         aria-hidden="true"
         className="pointer-events-none fixed inset-x-0 top-0 z-[80] h-px overflow-hidden"
@@ -79,19 +84,14 @@ export function RouteTransition({ children }: { children: ReactNode }) {
           initial={{ x: "-100%" }}
           animate={{ x: "100%" }}
           transition={
-            reduced ? { duration: 0 } : { duration: SWEEP_DURATION, ease: EASE_SWEEP }
+            reduced
+              ? { duration: 0 }
+              : { duration: SWEEP_DURATION, ease: EASE_SWEEP }
           }
         />
       </div>
 
-      <motion.div
-        data-reveal
-        initial={{ opacity: 0, y: 14 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={reduced ? { duration: 0 } : { duration: CONTENT_DURATION, ease: EASE }}
-      >
-        {children}
-      </motion.div>
+      {children}
     </>
   );
 }

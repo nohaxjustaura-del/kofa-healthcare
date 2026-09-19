@@ -6,8 +6,11 @@ node_modules/
 # next.js build output
 # `.next` is the production dir and `.next-dev` the dev one; next.config.ts
 # splits them so a dev server and a production server can share a checkout.
+# KOFA_DIST_SUFFIX appends to the dev name, so a second dev server on another
+# port gets `.next-dev-b` instead of fighting the first one for the same
+# manifests. The glob covers every suffix.
 .next/
-.next-dev/
+.next-dev*/
 out/
 build/
 dist/
