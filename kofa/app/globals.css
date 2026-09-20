@@ -967,7 +967,7 @@ html.lenis body {
    with one border side knocked out. At three different rotations
    it read as a rendering fault rather than a motif, and it left
    ~5rem of dead space above the title. The icon now sits in a
-   plain 3.25rem disc and the numeral carries the rhythm.
+   plain 3.25rem disc.
    ============================================================ */
 @layer components {
   .focus-area-panel {
@@ -1046,32 +1046,6 @@ html.lenis body {
     width: 2rem;
     height: 2rem;
     color: var(--color-teal);
-  }
-
-  /* The team columns' outline numeral, two sizes down. */
-  .focus-area-panel__index {
-    font-family: var(--font-sans);
-    font-weight: 200;
-    font-size: 2rem;
-    line-height: 1;
-    letter-spacing: -0.04em;
-    font-variant-numeric: tabular-nums;
-    color: var(--color-rule-strong);
-    transition:
-      color 600ms var(--ease-kofa),
-      -webkit-text-stroke-color 600ms var(--ease-kofa);
-  }
-
-  @supports (-webkit-text-stroke: 1px currentColor) {
-    .focus-area-panel__index {
-      color: transparent;
-      -webkit-text-stroke: 1px var(--color-rule-strong);
-    }
-  }
-
-  .focus-area-panel:hover .focus-area-panel__index {
-    color: var(--color-teal);
-    -webkit-text-stroke-color: transparent;
   }
 
   .focus-area-panel__title {

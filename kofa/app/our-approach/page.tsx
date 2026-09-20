@@ -22,7 +22,7 @@ export default function OurApproachPage() {
       <Section className="border-t border-rule bg-white">
         <Container>
           <div className="grid grid-cols-12 gap-y-12">
-            <p className="type-statement col-span-12 max-w-[30ch] text-ink lg:col-span-7">
+            <p className="type-statement col-span-12 max-w-[30ch] text-ink lg:col-span-5">
               Backed by permanent family-office capital, we take a patient,
               founder-aligned approach: investing in exceptional technologies,
               clinical needs and teams rather than fixed fund timelines.

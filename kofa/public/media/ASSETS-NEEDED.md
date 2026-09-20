@@ -145,7 +145,7 @@ Not upload-only, so worth deciding before collecting anything:
 - **Photographic interior page headers.** `components/ui/PageHero.tsx` is
   type and linework only, by design. Adding an image slot would want one
   image per page at roughly 21 : 9, ≥ 2400px wide.
-- **A photographic or video homepage hero**, replacing the drawn plate.
+- **A homepage video**, if specifically requested in a future brief. The current photographic hero and supporting photographs are restored and require no supplied replacement assets.
 
-Ask before shooting either. Both move the site back towards the register the
-client asked to leave, so they are a direction change rather than an asset.
+Interior photographic headers and a homepage video remain optional. The
+September 19 request already authorizes the restored homepage photographs.

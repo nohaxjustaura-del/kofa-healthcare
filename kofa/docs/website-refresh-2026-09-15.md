@@ -12,7 +12,7 @@ The September 15 request and supplied Word document define this update. The docu
 - News is one collection with KOFA News and Portfolio News filters.
 - Team order is Renee Masi, Senior Managing Director; Jing Lin, Managing Director; Dr. Meng Deng, Managing Director. Jing's existing biography remains; Renee and Meng have explicit biography placeholders pending supplied copy.
 - The KOFA logo is larger. The supplied red artwork remains the brand authority.
-- Decorative hospital, laboratory, and blood-cell imagery is replaced by a simpler treatment with restrained geometric linework. Existing company logos and Jing's portrait remain useful factual assets.
+- The September 19 follow-up restores restrained healthcare photography in the homepage hero, Portfolio and Focus Areas image slots, with simple outline icons and no visible photo credits. This supersedes the earlier abstract-only interpretation. Existing company logos and the supplied team portrait remain.
 - Navigation, filters, contact validation, and layouts are checked at desktop and mobile widths. The application passes its production build and TypeScript checks.
 
 ## Search appearance

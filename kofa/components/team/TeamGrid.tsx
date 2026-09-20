@@ -43,7 +43,8 @@ function Portrait({ member }: { member: TeamMember }) {
         src={member.portrait}
         alt={`${member.name}, ${member.role}`}
         fill
-        sizes="(max-width: 768px) 100vw, 40vw"
+        quality={88}
+        sizes="(max-width: 767px) calc(100vw - 3rem), (max-width: 1023px) calc((100vw - 5rem) / 2), 380px"
         className="object-cover transition-transform duration-[900ms] ease-kofa group-hover/member:scale-[1.02]"
       />
     );

@@ -79,7 +79,7 @@ export function HomePortfolio() {
         className="grid grid-cols-2 border-l border-t border-[#dbe8ea] sm:grid-cols-3 lg:grid-cols-4"
       >
         <p aria-live="polite" className="sr-only">
-          Showing {companies.length} {active.toLowerCase()} companies.
+          Showing {companies.length} {active === "Exits" ? "exited" : "active"} companies.
         </p>
         {companies.map((company) => (
           <Link

@@ -51,6 +51,28 @@ interface Submission {
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
+function validWebsite(value: string) {
+  try {
+    const url = new URL(
+      /^https?:\/\//i.test(value) ? value : `https://${value}`,
+    );
+    return (
+      (url.protocol === "http:" || url.protocol === "https:") &&
+      url.hostname.includes(".")
+    );
+  } catch {
+    return false;
+  }
+}
+
+function isPayload(value: unknown): value is Payload {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function stringValue(value: unknown): string {
+  return typeof value === "string" ? value.trim() : "";
+}
+
 /** Where enquiries go when CONTACT_TO_EMAIL is not set. The published
  *  address, so a deployment that configures only RESEND_API_KEY and a sender
  *  still delivers somewhere a person reads. */
@@ -133,14 +155,18 @@ function rateLimited(key: string): boolean {
 }
 
 export async function POST(request: Request) {
-  let body: Payload;
+  let body: unknown;
   try {
     body = await request.json();
   } catch {
     return NextResponse.json({ error: "Malformed request." }, { status: 400 });
   }
 
-  if (body.company_url) {
+  if (!isPayload(body)) {
+    return NextResponse.json({ error: "Malformed request." }, { status: 400 });
+  }
+
+  if (stringValue(body.company_url)) {
     // Silently accept and drop obvious bots. This branch was unreachable for a
     // long time, ContactForm never rendered or sent a company_url field, so
     // the honeypot was a comment rather than a defence. The form now ships the
@@ -150,14 +176,18 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true });
   }
 
-  const name = (body.name ?? "").trim();
-  const email = (body.email ?? "").trim();
-  const message = (body.message ?? "").trim();
+  const name = stringValue(body.name);
+  const email = stringValue(body.email);
+  const message = stringValue(body.message);
+  const company = stringValue(body.company);
+  const website = stringValue(body.website);
+  const reason = stringValue(body.reason);
 
   const errors: Record<string, string> = {};
   if (!name) errors.name = "Name is required.";
   if (!EMAIL.test(email)) errors.email = "A valid email is required.";
   if (message.length < 20) errors.message = "Message is too short.";
+  if (website && !validWebsite(website)) errors.website = "A valid URL is required.";
   if (name.length > 200 || email.length > 320 || message.length > 5000) {
     errors.length = "Submission too large.";
   }
@@ -169,9 +199,9 @@ export async function POST(request: Request) {
   const submission: Submission = {
     name,
     email,
-    company: (body.company ?? "").trim().slice(0, 200),
-    website: (body.website ?? "").trim().slice(0, 500),
-    reason: (body.reason ?? "General Inquiry").trim().slice(0, 100),
+    company: company.slice(0, 200),
+    website: website.slice(0, 500),
+    reason: (reason || "General Inquiry").slice(0, 100),
     message,
     receivedAt: new Date().toISOString(),
   };
@@ -228,9 +258,17 @@ export async function POST(request: Request) {
       "[contact] every delivery channel failed:",
       results.map((r) => (r as PromiseRejectedResult).reason),
     );
+    const allTimedOut = results.every(
+      (r) =>
+        r.status === "rejected" && r.reason instanceof DeliveryTimeoutError,
+    );
     return NextResponse.json(
-      { error: "Could not deliver the message." },
-      { status: 502 },
+      {
+        error: allTimedOut
+          ? "Delivery timed out. Please try again or email us directly."
+          : "Could not deliver the message.",
+      },
+      { status: allTimedOut ? 504 : 502 },
     );
   }
 
@@ -259,12 +297,45 @@ export async function POST(request: Request) {
 
 const DELIVERY_TIMEOUT_MS = 8000;
 
+class DeliveryTimeoutError extends Error {
+  constructor() {
+    super(`Delivery did not respond within ${DELIVERY_TIMEOUT_MS}ms`);
+    this.name = "DeliveryTimeoutError";
+  }
+}
+
+/* Race the request as well as aborting it so the handler settles at the
+   deadline even if a future fetch implementation or test double ignores the
+   abort signal. */
+async function fetchWithDeliveryTimeout(
+  url: string,
+  init: RequestInit,
+): Promise<Response> {
+  const controller = new AbortController();
+  let timeout: ReturnType<typeof setTimeout> | undefined;
+  const deadline = new Promise<never>((_, reject) => {
+    timeout = setTimeout(() => {
+      const error = new DeliveryTimeoutError();
+      controller.abort(error);
+      reject(error);
+    }, DELIVERY_TIMEOUT_MS);
+  });
+
+  try {
+    return await Promise.race([
+      fetch(url, { ...init, signal: controller.signal }),
+      deadline,
+    ]);
+  } finally {
+    if (timeout) clearTimeout(timeout);
+  }
+}
+
 async function deliverWebhook(submission: Submission, url: string) {
-  const res = await fetch(url, {
+  const res = await fetchWithDeliveryTimeout(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(submission),
-    signal: AbortSignal.timeout(DELIVERY_TIMEOUT_MS),
   });
   if (!res.ok) throw new Error(`Webhook responded ${res.status}`);
 }
@@ -276,7 +347,7 @@ async function deliverEmail(
 ) {
   const to = process.env.CONTACT_TO_EMAIL || FALLBACK_TO;
 
-  const res = await fetch("https://api.resend.com/emails", {
+  const res = await fetchWithDeliveryTimeout("https://api.resend.com/emails", {
     method: "POST",
     headers: {
       Authorization: `Bearer ${apiKey}`,
@@ -291,7 +362,6 @@ async function deliverEmail(
       subject: `${submission.reason}: ${submission.company || submission.name}`,
       text: plainTextBody(submission),
     }),
-    signal: AbortSignal.timeout(DELIVERY_TIMEOUT_MS),
   });
 
   if (!res.ok) {

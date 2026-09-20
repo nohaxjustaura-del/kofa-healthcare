@@ -93,7 +93,7 @@ export function PortfolioBrowser({ compact = false }: { compact?: boolean }) {
           {active} portfolio companies
         </h2>
         <p aria-live="polite" className="sr-only">
-          Showing {visible.length} {active.toLowerCase()} companies.
+          Showing {visible.length} {active === "Exits" ? "exited" : "active"} companies.
         </p>
         <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4 lg:gap-5">
           {visible.map((company) => (

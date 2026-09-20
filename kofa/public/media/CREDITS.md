@@ -12,43 +12,25 @@ Two kinds of media live under `public/`:
 
 Nothing here carries a watermark or a stock-subscription licence.
 
-## Homepage art direction, drawn rather than photographed
+## Homepage photography
 
-The site's illustration is now a set of drawn technical plates in
-`components/visuals/plates.tsx`, not image files. There is nothing in this
-section to licence, credit or re-clear, and nothing to download: the plates
-are SVG generated at build time from the geometry in that file. See
-[docs/illustration-system.md](../../docs/illustration-system.md).
+Restored on September 19, 2026 in response to the user's explicit request for
+healthcare photographs instead of the drawn placeholders. These original,
+generated illustrative scenes were recovered from commit `0a063b1`:
 
-This replaced a library of science photography and video on the client's
-instruction of September 15 2026: "They don't like the current pictures.
-Maybe let's keep it simple," with the stated direction being technical
-drawings and subtle patent illustrations, abstract forms suggesting movement,
-flow and precision, and natural images suggesting longevity and quality of
-life.
+- `home/clinical-collaboration.png`: two fictional clinicians collaborating;
+  the homepage hero, composed with people on the right.
+- `home/device-research.png`: a fictional researcher examining a device;
+  the portfolio introduction.
+- `home/healthy-longevity.png`: two fictional women walking outdoors;
+  the Focus Areas introduction.
 
-Deleted with that change, all of them unreferenced by then:
+These are illustrative scenes, not photographs of KOFA staff, portfolio
+teams, or actual patients. No visible photo credit or attribution label is
+added to the website. This maintenance note records provenance only.
 
-| File | What it was |
-| --- | --- |
-| `home/hero-blood-cells.mp4`, `home/blood-cells.jpg` | Erythrocyte field, the old hero loop and its poster |
-| `home/heart-cinematic.jpg` | 3D anatomical heart, the "conviction" break |
-| `home/fetal-ultrasound.jpg` | Fetal ultrasound, the women's-health break |
-| `home/researchers-lab.jpg` | Researchers at a bench, the fund-intro plate |
-| `home/precision-flow.png` | Abstract filament hero artwork |
-| `operating-theatre.jpg` | Surgical team under theatre lights (StockSnap, CC0) |
-| `lab-loop.webm`, `lab-loop-poster.jpg` | Hematology lab footage (Wikimedia, public domain) |
-| `home/clinical-collaboration.png` | Two clinicians at a laptop, the old homepage hero |
-| `home/device-research.png` | A bench researcher, the old portfolio-intro circle |
-| `home/healthy-longevity.png` | Two women on a park path, the old focus-areas circle |
-
-Together they were about 16 MB of the repository. `public/media/` now holds
-nothing but these two documents.
-
-The last three were generated illustrative scenes of fictional people rather
-than stock-library photographs, so nothing was ever licensed and there is no
-subscription to cancel. They went when the homepage moved to `FlowPlate`,
-`LatticePlate` and `LongevityPlate`; their provenance note went with them.
+The shared technical linework remains available for interior page decoration;
+Focus Areas uses simple consistent outline icons.
 
 ## Portfolio company media, `public/portfolio/`
 
@@ -86,5 +68,9 @@ is removed or an additional company is added before approved imagery arrives.
   company's `media` entry in `data/portfolio.ts` at it.
 - **A company video**: add `mp4` + a `poster` still, muted and audio-stripped,
   and set `kind: "video"` on that company's `media` entry.
-- **The hero**: replace `hero-blood-cells.mp4` (keep it muted and short) and,
-  if the poster should change, `blood-cells.jpg`.
+- **The hero**: replace `home/clinical-collaboration.png` with an approved image,
+  keeping clear space on the left for the introductory copy.
+
+## September 19 photo refinements
+
+The built-in image-generation tool edited the restored originals into the active `-v2.png` files, improving headroom and circular-crop composition. The hero is 1881 x 836 pixels; supporting images are 1254 x 1254 pixels. These are native tool outputs, not claimed as 4K masters. The site serves responsive optimized images at quality 90. Full edit prompts are recorded in `docs/homepage-photo-prompts-2026-09-19.md`. No photo credits are rendered in the interface.

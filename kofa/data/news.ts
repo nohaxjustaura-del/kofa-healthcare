@@ -1,3 +1,5 @@
+import generatedNewsSnapshot from "./news.generated.json";
+
 /**
  * NEWS: CMS content type
  * ---------------------------------------------------------------------------
@@ -43,7 +45,16 @@ export interface NewsItem {
   subheadline?: string;
 }
 
-export const news: NewsItem[] = [
+export interface GeneratedNewsItem {
+  slug: string;
+  title: string;
+  date: string;
+  source: string;
+  url: string;
+  company: string;
+}
+
+const curatedNews: NewsItem[] = [
   {
     slug: "cms-establishes-first-icd-10-pcs-code-for-computer-aided-neuraxial",
     title:
@@ -847,6 +858,67 @@ export const news: NewsItem[] = [
     company: "aria-cv",
   },
 ];
+
+const generatedNews = Object.values(generatedNewsSnapshot.sources)
+  .flat() as GeneratedNewsItem[];
+
+const TRACKING_QUERY_NAMES = new Set(["dclid", "fbclid", "gclid", "mc_cid", "mc_eid"]);
+
+function canonicalNewsUrl(value: string | undefined): string | undefined {
+  if (!value) return undefined;
+  try {
+    const url = new URL(value);
+    if (url.protocol !== "https:" || url.port) return undefined;
+    url.hostname = url.hostname.toLowerCase().replace(/^www\./, "");
+    url.hash = "";
+    url.pathname = url.pathname.replace(/\/+$/, "") || "/";
+    const query = [...url.searchParams.entries()]
+      .filter(
+        ([name]) =>
+          !name.toLowerCase().startsWith("utm_") &&
+          !TRACKING_QUERY_NAMES.has(name.toLowerCase()),
+      )
+      .sort(
+        ([aName, aValue], [bName, bValue]) =>
+          aName.localeCompare(bName) || aValue.localeCompare(bValue),
+      );
+    url.search = new URLSearchParams(query).toString();
+    return url.href;
+  } catch {
+    return undefined;
+  }
+}
+
+/** Curated records take precedence when an approved feed repeats their URL. */
+export function mergeNews(
+  curated: NewsItem[],
+  generated: GeneratedNewsItem[],
+): NewsItem[] {
+  const urls = new Set(curated.map((item) => canonicalNewsUrl(item.externalUrl)).filter(Boolean));
+  const slugs = new Set(curated.map((item) => item.slug));
+  const automated: NewsItem[] = [];
+
+  for (const item of generated) {
+    const url = canonicalNewsUrl(item.url);
+    if (!url || urls.has(url) || slugs.has(item.slug)) continue;
+    urls.add(url);
+    slugs.add(item.slug);
+    automated.push({
+      slug: item.slug,
+      title: item.title,
+      type: "Portfolio News",
+      date: item.date,
+      excerpt: `Read the original announcement from ${item.source}.`,
+      source: item.source,
+      externalUrl: url,
+      company: item.company,
+    });
+  }
+
+  return [...curated, ...automated];
+}
+
+export const news = mergeNews(curatedNews, generatedNews);
 
 /* --- Selectors ----------------------------------------------------------- */
 

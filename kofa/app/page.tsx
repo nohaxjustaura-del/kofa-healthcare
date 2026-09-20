@@ -1,15 +1,10 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import Image from "next/image";
 import { HomePortfolio } from "@/components/home/HomePortfolio";
 import { CTASection } from "@/components/ui/CTASection";
 import { Button, TextLink } from "@/components/ui/Button";
 import { Container, Section } from "@/components/ui/primitives";
-import {
-  FlowPlate,
-  FocusGlyph,
-  LatticePlate,
-  LongevityPlate,
-} from "@/components/visuals/plates";
+import { FocusGlyph } from "@/components/visuals/plates";
 import { focusAreas, site } from "@/data/site";
 
 export const metadata: Metadata = {
@@ -29,21 +24,17 @@ export const metadata: Metadata = {
    teaser. Anything that wants to be on the homepage has to displace one of
    the four, which is the client's call and not a build decision.
 
-   Two things did change.
+   The homepage combines original medical photography with the shared SVG
+   FocusGlyph icons. The three supplied photos provide the hero and its two
+   supporting circular crops; the glyphs keep the three Focus cards simple
+   and consistent.
 
-   1. IMAGERY. Three decorative photographs (clinical-collaboration.png,
-      device-research.png, healthy-longevity.png) are gone, replaced by the
-      drawn plates in components/visuals/plates.tsx. The brief asks for
-      "restrained geometric linework" in place of hospital and laboratory
-      photography, and the plates are original to this repo, so there is no
-      licence to re-clear if the site moves.
-
-   2. THE TYPE SCALE. This page used to set every heading with its own
-      one-off `text-[clamp(...)]` while the other eight pages used the scale
-      in app/globals.css. Two type systems on one site read as two templates
-      stitched together, and the homepage is the page most people judge it
-      by. Headings here are now .type-display-sm and .type-section, which is
-      the same ladder CTASection and PageHero sit on.
+   The type scale changed too. This page used to set every heading with its own
+   one-off `text-[clamp(...)]` while the other eight pages used the scale in
+   app/globals.css. Two type systems on one site read as two templates stitched
+   together, and the homepage is the page most people judge it by. Headings
+   here are now .type-display-sm and .type-section, which is the same ladder
+   CTASection and PageHero sit on.
 --------------------------------------------------------------------------- */
 
 export default function Home() {
@@ -55,16 +46,20 @@ export default function Home() {
           pages clear the same band with padding instead, because their teal
           ground runs up behind it. */}
       <section className="relative isolate mt-[104px] overflow-hidden bg-navy text-white">
-        {/* The plate bleeds off the right edge rather than sitting in a box.
-            Colour comes from this wrapper: every plate strokes currentColor,
-            so a text-* class and an opacity are the whole treatment and
-            there is no light/dark variant to maintain. Hidden below lg,
-            where there is no room for it to be anything but noise. */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-y-0 right-[-6%] -z-10 hidden w-[58%] text-white opacity-45 lg:block"
-        >
-          <FlowPlate className="h-full w-full" />
+        <div className="relative h-[250px] sm:h-[320px] lg:absolute lg:inset-0 lg:h-auto">
+          <Image
+            src="/media/home/clinical-collaboration-v2.png"
+            alt=""
+            fill
+            priority
+            quality={90}
+            sizes="100vw"
+            className="object-cover object-[68%_top]"
+          />
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 hidden bg-[linear-gradient(90deg,rgba(7,52,73,0.97)_0%,rgba(7,52,73,0.92)_42%,rgba(7,52,73,0.5)_66%,rgba(7,52,73,0.08)_100%)] lg:block"
+          />
         </div>
 
         <Container className="relative py-[clamp(3.5rem,7vw,6.5rem)]">
@@ -121,9 +116,16 @@ export default function Home() {
       <Section id="portfolio" className="bg-white">
         <Container>
           <div className="grid gap-10 border-b border-rule pb-14 lg:grid-cols-[.95fr_1fr] lg:items-center lg:gap-20">
-            <div className="relative mx-auto aspect-square w-full max-w-[380px] overflow-hidden rounded-full border border-teal/30 p-3">
-              <div className="grid h-full w-full place-items-center rounded-full bg-ice text-teal">
-                <LatticePlate className="h-[88%] w-[88%]" />
+            <div className="mx-auto aspect-square w-full max-w-[380px] rounded-full border border-teal/30 bg-ice p-2 sm:p-3">
+              <div className="relative h-full overflow-hidden rounded-full">
+                <Image
+                  src="/media/home/device-research-v2.png"
+                  alt=""
+                  fill
+                  quality={90}
+                  sizes="(min-width: 1024px) 380px, min(100vw - 3rem, 380px)"
+                  className="object-cover"
+                />
               </div>
             </div>
             <div>
@@ -160,9 +162,16 @@ export default function Home() {
                 </TextLink>
               </div>
             </div>
-            <div className="relative mx-auto aspect-square w-56 shrink-0 overflow-hidden rounded-full border border-teal/30 p-3 sm:mx-0">
-              <div className="grid h-full w-full place-items-center rounded-full bg-white text-teal">
-                <LongevityPlate className="h-[86%] w-[86%]" />
+            <div className="mx-auto aspect-square w-56 shrink-0 rounded-full border border-teal/30 bg-white p-2 sm:mx-0 sm:p-3">
+              <div className="relative h-full overflow-hidden rounded-full">
+                <Image
+                  src="/media/home/healthy-longevity-v2.png"
+                  alt=""
+                  fill
+                  quality={90}
+                  sizes="224px"
+                  className="object-cover"
+                />
               </div>
             </div>
           </div>
@@ -171,7 +180,7 @@ export default function Home() {
               hardcoded in both places, which meant a copy correction had to be
               made twice and never was. See data/site.ts. */}
           <div className="mt-10 grid gap-5 md:grid-cols-3 md:gap-6">
-            {focusAreas.map((area, i) => (
+            {focusAreas.map((area) => (
               <article key={area.title} className="focus-area-panel">
                 <div className="focus-area-panel__head">
                   <span className="focus-area-panel__badge">
@@ -179,9 +188,6 @@ export default function Home() {
                       kind={area.glyph}
                       className="focus-area-panel__glyph"
                     />
-                  </span>
-                  <span aria-hidden className="focus-area-panel__index">
-                    {String(i + 1).padStart(2, "0")}
                   </span>
                 </div>
                 <h3 className="focus-area-panel__title">{area.title}</h3>

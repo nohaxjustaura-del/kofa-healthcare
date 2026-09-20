@@ -132,6 +132,20 @@ function Field({
   );
 }
 
+function validWebsite(value: string) {
+  try {
+    const url = new URL(
+      /^https?:\/\//i.test(value) ? value : `https://${value}`,
+    );
+    return (
+      (url.protocol === "http:" || url.protocol === "https:") &&
+      url.hostname.includes(".")
+    );
+  } catch {
+    return false;
+  }
+}
+
 export function ContactForm() {
   const [f, setF] = useState<Fields>(EMPTY);
   const [errors, setErrors] = useState<Partial<Record<keyof Fields, string>>>({});
@@ -142,6 +156,7 @@ export function ContactForm() {
   const set = (k: keyof Fields) => (v: string) => {
     setF((prev) => ({ ...prev, [k]: v }));
     if (errors[k]) setErrors((prev) => ({ ...prev, [k]: undefined }));
+    if (status === "error" || status === "rate-limited") setStatus("idle");
   };
 
   function validate(): boolean {
@@ -153,7 +168,7 @@ export function ContactForm() {
     if (!f.message.trim()) e.message = "Please tell us a little about it.";
     else if (f.message.trim().length < 20)
       e.message = "A sentence or two more would help.";
-    if (f.website.trim() && !/^(https?:\/\/)?[\w-]+(\.[\w-]+)+/.test(f.website.trim()))
+    if (f.website.trim() && !validWebsite(f.website.trim()))
       e.website = "Please enter a valid URL.";
 
     setErrors(e);
@@ -200,6 +215,34 @@ export function ContactForm() {
         setStatus("sent");
         setF(EMPTY);
         return;
+      }
+
+      if (res.status === 422) {
+        const data: unknown = await res.json().catch(() => null);
+        const responseErrors =
+          data &&
+          typeof data === "object" &&
+          "errors" in data &&
+          data.errors &&
+          typeof data.errors === "object"
+            ? (data.errors as Record<string, unknown>)
+            : null;
+
+        if (responseErrors) {
+          const nextErrors: Partial<Record<keyof Fields, string>> = {};
+          for (const key of ["name", "email", "website", "message"] as const) {
+            const value = responseErrors[key];
+            if (typeof value === "string") nextErrors[key] = value;
+          }
+          if (Object.keys(nextErrors).length) {
+            setErrors(nextErrors);
+            setStatus("idle");
+            formRef.current
+              ?.querySelector<HTMLElement>(`#${Object.keys(nextErrors)[0]}`)
+              ?.focus();
+            return;
+          }
+        }
       }
 
       // 501 => no delivery destination configured on this deployment.

@@ -1,0 +1,10 @@
+{
+  "name": "kofa",
+  "private": true,
+  "scripts": {
+    "setup": "npm --prefix kofa ci",
+    "dev": "npm --prefix kofa run dev",
+    "build": "npm --prefix kofa run build",
+    "start": "npm --prefix kofa run start"
+  }
+}

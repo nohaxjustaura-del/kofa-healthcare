@@ -119,6 +119,7 @@ export function CompanyVisual({
             alt={media.alt}
             fill
             priority={priority}
+            quality={88}
             sizes={sizes}
             className={fitClass}
             style={{ objectPosition: position }}
@@ -143,6 +144,7 @@ export function CompanyVisual({
         alt={media.alt}
         fill
         priority={priority}
+        quality={88}
         sizes={sizes}
         className={fitClass}
         style={{ objectPosition: position }}
@@ -158,6 +160,7 @@ export function CompanyVisual({
         alt={`${name} company imagery`}
         fill
         priority={priority}
+        quality={88}
         sizes={sizes}
         className={`object-cover ${className}`}
       />

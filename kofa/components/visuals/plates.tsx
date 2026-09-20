@@ -492,21 +492,13 @@ export function LongevityPlate({ className = "" }: { className?: string }) {
 /* ===========================================================================
    FOCUS GLYPHS
    ---------------------------------------------------------------------------
-   One per focus area, drawn to the same conventions as the plates above so
-   the three cards read as three sheets from the same drawing set rather than
-   three icons from a library.
+   Three small, consistent marks for the Focus cards. Each uses a simple
+   24-unit shape with one stroke weight, so the cards remain quiet beside the
+   supporting photography.
 =========================================================================== */
 
 export type FocusGlyphKind = "cardiovascular" | "womens-health" | "beyond";
 
-/**
- * These are drawn on a 64-unit box, not the 120 the plates use, and at
- * stroke weights three to four times heavier. A glyph is displayed at about
- * 90px: a 0.7 stroke on a 120 box lands at half a device pixel there and
- * simply disappears, taking the fine hatching and the dimension ticks with
- * it. Each glyph is therefore ONE idea, centred, with at most one piece of
- * drawing furniture. The detailed work belongs on the full-size plates.
- */
 export function FocusGlyph({
   kind,
   className = "",
@@ -515,95 +507,38 @@ export function FocusGlyph({
   className?: string;
 }) {
   const common = {
-    viewBox: "0 0 64 64",
+    viewBox: "0 0 24 24",
     className,
     "aria-hidden": true as const,
     focusable: "false" as const,
     fill: "none",
     stroke: "currentColor",
+    strokeWidth: 1.75,
     strokeLinecap: "round" as const,
     strokeLinejoin: "round" as const,
   };
 
   if (kind === "cardiovascular") {
-    /* A pressure trace running into a vessel drawn in section. The two sit
-       side by side rather than on top of each other: overlapping them put
-       the waveform's peaks inside the lumen, where at this size the whole
-       thing collapsed into a tangle. */
     return (
       <svg {...common}>
-        <path
-          d="M22 32h40"
-          strokeWidth={1.1}
-          strokeOpacity={0.3}
-          strokeDasharray="9 3.5 1.6 3.5"
-        />
-        <path
-          d="M3 32h4l3-10 4 20 3-12 2 2h3"
-          strokeWidth={1.7}
-          strokeOpacity={0.9}
-        />
-        {/* r matched to the other two glyphs' 21 as closely as the trace
-            allows, so none of the three reads lighter than its neighbours. */}
-        <circle cx={42} cy={32} r={18} strokeWidth={1.6} strokeOpacity={0.9} />
-        <circle cx={42} cy={32} r={10} strokeWidth={1.2} strokeOpacity={0.45} />
+        <path d="M2.5 12h4l2.25-5 3.25 10 2.5-5H21.5" />
       </svg>
     );
   }
 
   if (kind === "womens-health") {
-    // A measured aperture: fourfold symmetry opening outward from a centre.
     return (
       <svg {...common}>
-        <circle cx={32} cy={32} r={21} strokeWidth={1.6} strokeOpacity={0.9} />
-        {/* One petal, drawn to fit, then rotated. No nested scale/translate:
-            the petal's own coordinates are already the ones on screen. */}
-        {[0, 90, 180, 270].map((deg) => (
-          <path
-            key={deg}
-            d="M32 32C32 32 24 24.5 24 18C24 12.8 27.6 9.5 32 9.5C36.4 9.5 40 12.8 40 18C40 24.5 32 32 32 32Z"
-            transform={`rotate(${deg} 32 32)`}
-            strokeWidth={1.35}
-            strokeOpacity={0.55}
-          />
-        ))}
-        <circle cx={32} cy={32} r={4} strokeWidth={1.5} strokeOpacity={0.9} />
-        <path
-          d="M32 57a25 25 0 0 0 22-13"
-          strokeWidth={1.2}
-          strokeOpacity={0.4}
-          strokeDasharray="2.5 4"
-        />
+        <circle cx={12} cy={8} r={4} />
+        <path d="M12 12v9m-3-3h6" />
       </svg>
     );
   }
 
-  /* Beyond our core: a path that starts inside the drawn boundary and
-     leaves it. The barbs are placed from the curve's own end tangent, (10,
-     −8) normalised, rotated ±30° and stepped back 7 units, so the head sits
-     on the direction of travel instead of being eyeballed. The dot marks
-     where the path crosses the boundary, at r = 21 from the centre. */
   return (
     <svg {...common}>
-      <circle
-        cx={32}
-        cy={32}
-        r={21}
-        strokeWidth={1.4}
-        strokeOpacity={0.5}
-        strokeDasharray="4 5"
-      />
-      <path
-        d="M18 44C25 44 26 33 32 30C42 25 48 22 58 14"
-        strokeWidth={1.7}
-        strokeOpacity={0.9}
-      />
-      <path
-        d="M51.1 15.1L58 14L55.5 20.5"
-        strokeWidth={1.6}
-        strokeOpacity={0.9}
-      />
-      <circle cx={49} cy={20.6} r={2.5} fill="currentColor" stroke="none" fillOpacity={0.85} />
+      <circle cx={12} cy={12} r={8} />
+      <path d="m12 7 3 5-3 5-3-5 3-5Z" />
     </svg>
   );
 }
