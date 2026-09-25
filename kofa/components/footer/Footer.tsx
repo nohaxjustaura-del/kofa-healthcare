@@ -88,14 +88,23 @@ export function Footer() {
           <p className="text-xs text-slate-500">
             © {new Date().getFullYear()} {site.name}. All rights reserved.
           </p>
-          {/* The smallest target on the site at 16px tall before this.
-              WCAG 2.2 SC 2.5.8, as above. */}
-          <Link
-            href="/privacy"
-            className="-my-2 inline-block py-2 text-xs text-slate-500 transition-colors hover:text-teal-deep"
-          >
-            Privacy
-          </Link>
+          {/* The smallest targets on the site at 16px tall before this.
+              WCAG 2.2 SC 2.5.8, as above. Image Credits is where the
+              homepage imagery's licences are honoured; see /credits. */}
+          <div className="flex items-center gap-6">
+            <Link
+              href="/credits"
+              className="-my-2 inline-block py-2 text-xs text-slate-500 transition-colors hover:text-teal-deep"
+            >
+              Image Credits
+            </Link>
+            <Link
+              href="/privacy"
+              className="-my-2 inline-block py-2 text-xs text-slate-500 transition-colors hover:text-teal-deep"
+            >
+              Privacy
+            </Link>
+          </div>
         </div>
       </div>
     </footer>

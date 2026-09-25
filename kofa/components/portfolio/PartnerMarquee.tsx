@@ -7,9 +7,9 @@ import { portfolioSorted, type PortfolioCompany } from "@/data/portfolio";
    PARTNER MARQUEE — the revolving portfolio strip
    ---------------------------------------------------------------------------
    The portfolio as a continuous run of plates, after the partners strip on
-   biofarma.com.ar: a white card per company, a small verified mark and the
-   name in the top corner, the logo given the middle of the card, the whole
-   row drifting sideways forever. One device, every company, a fifth of the
+   biofarma.com.ar: a white card per company, the name in the top corner, the
+   logo given the middle of the card, the whole row drifting sideways
+   forever. One device, every company, a fifth of the
    height a grid of the same content would take.
 
    It was removed in favour of a static Active/Exits tab grid and the client
@@ -53,31 +53,6 @@ import { portfolioSorted, type PortfolioCompany } from "@/data/portfolio";
 const PASS_SECONDS = 68;
 
 /* ---------------------------------------------------------------------------
-   The verified mark. A ring with a check, drawn rather than imported: at 15px
-   an icon font or an SVG sprite would both cost a request to render something
-   that is nine path commands.
---------------------------------------------------------------------------- */
-function VerifiedMark() {
-  return (
-    <svg
-      aria-hidden
-      viewBox="0 0 16 16"
-      className="h-[15px] w-[15px] shrink-0 text-teal transition-colors duration-500 ease-kofa"
-    >
-      <circle cx="8" cy="8" r="7.25" fill="currentColor" />
-      <path
-        d="M4.9 8.15 6.95 10.2 11.1 6.05"
-        fill="none"
-        stroke="var(--color-white)"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-/* ---------------------------------------------------------------------------
    One plate.
 
    `inert` renders the duplicate track: same pixels, no link, no alt text, no
@@ -93,13 +68,14 @@ function Plate({
 }) {
   const body = (
     <>
-      {/* --- corner: mark + name --- */}
-      <div className="flex items-center gap-2.5">
-        <VerifiedMark />
-        <span className="type-eyebrow truncate text-ink-mute transition-colors duration-500 ease-kofa group-hover/plate:text-ink group-focus-visible/plate:text-ink">
-          {company.name}
-        </span>
-      </div>
+      {/* --- corner: the name ---
+          The restored plate carried a teal check-in-a-circle beside every
+          name. The September brief removed exactly that ("company name
+          blocks have no green checkmarks"), so it did not come back with
+          the strip. The name stands alone. */}
+      <span className="type-eyebrow block truncate text-ink-mute transition-colors duration-500 ease-kofa group-hover/plate:text-ink group-focus-visible/plate:text-ink">
+        {company.name}
+      </span>
 
       {/* --- the logo, given the middle of the card ---
           Logos arrive as mixed JPEG/PNG/WebP on white grounds, so they are

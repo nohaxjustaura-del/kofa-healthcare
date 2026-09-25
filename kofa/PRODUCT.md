@@ -4,7 +4,7 @@ KOFA Healthcare is a U.S.-based evergreen medtech investment fund founded in 201
 
 ## Approved sources
 
-The user's September 15 Word document supplies the copy. Jing Lin's email specifies the information architecture and amendments. The user's follow-ups explicitly request much closer adherence to OrbiMed's style and layout, authorize suitable implementation resources, and establish original medical photography as the latest visual direction.
+The user's September 15 Word document supplies the copy. Jing Lin's email specifies the information architecture and amendments. The user's follow-ups explicitly request much closer adherence to OrbiMed's style and layout and authorize suitable implementation resources. Jing Lin's September 22 and 24 reviews set the current visual direction: no generated imagery and no people; a silent looping animation of medtech's evolution in the hero; still images of medical tools elsewhere; the revolving portfolio strip on the homepage; the logo exactly as KOFA uses it; and OrbiMed's typeface.
 
 ## Visitor goals
 
@@ -18,11 +18,11 @@ Only Alydia Health and Aria CV are Exits. The other fourteen portfolio companies
 
 ## Brand commitments
 
-Use the supplied KOFA red artwork prominently. The requested visual reference is https://www.orbimed.com/ and should govern composition, type, proportions, navigation, and photography placement. The homepage hero uses an original clinician collaboration photograph with people composed on the right and readable white copy on a dark left field. Original supporting photographs may show medical-device research and healthy longevity in restrained circular crops. The site should feel clinically credible, founder-friendly, and quietly institutional.
+Use the supplied KOFA red artwork prominently. The requested visual reference is https://www.orbimed.com/ and should govern composition, type, proportions, navigation, and image placement. The homepage hero pairs readable white copy with a silent film of real clinical imaging tracing medtech's milestones. Supporting images are real, openly licensed medical stills (angiogram, catheter tips, fetal ultrasound, vascular model), credited at `/credits`. The site should feel clinically credible, founder-friendly, and quietly institutional.
 
 ## Constraints
 
-No invented metrics, investment claims, bios, or portfolio stories. No homepage Our Conviction or Portfolio Stories sections. Google controls sitelinks; use crawlable pages and clear navigation without guaranteeing search appearance. Changes are made in the local Next.js project; deployment has not been requested.
+No invented metrics, investment claims, bios, or portfolio stories. No homepage Our Conviction or Portfolio Stories sections. Google controls sitelinks; use crawlable pages and clear navigation without guaranteeing search appearance. Changes are made in the Next.js project. Production deployment was subsequently authorized and verified in September 2026; the original brief did not itself request deployment.
 
 ## Stack
 

@@ -464,6 +464,216 @@ html[data-motion="off"] [data-lag] {
   }
 }
 
+/* ============================================================
+   HERO FILM: components/home/EvolutionReel.tsx
+   ------------------------------------------------------------
+   Shot like a documentary title sequence, not a widget: the
+   picture sits large on the right on the hero's near-black, its
+   edges dissolving into it through a soft mask; grain rides on
+   the picture only; one quiet caption. Below lg the picture is a
+   square block above the copy and fades into it at the bottom.
+   The side-by-side composition starts at 1280px (xl): narrower,
+   the headline and the picture cannot share the width without one
+   of them being buried, so tablets get the stacked version.
+   ============================================================ */
+/* Below xl: a centred square, never wider than the footage can hold
+   sharply (the clips are 900px) nor taller than most of the screen. */
+.ev-film {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  width: min(100%, 72svh, 760px);
+  margin-inline: auto;
+  overflow: hidden;
+}
+
+.ev-stage {
+  position: absolute;
+  inset: 0;
+  /* Load-bearing, not decoration. The mask makes the stage an isolated
+     group, so the grain's overlay blend can only blend with what is inside
+     it; where no shot covered the stage (between a shot's edge and the
+     stage's), the grain had nothing beneath it and drew as plain grey,
+     a lighter band around the picture. A solid ground gives it black to
+     blend with everywhere. */
+  background-color: #050d13;
+  -webkit-mask-image:
+    linear-gradient(to right, transparent 0%, #000 7%, #000 93%, transparent 100%),
+    linear-gradient(to bottom, transparent 0%, #000 7%, #000 72%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(to right, transparent 0%, #000 7%, #000 93%, transparent 100%),
+    linear-gradient(to bottom, transparent 0%, #000 7%, #000 72%, transparent 100%);
+  mask-composite: intersect;
+}
+
+@media (min-width: 1280px) {
+  .ev-film {
+    position: absolute;
+    inset: 0;
+    aspect-ratio: auto;
+    width: auto;
+    margin-inline: 0;
+  }
+  /* Right-set, full height. On very wide screens it stops at the
+     1440px column rather than drifting to the window's edge. The
+     long fade on the left is where the headline lives. */
+  .ev-stage {
+    inset: 0 max(0px, calc((100vw - 1440px) / 2)) 0 auto;
+    width: min(56vw, 840px);
+    -webkit-mask-image:
+      linear-gradient(to right, transparent 0%, rgb(0 0 0 / 0.35) 14%, #000 34%, #000 93%, transparent 100%),
+      linear-gradient(to bottom, transparent 0%, #000 12%, #000 84%, transparent 100%);
+    mask-image:
+      linear-gradient(to right, transparent 0%, rgb(0 0 0 / 0.35) 14%, #000 34%, #000 93%, transparent 100%),
+      linear-gradient(to bottom, transparent 0%, #000 12%, #000 84%, transparent 100%);
+  }
+}
+
+.ev-shade {
+  display: none;
+}
+@media (min-width: 1280px) {
+  /* Solid black behind the copy, fading out a little past it. The
+     stops track the content column: its left edge is (100vw - 1200px)
+     / 2 plus the 2.5rem gutter, and the copy is 37.5rem wide. */
+  .ev-shade {
+    display: block;
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(
+      90deg,
+      #050d13 0%,
+      #050d13 max(2.5rem + 28rem, calc((100vw - 1200px) / 2 + 30.5rem)),
+      rgb(5 13 19 / 0.55) max(2.5rem + 38rem, calc((100vw - 1200px) / 2 + 40.5rem)),
+      rgb(5 13 19 / 0) max(2.5rem + 48rem, calc((100vw - 1200px) / 2 + 50.5rem))
+    );
+  }
+}
+
+.ev-shot,
+.ev-drift {
+  position: absolute;
+  inset: 0;
+}
+/* Each shot also fades out at its own edges. Video codecs do not
+   reproduce the page's exact near-black (limited-range YUV shifts it a
+   few levels), so a clip's frame can show as a faint box wherever the
+   stage mask is light; a mask on the moving layer removes the edge
+   whatever the codec does, and it moves with the drift. */
+.ev-drift {
+  will-change: transform;
+  -webkit-mask-image:
+    linear-gradient(to right, transparent 0%, #000 11%, #000 89%, transparent 100%),
+    linear-gradient(to bottom, transparent 0%, #000 11%, #000 89%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(to right, transparent 0%, #000 11%, #000 89%, transparent 100%),
+    linear-gradient(to bottom, transparent 0%, #000 11%, #000 89%, transparent 100%);
+  mask-composite: intersect;
+}
+
+/* Film grain. The tile is neutral grey noise, invisible under an
+   overlay blend except as texture; stepping its position a few
+   times a second is what makes it read as grain rather than as a
+   dirty screen. Oversized so the steps never expose an edge. */
+.ev-grain {
+  position: absolute;
+  inset: -40%;
+  pointer-events: none;
+  background-image: url("/media/film/grain.png");
+  background-size: 160px 160px;
+  mix-blend-mode: overlay;
+  opacity: 0.2;
+  animation: ev-grain 0.8s steps(1) infinite;
+}
+@keyframes ev-grain {
+  0% { transform: translate3d(0, 0, 0); }
+  16% { transform: translate3d(-3%, 2%, 0); }
+  33% { transform: translate3d(2%, -4%, 0); }
+  50% { transform: translate3d(-4%, 1%, 0); }
+  66% { transform: translate3d(3%, 3%, 0); }
+  83% { transform: translate3d(-1%, -3%, 0); }
+  100% { transform: translate3d(0, 0, 0); }
+}
+html[data-motion="off"] .ev-grain {
+  animation: none !important;
+}
+
+/* The caption: a year, a hairline, a name. Bottom-left of the picture
+   on phones; on desktop it sits at the right edge of the content
+   column, clear of the white curve below. */
+.ev-caption-host {
+  position: absolute;
+  left: 1.5rem;
+  bottom: 1.25rem;
+}
+@media (min-width: 640px) {
+  .ev-caption-host {
+    left: 2.5rem;
+  }
+}
+@media (min-width: 1280px) {
+  .ev-caption-host {
+    left: auto;
+    right: max(2.5rem, calc((100vw - 1200px) / 2 + 2.5rem));
+    bottom: clamp(4.75rem, 7.5vw, 6.25rem);
+  }
+}
+.ev-caption {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  animation: ev-caption-in 1100ms var(--ease-kofa) both;
+}
+.ev-caption__year {
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  font-variant-numeric: tabular-nums;
+  color: rgb(255 255 255 / 0.88);
+}
+.ev-caption__year::after {
+  content: "";
+  display: inline-block;
+  width: 1.75rem;
+  height: 1px;
+  margin-left: 0.85rem;
+  vertical-align: middle;
+  background-color: rgb(255 255 255 / 0.3);
+}
+.ev-caption__label {
+  font-size: 0.8rem;
+  letter-spacing: 0.01em;
+  color: rgb(255 255 255 / 0.56);
+}
+@keyframes ev-caption-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* The server markup is the still (the 1895 radiograph), which is the
+   picture for motion-off and no-JS visitors. With motion on, the film
+   takes over after hydration and opens from darkness, so until it
+   does the still is held back instead of flashing up and being cut
+   away. Keyed to data-motion="on" specifically: with JavaScript off
+   the pre-paint script never runs, there is no attribute, and the
+   still must show. */
+html[data-motion="on"] .ev-film[data-animate="true"][data-live="false"] .ev-shot {
+  opacity: 0 !important;
+}
+/* visibility, not opacity: the entrance animation fills forwards and
+   would beat an opacity declaration. */
+html[data-motion="on"] .ev-film[data-animate="true"][data-live="false"] .ev-caption {
+  visibility: hidden;
+}
+
 /* Slow marquee for the portfolio logo strip */
 @keyframes kofa-marquee {
   from {
@@ -1076,6 +1286,9 @@ html.lenis body {
    ============================================================ */
 @layer components {
   .focus-area-panel {
+    /* One number for the padding, because the image below bleeds out of it
+       with the same value negated. */
+    --panel-pad: clamp(1.75rem, 2.4vw, 2.25rem);
     position: relative;
     display: flex;
     flex-direction: column;
@@ -1083,20 +1296,33 @@ html.lenis body {
     border: 1px solid var(--color-rule-soft);
     border-radius: 10px;
     background-color: var(--color-white);
-    padding: clamp(1.75rem, 2.4vw, 2.25rem);
+    padding: var(--panel-pad);
     transition: border-color 400ms var(--ease-kofa);
   }
 
-  /* Top-edge accent. 2.75rem at rest, full bleed on hover. */
+  /* Top-edge accent. 2.75rem at rest, full bleed on hover. It now sits on
+     the card's image, so it has to be lifted above it. */
   .focus-area-panel::before {
     position: absolute;
     top: 0;
     left: 0;
+    z-index: 2;
     height: 2px;
     width: 2.75rem;
-    background-color: var(--color-teal);
+    background-color: var(--color-aqua);
     content: "";
     transition: width 600ms var(--ease-kofa);
+  }
+
+  /* The card's medical still, edge to edge across the top. The ground is
+     the images' own darkest navy, so nothing flashes white while the file
+     loads. */
+  .focus-area-panel__media {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    margin: calc(var(--panel-pad) * -1) calc(var(--panel-pad) * -1) 0;
+    overflow: hidden;
+    background-color: #041f2d;
   }
 
   .focus-area-panel:hover {
@@ -1107,13 +1333,22 @@ html.lenis body {
     width: 100%;
   }
 
+  /* Pulled up so the badge straddles the image's lower edge: half on the
+     picture, half on the card, which ties the icon to the photograph it
+     now sits under. */
   .focus-area-panel__head {
+    position: relative;
+    z-index: 1;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
+    margin-top: -1.75rem;
   }
 
+  /* Solid now rather than a teal wash, because half of it overlaps the
+     image and a translucent disc would show the picture through it. The
+     colour is the old wash composited onto white. */
   .focus-area-panel__badge {
     display: grid;
     width: 3.5rem;
@@ -1122,7 +1357,8 @@ html.lenis body {
     place-items: center;
     border: 1px solid rgba(0, 142, 149, 0.22);
     border-radius: 50%;
-    background-color: rgba(0, 142, 149, 0.06);
+    background-color: #f0f8f8;
+    box-shadow: 0 0 0 4px var(--color-white);
     transition:
       border-color 400ms var(--ease-kofa),
       background-color 400ms var(--ease-kofa);
@@ -1130,7 +1366,7 @@ html.lenis body {
 
   .focus-area-panel:hover .focus-area-panel__badge {
     border-color: rgba(0, 142, 149, 0.45);
-    background-color: rgba(0, 142, 149, 0.1);
+    background-color: #e6f3f4;
   }
 
   /* SIZE AND COLOUR ONLY.

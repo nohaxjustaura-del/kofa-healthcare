@@ -146,7 +146,10 @@ Not upload-only, so worth deciding before collecting anything:
 - **Photographic interior page headers.** `components/ui/PageHero.tsx` is
   type and linework only, by design. Adding an image slot would want one
   image per page at roughly 21 : 9, ≥ 2400px wide.
-- **A homepage video**, if specifically requested in a future brief. The current photographic hero and supporting photographs are restored and require no supplied replacement assets.
+- **Homepage imagery needs nothing supplied.** The hero film and the four
+  stills are openly licensed real medical imaging, with attributions at
+  `/credits`. If KOFA
+  later wants its own portfolio companies' imaging in those slots, each
+  swap is a file plus a line in `data/credits.ts`.
 
-Interior photographic headers and a homepage video remain optional. The
-September 19 request already authorizes the restored homepage photographs.
+Interior photographic headers remain optional.

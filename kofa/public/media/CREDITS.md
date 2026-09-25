@@ -2,8 +2,9 @@
 
 Two kinds of media live under `public/`:
 
-1. **Homepage art direction** (`public/media/home/`), the curated science
-   visuals for the hero and the editorial "visual break" sections.
+1. **Homepage imagery**: the hero film's shots in `public/media/film/`, and
+   the four real medical stills on the homepage and `/focus-areas` in
+   `public/media/home/`.
 2. **Portfolio company media** (`public/portfolio/`), one real device,
    platform, assay or clinical visual per company, sourced from each company's
    own official website (or the current official product owner's site). These
@@ -12,48 +13,147 @@ Two kinds of media live under `public/`:
 
 Nothing here carries a watermark or a stock-subscription licence.
 
-## Homepage photography
+## Homepage imagery
 
-**Real photographs, as of September 23, 2026.** The three images that stood
-here before were AI-generated, and the client's review said so in one line:
-"the pictures look AI". They were replaced outright, not retouched. The six
-generated files (`clinical-collaboration`, `device-research`,
-`healthy-longevity`, each with a `-v2`) are deleted; recover them from commit
-`4a3c04e` if they are ever needed for reference.
+**Real medical imaging and an original drawn film, as of September 24,
+2026.** Two rounds of client review decide this section:
 
-All three replacements are from Unsplash. The Unsplash Licence grants free
-commercial use, with modification, and does not require attribution or
-permission; credits are recorded here as good practice, not obligation.
+- **September 22:** "the pictures look AI". They were generated, and were
+  replaced with real Unsplash photographs (commit `f3f4f7b`).
+- **September 24**, on those photographs: no people. Instead, "one silent
+  looping animation on an evolution of a medical equipment / medical field"
+  for the hero, and "still images of medical tools ... catheter tip,
+  angiogram images, fetus ultrasound, and vascular flow" elsewhere.
 
-| File | Unsplash ID | Photographer | Subject |
-| --- | --- | --- | --- |
-| `home/hero-lab-research.jpg` | `k9a7H43zhP4` (`photo-1581093577421`) | ThisisEngineering | Researcher at a laboratory bench. The hero. |
-| `home/portfolio-microscope.jpg` | `bcqDxjddPGk` (`photo-1581091007718`) | ThisisEngineering | Gloved hand placing a petri dish under a microscope. The portfolio introduction. |
-| `home/focus-clinician.jpg` | (`photo-1638202993928`) | Unsplash contributor | Clinician with a stethoscope. The Focus Areas introduction. |
+The Unsplash set (`hero-lab-research.jpg`, `portfolio-microscope.jpg`,
+`focus-clinician.jpg`) is deleted; recover it from commit `f3f4f7b` if ever
+needed. The generated set before it is in commit `4a3c04e`.
 
-Two notes on the selection, because both were deliberate:
+### The hero film
 
-- **`portfolio-microscope.jpg` is already KOFA's.** The same photograph runs
-  on kofahealthcare.com today, as
-  `thisisengineering-raeng-bcqDxjddPGk-unsplash-1.jpg`. It is the one image
-  on the page the client has already accepted in another context.
-- **Nothing uploaded after 2021 was considered.** Unsplash now carries a
-  great deal of AI-generated work, and an Unsplash URL is no guarantee of a
-  camera. Unsplash encodes the upload time in the image path
-  (`photo-1581093577421` is a millisecond timestamp, February 2020), so the
-  shortlist was filtered to pre-2022 uploads before anything was looked at.
-  **Apply the same rule to any replacement**, or the problem the client
-  raised comes straight back.
+`components/home/EvolutionReel.tsx` plays real clinical imaging in the
+order the technology arrived. It went through three cuts: line drawing
+("make the animations way more realistic"), then real footage inside a
+glowing lens with a timeline ring and a teal duotone ("way too vibe coded
+and generated"), then this one, shot like a documentary title sequence:
+full-bleed on the near-black of a clinical display, natural tones, slow
+dissolves and camera drift, film grain, one quiet caption, and nothing
+drawn over the pictures. The milestone dates are the published firsts; the
+footage shows each technique as practised, except 1895, which is the actual
+first.
 
-Sources were downscaled and cropped to the shapes the page needs (hero
-2400x1067; the two circular crops 1500x1500) and re-encoded as progressive
-mozjpeg at quality 86. No generative editing of any kind was applied.
+| File (`public/media/film/`) | Milestone | Source | Author | Licence |
+| --- | --- | --- | --- | --- |
+| `1895-x-ray.jpg` | 1895, X-ray imaging | [Commons, Röntgen's radiograph of Anna Bertha Ludwig's hand, 22 Dec 1895](https://commons.wikimedia.org/wiki/File:First_medical_X-ray_by_Wilhelm_R%C3%B6ntgen_of_his_wife_Anna_Bertha_Ludwig%27s_hand_-_18951222.jpg) | Wilhelm Röntgen | Public domain |
+| `1929-catheterization.*` | 1929, cardiac catheterization | [Commons, "CAG+PTCA 67Yrs Male 10FPS (2)"](https://commons.wikimedia.org/wiki/File:CAG%2BPTCA_67Yrs_Male_10FPS_(2).webm) | Suyash Dwivedi | CC BY-SA 4.0 |
+| `1958-obstetric-ultrasound.*` | 1958, obstetric ultrasound | [Commons, "Fetus playin with fingers ecografia ultrasuoni Dr. Wolfgang Moroder"](https://commons.wikimedia.org/wiki/File:Fetus_playin_with_fingers_ecografia_ultrasuoni_Dr._Wolfgang_Moroder.ogv) | Dr. Wolfgang Moroder | CC BY-SA 3.0 |
+| `1960-heart-valve.jpg` | 1960, mechanical heart valve | [Wellcome Collection, "Prosthetic heart valve, Starr Edwards"](https://wellcomecollection.org/works/z7jrgqf7) (image N0009646) | Wellcome Collection | CC BY 4.0 |
+| `1977-balloon-angioplasty.*` | 1977, balloon angioplasty | [Commons, "CAG+PTCA 67Yrs Male 10FPS (16)"](https://commons.wikimedia.org/wiki/File:CAG%2BPTCA_67Yrs_Male_10FPS_(16).webm) | Suyash Dwivedi | CC BY-SA 4.0 |
+| `today-live-3d-ultrasound.*` | Today, live 3D ultrasound | [Commons, "Fetal yawning 4D ultrasound ecografia 4D Dr. Wolfgang Moroder"](https://commons.wikimedia.org/wiki/File:Fetal_yawning_4D_ultrasound_ecografia_4D_Dr._Wolfgang_Moroder.theora.ogv) | Dr. Wolfgang Moroder | CC BY-SA 3.0 |
+| `grain.png` | film grain tile | generated noise (seeded Gaussian), not an image of anything | — | — |
 
-None of these are photographs of KOFA staff, portfolio teams, or actual
-patients. No visible photo credit is rendered on the website.
+Clips are 900 x 900, H.264 MP4 (CRF 23 to 27, `-tune film`) and VP9 WebM
+(CRF 33 to 38), each with a JPEG poster; the whole film is about 1.8 MB of
+WebM, fetched one shot at a time as each approaches.
 
-The shared technical linework remains available for interior page decoration;
-Focus Areas uses simple consistent outline icons.
+How each was made, exactly:
+
+- **The grade.** Greyscale sources (the X-ray, angiograms and 2D
+  ultrasound) go through one neutral "silver" curve: blacks land exactly
+  on the hero ground `#050d13`, mid-greys stay neutral, whites are a warm
+  `#f3efe7`, with a gentle S-curve. Colour sources (the valve, the 3D
+  ultrasound) keep their colour, trimmed about 15 to 20% in saturation,
+  with the same black point. There is deliberately no duotone.
+- **Every clip** fades to that black at its border, so a shot shown smaller
+  than its frame never reveals an edge. 10 fps sources (the angiograms and
+  the 3D ultrasound) are brought to 30 fps by frame blending, which reads
+  like a fluoroscope's persistence rather than inventing motion; the 2D
+  ultrasound is 19 fps. A light temporal denoise (hqdn3d) runs before
+  encoding, and a mild unsharp mask after the Lanczos resize.
+- **Angiograms:** each frame averaged with its neighbours (as a cath-lab
+  monitor does), inverted so contrast-filled vessels read light, and a
+  modest local-contrast lift. The anatomy is kept; an earlier pass
+  subtracted the background and made neon vessels on a flat field, which
+  read as CG. The area outside the round fluoroscopy field is masked to
+  black. The balloon clip is cropped inside the field, about 2x in on the
+  balloon, and locally tone-mapped so a broad bright heart shadow is
+  compressed while the small bright balloon is not.
+- **Ultrasounds:** cropped so the scanner's on-screen text falls outside
+  the frame. The 3D render sits in a box whose straight edges are faded
+  out just inside.
+- **Röntgen's radiograph:** a sepia print on which bone and the ring print
+  dark; inverted so they read light, the modern convention. The frame is
+  widened to the left with blank card (which inverts to black) so the hand
+  sits right of the headline; nothing of the hand is cut, and the image is
+  never mirrored (a flipped radiograph would be a falsified anatomy).
+- **The valve:** a 1960s-type Starr-Edwards studio photograph, set into a
+  wider square of its own studio darkness so it has room around it, with
+  the grey table crushed by a tone curve rather than a spatial mask, so
+  the object keeps its true edges.
+
+The ShareAlike clips are adapted works and are licensed under the same
+terms (CC BY-SA 4.0 and 3.0), as `/credits` states. Transcatheter valves
+and other post-2000 devices were considered for the film and left out: no
+openly licensed footage of them could be found, and a surgical valve shown
+under a transcatheter label would have been wrong. The Starr-Edwards valve
+is shown under 1960, the year the first one was implanted.
+
+### The four stills
+
+All four are real, openly licensed medical imagery or photographs of real
+devices. None shows a person;
+none was generated or generatively edited. The public attribution the
+licences require is at `/credits`, from `data/credits.ts`, which is linked
+from the footer of every page. Keep the two lists in step.
+
+| File | Shows | Source | Author | Licence |
+| --- | --- | --- | --- | --- |
+| `home/tissue-heart-valve.jpg` | Carpentier-Edwards tissue heart valve; homepage portfolio circle | [Wellcome Collection, "Prosthetic heart valve, Carpentier Edwards"](https://wellcomecollection.org/works/sae682d6) (image N0009644) | Wellcome Collection | CC BY 4.0 |
+| `home/catheter-tips.jpg` | Three electrophysiology ablation catheter tips; Cardiovascular Innovation | [Wellcome Collection, "Cardiac ablation"](https://wellcomecollection.org/works/qxts5pgx) (image N0013829) | Wellcome Collection | CC BY 4.0 |
+| `home/fetal-ultrasound.jpg` | Fetal ultrasound at 12 weeks; Advancing Women's Health | [Wikimedia Commons, "CRL Crown rump length 12 weeks ecografia Dr. Wolfgang Moroder"](https://commons.wikimedia.org/wiki/File:CRL_Crown_rump_length_12_weeks_ecografia_Dr._Wolfgang_Moroder.jpg) | Dr. Wolfgang Moroder | CC BY-SA 3.0 |
+| `home/vessel-model.jpg` | 3D-printed model of the brain's blood vessels; Beyond Our Core | [Wellcome Collection, "Brain blood vessels, suspected meningitis, 3D printed nylon"](https://wellcomecollection.org/works/sq3uzant) (image B0010185) | Dave Farnham | CC BY 4.0 |
+
+What was done to each, exactly:
+
+- **The three Focus Area stills** were mapped from luminance onto one
+  gradient in the site's own colours (deep navy `#041f2d`, hero navy
+  `#0a3a50`, muted teal `#4f8c98`, ice `#eef7f8`), so three imaging
+  modalities read as a single series. Exported as progressive mozjpeg,
+  quality 90, 4:4:4.
+- **Tissue valve (portfolio circle):** kept in natural colour with the hero
+  film's grade and black point, set into a square of its own black
+  background centred on the valve, its blacks deepened slightly by a tone
+  curve; 1000 x 1000. It replaced a heavily processed coronary angiogram
+  after the review note that you could not tell what was going on in it.
+- **Catheter tips:** cropped to 1200 x 750.
+- **Fetal ultrasound:** cropped to the fetus; the scanner's on-screen text
+  falls outside the crop. The yellow measurement calipers and the dotted
+  line between them crossed the fetus, so they were removed: the scan is
+  pure greyscale, so every pixel with a yellow cast is overlay, and each was
+  refilled with real neighbouring speckle mirrored across the thin line (a
+  clone-stamp, not synthesis). Lanczos-resampled from 640 x 400 to 960 x 600.
+- **Vessel model:** cropped to 1900 x 1188 and resampled to 1440 x 900.
+
+The ShareAlike still (the fetal ultrasound) is an adapted work, and the
+adapted file is licensed under the same terms (CC BY-SA 3.0), as `/credits`
+states.
+
+**A courtesy owed:** Dr. Moroder's file pages ask users of his images to
+credit him as author (done, at `/credits`) *and to send him a message*. The
+site now uses three of his works (the 12-week still and two clips). The
+message is a request, not a licence condition, but it should be sent before
+launch. His contact is on his Commons user page
+(`User:Wolfgang Moroder`) and at ecofetale.com.
+
+Sources for the working files (full-resolution originals and the grading
+script) were kept outside the repository; the table above is enough to
+re-fetch any original.
+
+**Replacing a still:** use real imaging, not generated work. Open archives
+with explicit licences (Wikimedia Commons, Wellcome Collection, NIH/NLM)
+state the author and licence per file, which a stock search does not. Avoid
+anything licensed NC (non-commercial): KOFA is a commercial site. Update
+`data/credits.ts` and this table in the same change.
 
 ## Portfolio company media, `public/portfolio/`
 
@@ -91,9 +191,7 @@ is removed or an additional company is added before approved imagery arrives.
   company's `media` entry in `data/portfolio.ts` at it.
 - **A company video**: add `mp4` + a `poster` still, muted and audio-stripped,
   and set `kind: "video"` on that company's `media` entry.
-- **The hero**: replace `home/clinical-collaboration.png` with an approved image,
-  keeping clear space on the left for the introductory copy.
-
-## September 19 photo refinements
-
-The built-in image-generation tool edited the restored originals into the active `-v2.png` files, improving headroom and circular-crop composition. The hero is 1881 x 836 pixels; supporting images are 1254 x 1254 pixels. These are native tool outputs, not claimed as 4K masters. The site serves responsive optimized images at quality 90. Full edit prompts are recorded in `docs/homepage-photo-prompts-2026-09-19.md`. No photo credits are rendered in the interface.
+- **A film clip**: grade it the same way (see "The hero film" above), drop
+  the `.webm`, `.mp4` and poster `.jpg` in `public/media/film/`, and point
+  the milestone in `components/home/EvolutionReel.tsx` at it.
+- **A homepage still**: see "Replacing a still" above.

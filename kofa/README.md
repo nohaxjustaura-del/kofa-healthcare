@@ -70,13 +70,14 @@ the original announcement from [source].” Article cards and pages link to the
 original publisher; the site does not copy article bodies or generate factual
 summaries.
 
-`.github/workflows/news-refresh.yml` runs daily at 14:23 UTC and can also be
-started manually. It runs on the repository default branch, installs locked
+`.github/workflows/news-refresh.yml` is enabled on GitHub and scheduled daily
+at 14:23 UTC; it can also be started manually. Its first scheduled run has not
+yet been verified. It runs on the repository default branch, installs locked
 dependencies, type-checks, runs the offline parser tests, refreshes the snapshot,
 builds the site, and commits only a changed snapshot. The automation becomes
 active after this repository is pushed to GitHub with Actions enabled and the
 hosting project is connected to the repository. Branch protection must allow
-the GitHub Actions bot to update the default branch. GitHub may delay scheduled
+runs. The GitHub Actions bot must be allowed to update the default branch. GitHub may delay scheduled
 runs and can disable schedules after prolonged inactivity in a public
 repository.
 
@@ -109,14 +110,21 @@ The live content is stored in TypeScript files, not a CMS:
 | Team names, roles, biographies, portraits, LinkedIn links | `data/team.ts` |
 | Contact form fields and mailto fallback | `components/ui/ContactForm.tsx` |
 | Contact validation and delivery | `app/api/contact/route.ts` |
-| Home photography | `public/media/home/` |
+| Homepage hero film (shots, timing) | `components/home/EvolutionReel.tsx`, media in `public/media/film/` |
+| Homepage and Focus Areas stills | `public/media/home/`, referenced from `data/site.ts` and `app/page.tsx` |
+| Public image attributions (`/credits`) | `data/credits.ts` |
 
-The homepage photography is `hero-lab-research.jpg`,
-`portfolio-microscope.jpg` and `focus-clinician.jpg` — real photographs from
-Unsplash, which replaced an AI-generated set the client rejected. Before
-swapping any of them, read the selection rule in `public/media/CREDITS.md`:
-Unsplash now hosts a lot of generated work, so candidates are filtered to
-pre-2022 uploads by their `photo-<timestamp>` path.
+Per the client's September 24 note there are no people in the homepage
+imagery. The hero is a silent, looping film of real clinical imaging in the
+order the technology arrived: Röntgen's 1895 radiograph, catheterization,
+ultrasound, a 1960 heart valve, angioplasty and live 3D ultrasound, shown
+full-bleed and cinematic. Clips load one shot at a time, pause off-screen,
+and give way to a still of the 1895 radiograph when a visitor turns motion
+off. The four stills (a tissue heart valve, catheter tips, a fetal
+ultrasound, and a 3D-printed vessel model) are real, openly licensed medical
+imagery as well. Their licences require the
+attribution published at `/credits`. Read `public/media/CREDITS.md` before
+replacing one, and update `data/credits.ts` in the same change.
 
 ## Inputs still needed before launch
 
@@ -129,10 +137,13 @@ pre-2022 uploads by their `photo-<timestamp>` path.
 
 ## Handoff status
 
-The codebase is prepared for client review. No deployment, GitHub schedule, or
-real email/webhook delivery has been activated in this handoff. The items above
-under “Inputs still needed before launch” remain client dependencies, and live
-production readiness requires the controlled delivery proof described above.
+The codebase is prepared for client review. Production Vercel deployments of
+commit `4a3c04e` were verified Ready in September 2026 at
+`kofa-healthcare.vercel.app` and `kofa-eight.vercel.app`; the GitHub news
+schedule is enabled. A completed scheduled refresh and real email/webhook
+delivery have not yet been verified. The items above under “Inputs still needed
+before launch” remain client dependencies, and live contact readiness requires
+the controlled delivery proof described above.
 
 Fresh handoff verification on September 19, 2026:
 
