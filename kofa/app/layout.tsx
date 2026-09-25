@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { GeistSans } from "geist/font/sans";
 import "./globals.css";
 import { Navigation } from "@/components/navigation/Navigation";
 import { Footer } from "@/components/footer/Footer";
@@ -12,36 +11,22 @@ import { socialMetadata, siteUrl } from "@/lib/metadata";
 import { site } from "@/data/site";
 
 /**
- * Display face. Fraunces replaces Instrument Serif.
+ * TYPE.
  *
- * Instrument Serif is a single 400 weight, quite condensed, with didone-ish
- * contrast; at 100px it was elegant but thin, and it gave the page only one
- * lever (size) for display hierarchy. Fraunces is variable on three useful
- * axes, so the same family covers a 100px headline and a 22px card title
- * without either being a compromise:
+ * There is no next/font call here any more, and that is deliberate.
  *
- *   opsz  optical size, tracked to font-size by the browser. High contrast and
- *         fine hairlines at display sizes, sturdier at text sizes. This is the
- *         axis Instrument Serif did not have and the reason the swap is worth
- *         making at all.
- *   SOFT  rounds the terminals. Held low: this is a healthcare fund, not a
- *         lifestyle brand.
- *   WONK  swaps in the singular italic-ish forms. Off by default; the italic
- *         style turns it on where it belongs.
+ * The site is set in General Sans, standing in for OrbiMed's Graphik until
+ * KOFA licenses the real thing. The same ITF Free Font Licence that makes
+ * General Sans free also forbids subsetting and format conversion, and
+ * next/font's whole value is that it does both. So the official woff2 files
+ * are served verbatim from public/fonts/general-sans and declared by hand at
+ * the top of app/globals.css, which is also where the note on swapping in
+ * Graphik lives.
  *
- * `weight` is deliberately absent. next/font refuses `axes` alongside an
- * explicit weight list ("Axes can only be defined for variable fonts when the
- * weight property is nonexistent or set to `variable`"), and omitting it is
- * what we want anyway: the whole 100-900 range ships in one variable file, so
- * display sizes can sit at 400 and card titles at 500 without a second
- * download.
+ * The practical consequence: no font variable is stamped onto <html> below.
+ * globals.css sets font-family on <body> from --font-sans instead, so the
+ * family is declared in exactly one place.
  */
-/**
- * Geist for navigation, body, buttons, labels and metadata; Fraunces
- * kept selective, for display headlines and editorial statements only. Geist
- * ships self-hosted with next/font, so there is no external font request.
- */
-const sans = GeistSans;
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -87,7 +72,6 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={sans.variable}
       /*
         MOTION_PREFERENCE_SCRIPT below stamps data-motion onto
         document.documentElement before <body> renders. It has to run
@@ -107,6 +91,31 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
+        {/*
+          The two weights that are on screen before anything else: Light
+          carries every heading, Regular every paragraph. Because the faces
+          are declared in a hand-written @font-face block rather than through
+          next/font, the browser would not discover them until it had parsed
+          the stylesheet and matched a rule, which on a cold load is well
+          after first paint. These two hints move that to the head. The other
+          three weights (Italic, Medium, Semibold) are used sparsely enough
+          that font-display:swap covers them.
+        */}
+        <link
+          rel="preload"
+          href="/fonts/general-sans/GeneralSans-Light.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="preload"
+          href="/fonts/general-sans/GeneralSans-Regular.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
+
         {/*
           Entrance animations render their `initial` state into the server HTML,
           so every revealed element ships as opacity:0 and only becomes visible

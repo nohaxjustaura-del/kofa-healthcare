@@ -2,26 +2,55 @@ import Image from "next/image";
 import Link from "next/link";
 
 /* ---------------------------------------------------------------------------
-   THE MARK
+   THE LOGO
    ---------------------------------------------------------------------------
-   The supplied artwork is the authority. public/brand/kofa-symbol-supplied.png
-   is 1380 x 1268, i.e. WIDER THAN IT IS TALL, the hexagon is not square.
-   It was previously rendered into a square box, which object-contain then
-   letterboxed: the drawn mark came out at 92% of the height it was asked for
-   and sat in a box with dead space above and below it, so every lockup on the
-   site was quietly smaller and looser than its own measurements claimed.
+   This file used to BUILD a lockup: the supplied hexagon, and beside it the
+   words "KOFA" and "Healthcare" set in Geist Bold at hand-picked sizes and
+   tracking. The client's note on it was exact — "the logo is slightly
+   different from the one we are using right now (the fonts and layout, the
+   distance between the logo and the name)" — and all three observations were
+   correct, because all three were things this file had invented:
 
-   `size` is now the mark's HEIGHT in px, and the width follows from the real
-   aspect ratio. Nothing is cropped, nothing is stretched, and the number in
-   the call site is the number you measure on screen.
+     fonts     "KOFA" was Geist Bold standing in for the artwork's own
+               heavier, wider letterforms. Close, and visibly not the same.
+     layout    The artwork stacks the name UNDER the mark. This set it
+               beside, and added a second line, "Healthcare", that does not
+               appear in the supplied logo at all.
+     distance  Two compounding errors. The gap was a hand-chosen 0.38em,
+               where the artwork's own is 0.133 of the mark's height; and
+               kofa-symbol-supplied.png carries ~10% transparent padding
+               (ink occupies 1167x1012 of a 1380x1268 canvas), so every
+               measurement taken against the file was against the canvas
+               rather than the drawing, and the mark rendered smaller and
+               looser than the numbers claimed.
+
+   So nothing is typeset here any more. public/brand/kofa-lockup.png is the
+   supplied artwork cropped to its own ink and otherwise untouched, which
+   makes the letterforms, the arrangement and the gap the client's rather
+   than ours, by construction. There is no font to match and no spacing to
+   tune, and re-exporting the logo is a file swap.
+
+   The crop is reproducible: the supplied file is 1272 x 1364, the mark's ink
+   occupies x148-1168 / y87-970 and the wordmark's x215-1102 / y1089-1274, so
+   the lockup is the box x148-1168 / y87-1274, or 1021 x 1188.
 --------------------------------------------------------------------------- */
 
-/** Intrinsic dimensions of the supplied symbol. Update both if the file is
- *  ever re-exported; they are the reason nothing here distorts. */
-const SYMBOL_W = 1380;
-const SYMBOL_H = 1268;
-const SYMBOL_RATIO = SYMBOL_W / SYMBOL_H;
+/** Intrinsic dimensions of the cropped assets. Both are cut from the same
+ *  master, so they share a width and cannot drift apart. Update these if the
+ *  artwork is ever re-exported; they are the reason nothing here distorts. */
+const LOCKUP_W = 1021;
+const LOCKUP_H = 1188;
+const LOCKUP_RATIO = LOCKUP_W / LOCKUP_H; // 0.8594, portrait
 
+const SYMBOL_W = 1021;
+const SYMBOL_H = 884;
+const SYMBOL_RATIO = SYMBOL_W / SYMBOL_H; // 1.1550, landscape
+
+/**
+ * The hexagon on its own, for the places that want a mark rather than a
+ * logo. `size` is its HEIGHT in px; the width follows from the real ink
+ * ratio, so the number at the call site is the number on screen.
+ */
 export function LogoGlyph({
   className = "",
   size = 22,
@@ -31,7 +60,7 @@ export function LogoGlyph({
 }) {
   return (
     <Image
-      src="/brand/kofa-symbol-supplied.png"
+      src="/brand/kofa-symbol-trimmed.png"
       alt=""
       width={Math.round(size * SYMBOL_RATIO)}
       height={size}
@@ -41,66 +70,52 @@ export function LogoGlyph({
 }
 
 /**
- * Header and footer lockup: the supplied mark with the wordmark beside it.
+ * The logo, as supplied: hexagon above the KOFA wordmark.
  *
- * `size` is the height of the mark. The wordmark is scaled from it rather
- * than set in absolute rem, so the lockup stays in proportion at any size and
- * the two parts cannot drift apart when one call site changes. The whole
- * lockup is driven by one font-size on the wrapper, which is what makes
- * `responsive` a one-line change rather than a media query per part.
+ * `size` is the height of the WHOLE lockup, not of the mark. That is a change
+ * from the previous signature, where it meant the mark's height and the
+ * wordmark was extra; call sites have been rescaled to match and the two
+ * numbers are related by LOCKUP_H / SYMBOL_H, about 1.34.
  *
- * `responsive` clamps that height between 60px and `size` against the
- * viewport. The header is the reason: at the full 84px the lockup measures
- * 202px, which alongside the 101px menu button leaves a 320px phone with
- * nothing to spare. Floor of 60px keeps the mark the dominant thing in the
- * header on a phone, which is what the client asked for, without letting it
- * push the menu button off the edge.
+ * `responsive` clamps that height against the viewport so the header still
+ * fits a 320px phone alongside the menu button. The floor is 52px, which is
+ * where the wordmark stops being comfortably readable.
+ *
+ * `label` is gone. It used to switch the typeset "KOFA / Healthcare" on and
+ * off; the name is part of the artwork now, so there is nothing to toggle.
+ * Anywhere that genuinely wants the bare hexagon should use LogoGlyph.
  */
 export function LogoMark({
   className = "",
-  size = 64,
+  size = 72,
   href = "/",
-  label = true,
   priority = false,
   responsive = false,
 }: {
   className?: string;
   size?: number;
   href?: string | null;
-  label?: boolean;
   priority?: boolean;
   responsive?: boolean;
 }) {
-  const showLabel = label && size >= 28;
-  const fontSize = responsive
-    ? `clamp(${Math.min(60, size)}px, 16vw, ${size}px)`
+  const height = responsive
+    ? `clamp(${Math.min(52, size)}px, 13vw, ${size}px)`
     : `${size}px`;
 
   const inner = (
-    <span className={`inline-flex items-center gap-[0.38em] ${className}`} style={{ fontSize }}>
-      <Image
-        src="/brand/kofa-symbol-supplied.png"
-        alt={showLabel ? "" : "KOFA Healthcare"}
-        width={Math.round(size * SYMBOL_RATIO)}
-        height={size}
-        priority={priority}
-        className="h-[1em] w-auto shrink-0"
-      />
-      {showLabel && (
-        <span className="min-w-0 leading-none text-[var(--color-kofa-red)]">
-          {/* Every length here is a fraction of the mark's height, so the two
-              halves of the lockup keep their proportions at any `size`.
-              Note the margin below is expressed in ITS OWN em, which is
-              0.225 of the mark, hence 0.42 rather than 0.095. */}
-          <span className="block text-[0.62em] font-bold leading-none tracking-[-0.055em]">
-            KOFA
-          </span>
-          <span className="mt-[0.42em] block text-[0.225em] font-medium leading-none tracking-[0.02em]">
-            Healthcare
-          </span>
-        </span>
-      )}
-    </span>
+    <Image
+      src="/brand/kofa-lockup.png"
+      alt="KOFA Healthcare"
+      width={Math.round(size * LOCKUP_RATIO)}
+      height={size}
+      priority={priority}
+      /* Height drives, width follows. The intrinsic attributes above are
+         what Next uses to reserve space and pick srcset widths; the style
+         below is what actually sizes it, so `responsive` can hand it a
+         clamp() without the two disagreeing. */
+      style={{ height, width: "auto" }}
+      className={className}
+    />
   );
 
   if (!href) return inner;
@@ -110,7 +125,7 @@ export function LogoMark({
       href={href}
       aria-label="KOFA Healthcare home"
       /* shrink-0: as a flex child of the header row this would otherwise
-         compress under pressure and squeeze the wordmark rather than being
+         compress under pressure and squash the artwork rather than being
          allowed to set its own width. The clamp is what handles small
          screens; the flex algorithm is not invited to have an opinion. */
       className="inline-flex shrink-0 items-center rounded-sm"

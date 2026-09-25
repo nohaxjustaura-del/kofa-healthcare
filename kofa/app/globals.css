@@ -1,6 +1,72 @@
 @import "tailwindcss";
 
 /* ============================================================
+   THE TEXT FACE
+   ------------------------------------------------------------
+   The client asked for "OrbiMed's font". OrbiMed sets its entire
+   site in GRAPHIK (Commercial Type): body 400/22px at 150%,
+   h1 300/56px at 120% with -0.02em, h2 300/32px on the same
+   ratios, ink #231f20. Graphik is a paid licence, so its files
+   cannot be shipped here.
+
+   What ships instead is General Sans (Indian Type Foundry,
+   ITF Free Font Licence: commercial use and self-hosting both
+   granted in writing — see LICENSE-ITF-FFL.txt beside the
+   woff2 files). It is the closest free face to Graphik in the
+   ways that decide how a page reads: near-monolinear strokes,
+   geometric round forms, flat terminals, and a light weight
+   that stays elegant at display size rather than going spindly.
+
+   The files are the official ITF release, byte for byte. The
+   licence forbids subsetting and format conversion, so they are
+   NOT run through next/font — they are served verbatim from
+   public/fonts and declared by hand below.
+
+   TO SWITCH TO REAL GRAPHIK, when KOFA buys the licence:
+   drop the woff2 files into public/fonts/graphik/, add a
+   matching @font-face block naming the family "Graphik", and
+   nothing else changes. "Graphik" is already first in the two
+   stacks in @theme, so the whole site moves the moment the
+   family resolves.
+   ============================================================ */
+
+@font-face {
+  font-family: "General Sans";
+  src: url("/fonts/general-sans/GeneralSans-Light.woff2") format("woff2");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "General Sans";
+  src: url("/fonts/general-sans/GeneralSans-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "General Sans";
+  src: url("/fonts/general-sans/GeneralSans-Italic.woff2") format("woff2");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "General Sans";
+  src: url("/fonts/general-sans/GeneralSans-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "General Sans";
+  src: url("/fonts/general-sans/GeneralSans-Semibold.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ============================================================
    KOFA HEALTHCARE: DESIGN SYSTEM
    "The Living Network"
    ============================================================ */
@@ -52,9 +118,19 @@
   --color-rule-strong: rgba(18, 26, 24, 0.2);
   --color-rule-teal: rgba(23, 109, 103, 0.35);
 
-  /* --- Type ------------------------------------------------- */
-  --font-serif: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, sans-serif;
+  /* --- Type -------------------------------------------------
+     "Graphik" leads both stacks deliberately. No @font-face
+     declares it today, so it is inert and every glyph comes from
+     General Sans; the day a licensed Graphik is added it takes
+     over the whole site without another edit. See the note at
+     the top of this file.
+
+     --font-serif is a misnomer kept for now: nothing on the site
+     has been set in a serif since Fraunces was dropped, and the
+     token is referenced by the four display classes below plus
+     a handful of components. Renaming it is a separate sweep. */
+  --font-serif: "Graphik", "General Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Graphik", "General Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
 
   /* --- Motion ----------------------------------------------- */
   --ease-kofa: cubic-bezier(0.22, 1, 0.36, 1);
@@ -122,37 +198,53 @@
    ============================================================ */
 
 @layer components {
-  /* Shared Geist display scales retained for interior page compatibility. */
+  /* ---------------------------------------------------------------
+     DISPLAY SCALE, on OrbiMed's ratios.
+
+     Measured off orbimed.com's own stylesheet rather than guessed:
+       h1  Graphik 300, 56px, line-height 120%, letter-spacing -1.12px
+       h2  Graphik 300, 32px, line-height 120%, letter-spacing -0.64px
+     -1.12/56 and -0.64/32 are both exactly -0.02em, so the tracking
+     is one ratio at every size and is written that way below.
+
+     Two things changed from the previous scale: weight 400 → 300,
+     and the hand-tuned per-size letter-spacing/line-height clamps
+     collapsed into the single -0.02em / 1.2 pair OrbiMed uses.
+     Those clamps were fitted to Geist's metrics and would fight a
+     light weight — at 300 they read loose at the top of the ramp
+     and cramped at the bottom. The size ramp itself is unchanged,
+     so nothing reflows.
+  --------------------------------------------------------------- */
   .type-display {
     font-family: var(--font-serif);
-    font-weight: 400;
+    font-weight: 300;
     font-size: clamp(2.875rem, 1.4rem + 5.4vw, 6.25rem); /* 46px → 100px */
-    letter-spacing: clamp(-1.9px, 0.3015px - 0.1532vw, -0.37px);
-    line-height: clamp(49.7px, 27.72px + 5.03vw, 100px);
+    letter-spacing: -0.02em;
+    line-height: 1.2;
   }
 
   .type-display-sm {
     font-family: var(--font-serif);
-    font-weight: 400;
+    font-weight: 300;
     font-size: clamp(2.25rem, 1.4rem + 3.2vw, 4rem); /* 36px → 64px */
-    letter-spacing: clamp(-1.02px, 0.123px - 0.0882vw, -0.25px);
-    line-height: clamp(39.6px, 27.12px + 2.94vw, 65.3px);
+    letter-spacing: -0.02em;
+    line-height: 1.2;
   }
 
   .type-section {
     font-family: var(--font-serif);
-    font-weight: 400;
+    font-weight: 300;
     font-size: clamp(1.875rem, 1.15rem + 2.6vw, 3.25rem); /* 30px → 52px */
-    letter-spacing: clamp(-0.76px, 0.1554px - 0.0705vw, -0.16px);
-    line-height: 1.1;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
   }
 
   .type-statement {
     font-family: var(--font-serif);
-    font-weight: 400;
+    font-weight: 300;
     font-size: clamp(1.5rem, 1rem + 1.9vw, 2.5rem); /* 24px → 40px */
-    letter-spacing: clamp(-0.48px, 0.0954px - 0.0453vw, -0.096px);
-    line-height: 1.18;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
   }
 
   /* Small uppercase metadata label, the connective tissue of the site */
@@ -173,34 +265,47 @@
     letter-spacing: 0.02em;
   }
 
-  /* Three body tiers, each carrying its own leading and tracking. Previously
+  /* Four body tiers, each carrying its own leading and tracking. Previously
      `.type-body` was paired with an ad-hoc `text-[…]` override at 17 of its 24
      call sites, which meant the leading stayed tuned for a size most of the
-     site no longer used. Pick a tier; never override the size. */
+     site no longer used. Pick a tier; never override the size.
+
+     Leading is now 1.5 across all four, which is OrbiMed's `body p`
+     line-height of 150%. The old values (1.58–1.62) were set for Geist,
+     whose larger x-height wants more air; General Sans sits lower and
+     reads tight-but-open at 1.5, the same as Graphik does there.
+
+     Tracking stays slightly negative and unchanged. OrbiMed declares none
+     on body copy, but it is running 22px everywhere — at the 14–16px this
+     site uses for most running text, zero tracking reads loose. */
   .type-body {
     font-size: 1rem;
-    line-height: 1.62;
+    line-height: 1.5;
     letter-spacing: -0.006em;
     color: var(--color-ink-soft);
   }
 
   .type-body-sm {
     font-size: 0.9375rem;
-    line-height: 1.6;
+    line-height: 1.5;
     letter-spacing: -0.005em;
     color: var(--color-ink-soft);
   }
 
   .type-body-xs {
     font-size: 0.875rem;
-    line-height: 1.58;
+    line-height: 1.5;
     letter-spacing: -0.003em;
     color: var(--color-ink-soft);
   }
 
+  /* The lead-paragraph tier, and the one place the site meets OrbiMed's
+     body size head on: this now tops out at 22px, exactly their `body p`.
+     It was 19px, which left every standfirst on the site a size below the
+     reference the client pointed at. */
   .type-body-lg {
-    font-size: clamp(1.0625rem, 1rem + 0.25vw, 1.1875rem);
-    line-height: 1.6;
+    font-size: clamp(1.125rem, 1rem + 0.5vw, 1.375rem); /* 18px → 22px */
+    line-height: 1.5;
     letter-spacing: -0.008em;
     color: var(--color-ink-soft);
   }
@@ -357,6 +462,216 @@ html[data-motion="off"] [data-lag] {
   [data-hover-reveal-gap] {
     margin-top: 0.625rem !important;
   }
+}
+
+/* ============================================================
+   HERO FILM: components/home/EvolutionReel.tsx
+   ------------------------------------------------------------
+   Shot like a documentary title sequence, not a widget: the
+   picture sits large on the right on the hero's near-black, its
+   edges dissolving into it through a soft mask; grain rides on
+   the picture only; one quiet caption. Below lg the picture is a
+   square block above the copy and fades into it at the bottom.
+   The side-by-side composition starts at 1280px (xl): narrower,
+   the headline and the picture cannot share the width without one
+   of them being buried, so tablets get the stacked version.
+   ============================================================ */
+/* Below xl: a centred square, never wider than the footage can hold
+   sharply (the clips are 900px) nor taller than most of the screen. */
+.ev-film {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  width: min(100%, 72svh, 760px);
+  margin-inline: auto;
+  overflow: hidden;
+}
+
+.ev-stage {
+  position: absolute;
+  inset: 0;
+  /* Load-bearing, not decoration. The mask makes the stage an isolated
+     group, so the grain's overlay blend can only blend with what is inside
+     it; where no shot covered the stage (between a shot's edge and the
+     stage's), the grain had nothing beneath it and drew as plain grey,
+     a lighter band around the picture. A solid ground gives it black to
+     blend with everywhere. */
+  background-color: #050d13;
+  -webkit-mask-image:
+    linear-gradient(to right, transparent 0%, #000 7%, #000 93%, transparent 100%),
+    linear-gradient(to bottom, transparent 0%, #000 7%, #000 72%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(to right, transparent 0%, #000 7%, #000 93%, transparent 100%),
+    linear-gradient(to bottom, transparent 0%, #000 7%, #000 72%, transparent 100%);
+  mask-composite: intersect;
+}
+
+@media (min-width: 1280px) {
+  .ev-film {
+    position: absolute;
+    inset: 0;
+    aspect-ratio: auto;
+    width: auto;
+    margin-inline: 0;
+  }
+  /* Right-set, full height. On very wide screens it stops at the
+     1440px column rather than drifting to the window's edge. The
+     long fade on the left is where the headline lives. */
+  .ev-stage {
+    inset: 0 max(0px, calc((100vw - 1440px) / 2)) 0 auto;
+    width: min(56vw, 840px);
+    -webkit-mask-image:
+      linear-gradient(to right, transparent 0%, rgb(0 0 0 / 0.35) 14%, #000 34%, #000 93%, transparent 100%),
+      linear-gradient(to bottom, transparent 0%, #000 12%, #000 84%, transparent 100%);
+    mask-image:
+      linear-gradient(to right, transparent 0%, rgb(0 0 0 / 0.35) 14%, #000 34%, #000 93%, transparent 100%),
+      linear-gradient(to bottom, transparent 0%, #000 12%, #000 84%, transparent 100%);
+  }
+}
+
+.ev-shade {
+  display: none;
+}
+@media (min-width: 1280px) {
+  /* Solid black behind the copy, fading out a little past it. The
+     stops track the content column: its left edge is (100vw - 1200px)
+     / 2 plus the 2.5rem gutter, and the copy is 37.5rem wide. */
+  .ev-shade {
+    display: block;
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(
+      90deg,
+      #050d13 0%,
+      #050d13 max(2.5rem + 28rem, calc((100vw - 1200px) / 2 + 30.5rem)),
+      rgb(5 13 19 / 0.55) max(2.5rem + 38rem, calc((100vw - 1200px) / 2 + 40.5rem)),
+      rgb(5 13 19 / 0) max(2.5rem + 48rem, calc((100vw - 1200px) / 2 + 50.5rem))
+    );
+  }
+}
+
+.ev-shot,
+.ev-drift {
+  position: absolute;
+  inset: 0;
+}
+/* Each shot also fades out at its own edges. Video codecs do not
+   reproduce the page's exact near-black (limited-range YUV shifts it a
+   few levels), so a clip's frame can show as a faint box wherever the
+   stage mask is light; a mask on the moving layer removes the edge
+   whatever the codec does, and it moves with the drift. */
+.ev-drift {
+  will-change: transform;
+  -webkit-mask-image:
+    linear-gradient(to right, transparent 0%, #000 11%, #000 89%, transparent 100%),
+    linear-gradient(to bottom, transparent 0%, #000 11%, #000 89%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(to right, transparent 0%, #000 11%, #000 89%, transparent 100%),
+    linear-gradient(to bottom, transparent 0%, #000 11%, #000 89%, transparent 100%);
+  mask-composite: intersect;
+}
+
+/* Film grain. The tile is neutral grey noise, invisible under an
+   overlay blend except as texture; stepping its position a few
+   times a second is what makes it read as grain rather than as a
+   dirty screen. Oversized so the steps never expose an edge. */
+.ev-grain {
+  position: absolute;
+  inset: -40%;
+  pointer-events: none;
+  background-image: url("/media/film/grain.png");
+  background-size: 160px 160px;
+  mix-blend-mode: overlay;
+  opacity: 0.2;
+  animation: ev-grain 0.8s steps(1) infinite;
+}
+@keyframes ev-grain {
+  0% { transform: translate3d(0, 0, 0); }
+  16% { transform: translate3d(-3%, 2%, 0); }
+  33% { transform: translate3d(2%, -4%, 0); }
+  50% { transform: translate3d(-4%, 1%, 0); }
+  66% { transform: translate3d(3%, 3%, 0); }
+  83% { transform: translate3d(-1%, -3%, 0); }
+  100% { transform: translate3d(0, 0, 0); }
+}
+html[data-motion="off"] .ev-grain {
+  animation: none !important;
+}
+
+/* The caption: a year, a hairline, a name. Bottom-left of the picture
+   on phones; on desktop it sits at the right edge of the content
+   column, clear of the white curve below. */
+.ev-caption-host {
+  position: absolute;
+  left: 1.5rem;
+  bottom: 1.25rem;
+}
+@media (min-width: 640px) {
+  .ev-caption-host {
+    left: 2.5rem;
+  }
+}
+@media (min-width: 1280px) {
+  .ev-caption-host {
+    left: auto;
+    right: max(2.5rem, calc((100vw - 1200px) / 2 + 2.5rem));
+    bottom: clamp(4.75rem, 7.5vw, 6.25rem);
+  }
+}
+.ev-caption {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  animation: ev-caption-in 1100ms var(--ease-kofa) both;
+}
+.ev-caption__year {
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  font-variant-numeric: tabular-nums;
+  color: rgb(255 255 255 / 0.88);
+}
+.ev-caption__year::after {
+  content: "";
+  display: inline-block;
+  width: 1.75rem;
+  height: 1px;
+  margin-left: 0.85rem;
+  vertical-align: middle;
+  background-color: rgb(255 255 255 / 0.3);
+}
+.ev-caption__label {
+  font-size: 0.8rem;
+  letter-spacing: 0.01em;
+  color: rgb(255 255 255 / 0.56);
+}
+@keyframes ev-caption-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* The server markup is the still (the 1895 radiograph), which is the
+   picture for motion-off and no-JS visitors. With motion on, the film
+   takes over after hydration and opens from darkness, so until it
+   does the still is held back instead of flashing up and being cut
+   away. Keyed to data-motion="on" specifically: with JavaScript off
+   the pre-paint script never runs, there is no attribute, and the
+   still must show. */
+html[data-motion="on"] .ev-film[data-animate="true"][data-live="false"] .ev-shot {
+  opacity: 0 !important;
+}
+/* visibility, not opacity: the entrance animation fills forwards and
+   would beat an opacity declaration. */
+html[data-motion="on"] .ev-film[data-animate="true"][data-live="false"] .ev-caption {
+  visibility: hidden;
 }
 
 /* Slow marquee for the portfolio logo strip */
@@ -971,6 +1286,9 @@ html.lenis body {
    ============================================================ */
 @layer components {
   .focus-area-panel {
+    /* One number for the padding, because the image below bleeds out of it
+       with the same value negated. */
+    --panel-pad: clamp(1.75rem, 2.4vw, 2.25rem);
     position: relative;
     display: flex;
     flex-direction: column;
@@ -978,20 +1296,33 @@ html.lenis body {
     border: 1px solid var(--color-rule-soft);
     border-radius: 10px;
     background-color: var(--color-white);
-    padding: clamp(1.75rem, 2.4vw, 2.25rem);
+    padding: var(--panel-pad);
     transition: border-color 400ms var(--ease-kofa);
   }
 
-  /* Top-edge accent. 2.75rem at rest, full bleed on hover. */
+  /* Top-edge accent. 2.75rem at rest, full bleed on hover. It now sits on
+     the card's image, so it has to be lifted above it. */
   .focus-area-panel::before {
     position: absolute;
     top: 0;
     left: 0;
+    z-index: 2;
     height: 2px;
     width: 2.75rem;
-    background-color: var(--color-teal);
+    background-color: var(--color-aqua);
     content: "";
     transition: width 600ms var(--ease-kofa);
+  }
+
+  /* The card's medical still, edge to edge across the top. The ground is
+     the images' own darkest navy, so nothing flashes white while the file
+     loads. */
+  .focus-area-panel__media {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    margin: calc(var(--panel-pad) * -1) calc(var(--panel-pad) * -1) 0;
+    overflow: hidden;
+    background-color: #041f2d;
   }
 
   .focus-area-panel:hover {
@@ -1002,13 +1333,22 @@ html.lenis body {
     width: 100%;
   }
 
+  /* Pulled up so the badge straddles the image's lower edge: half on the
+     picture, half on the card, which ties the icon to the photograph it
+     now sits under. */
   .focus-area-panel__head {
+    position: relative;
+    z-index: 1;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
+    margin-top: -1.75rem;
   }
 
+  /* Solid now rather than a teal wash, because half of it overlaps the
+     image and a translucent disc would show the picture through it. The
+     colour is the old wash composited onto white. */
   .focus-area-panel__badge {
     display: grid;
     width: 3.5rem;
@@ -1017,7 +1357,8 @@ html.lenis body {
     place-items: center;
     border: 1px solid rgba(0, 142, 149, 0.22);
     border-radius: 50%;
-    background-color: rgba(0, 142, 149, 0.06);
+    background-color: #f0f8f8;
+    box-shadow: 0 0 0 4px var(--color-white);
     transition:
       border-color 400ms var(--ease-kofa),
       background-color 400ms var(--ease-kofa);
@@ -1025,7 +1366,7 @@ html.lenis body {
 
   .focus-area-panel:hover .focus-area-panel__badge {
     border-color: rgba(0, 142, 149, 0.45);
-    background-color: rgba(0, 142, 149, 0.1);
+    background-color: #e6f3f4;
   }
 
   /* SIZE AND COLOUR ONLY.

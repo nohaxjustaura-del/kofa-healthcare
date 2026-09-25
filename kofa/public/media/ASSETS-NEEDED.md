@@ -124,17 +124,18 @@ Listed so nobody spends time on them:
 - **Favicon**, generated at build from the brand glyph, `app/icon.tsx`.
 - **Social share card**, generated at build, `app/opengraph-image.tsx`; it
   restyles itself when `data/site.ts` changes.
-- **The KOFA logo.** The header and footer render the supplied artwork at
-  `public/brand/kofa-symbol-supplied.png` beside a wordmark set in type.
-  `public/brand/kofa-stacked-supplied.png` is the supplied stacked lockup,
-  kept as the reference original.
+- **The KOFA logo.** No longer an approximation. The header and footer
+  render `public/brand/kofa-lockup.png`, which is
+  `kofa-stacked-supplied.png` cropped to its own ink and otherwise
+  untouched, so the letterforms, the arrangement and the gap between mark
+  and name are the supplied artwork's rather than ours. Nothing is typeset.
+  `kofa-symbol-trimmed.png` is the hexagon alone, cut from the same master.
 
-  One thing worth supplying if it exists: **the wordmark as vector or as an
-  image with transparency**. The lockup currently sets "KOFA" in Geist Bold
-  to sit beside the mark, which is close to the supplied artwork's
-  letterforms but not identical. An SVG of the official lockup would remove
-  the approximation. `public/kofa-logo.png` and `public/brand/kofa-mark.png`
-  are older leftovers that nothing renders.
+  A vector of the lockup would still be a small win — sharper at very large
+  sizes, smaller on the wire — but it is no longer needed for accuracy.
+  `public/kofa-logo.png`, `public/brand/kofa-mark.png` and
+  `public/brand/kofa-symbol-supplied.png` are leftovers that nothing
+  renders now.
 
 ---
 
@@ -145,7 +146,10 @@ Not upload-only, so worth deciding before collecting anything:
 - **Photographic interior page headers.** `components/ui/PageHero.tsx` is
   type and linework only, by design. Adding an image slot would want one
   image per page at roughly 21 : 9, ≥ 2400px wide.
-- **A homepage video**, if specifically requested in a future brief. The current photographic hero and supporting photographs are restored and require no supplied replacement assets.
+- **Homepage imagery needs nothing supplied.** The hero film and the four
+  stills are openly licensed real medical imaging, with attributions at
+  `/credits`. If KOFA
+  later wants its own portfolio companies' imaging in those slots, each
+  swap is a file plus a line in `data/credits.ts`.
 
-Interior photographic headers and a homepage video remain optional. The
-September 19 request already authorizes the restored homepage photographs.
+Interior photographic headers remain optional.

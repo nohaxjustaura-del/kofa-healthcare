@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { BodyCopy, Container, Section } from "@/components/ui/primitives";
 import { PageHero } from "@/components/ui/PageHero";
 import { CTASection } from "@/components/ui/CTASection";
@@ -10,7 +11,8 @@ import { pageMetadata } from "@/lib/metadata";
    reads too, so the two cannot drift. Everything there is verbatim from the
    supplied content document; nothing on this page says anything the document
    does not. The drawn mark on each card is selected by that record's `glyph`
-   field and carries no claim of its own. */
+   field and carries no claim of its own; the still above it comes from the
+   record's `image`, the same one the homepage card shows. */
 
 export const metadata: Metadata = pageMetadata({
   title: "Focus Areas",
@@ -35,10 +37,24 @@ export default function FocusAreasPage() {
                 key={area.title}
                 className="group relative flex min-h-[23rem] flex-col bg-white pb-10 pt-9 lg:px-9 lg:pt-11 lg:first:pl-0 lg:last:pr-0"
               >
+                {/* A fixed height from lg, not an aspect ratio: the middle
+                    column is padded on both sides and the outer two on one,
+                    so equal ratios would give three different heights and
+                    stagger every row beneath them. */}
+                <div className="relative mb-9 aspect-[16/10] overflow-hidden rounded-md bg-[#041f2d] lg:aspect-auto lg:h-[190px] xl:h-[208px]">
+                  <Image
+                    src={area.image.src}
+                    alt={area.image.alt}
+                    fill
+                    quality={90}
+                    sizes="(min-width: 1200px) 380px, (min-width: 1024px) 31vw, 100vw"
+                    className="object-cover transition-transform duration-[1400ms] ease-kofa group-hover:scale-[1.035]"
+                  />
+                </div>
                 <div className="flex items-start justify-between gap-6">
                   <FocusGlyph
                     kind={area.glyph}
-                    className="h-24 w-24 text-teal transition-colors duration-500 group-hover:text-teal-deep"
+                    className="h-14 w-14 text-teal transition-colors duration-500 group-hover:text-teal-deep"
                   />
                   <span
                     aria-hidden
@@ -48,7 +64,7 @@ export default function FocusAreasPage() {
                   </span>
                 </div>
 
-                <span aria-hidden className="mt-9 block h-px w-10 bg-teal" />
+                <span aria-hidden className="mt-7 block h-px w-10 bg-teal" />
 
                 <h2 className="mt-6 max-w-[17ch] text-[1.6rem] font-normal leading-[1.2] tracking-[-0.022em] text-ink">
                   {area.title}

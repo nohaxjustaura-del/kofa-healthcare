@@ -1,11 +1,7 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { ImageResponse } from "next/og";
-import {
-  BRAND,
-  KOFA_GLYPH_PATH,
-  KOFA_GLYPH_VIEWBOX,
-  OG_IMAGE_ALT,
-  OG_IMAGE_SIZE,
-} from "@/lib/metadata";
+import { BRAND, OG_IMAGE_ALT, OG_IMAGE_SIZE } from "@/lib/metadata";
 import { site } from "@/data/site";
 
 /**
@@ -37,6 +33,13 @@ import { site } from "@/data/site";
  * the same set of levers the ink-mute note in app/globals.css describes for
  * small type. Do not add fontWeight here expecting it to do anything.
  *
+ * THE LOGO IS THE ARTWORK. It used to be the hexagon plus "KOFA" and
+ * "HEALTHCARE" typeset beside it in Noto Sans: the same wrong font, wrong
+ * layout and wrong spacing the client flagged in the site header, repeated
+ * on every link preview. It is now public/brand/kofa-lockup.png, the
+ * supplied stacked artwork cropped to its ink (a pixel-exact crop), embedded
+ * as a data URI because satori cannot fetch a relative URL at build time.
+ *
  * SATORI LAYOUT RULES, so the next edit does not break the build:
  *   - every element that has more than one child needs an explicit
  *     `display: "flex"`; satori throws otherwise;
@@ -54,6 +57,13 @@ export const alt = OG_IMAGE_ALT;
    pages present an external host: protocol and www stripped. */
 const displayHost = site.url.replace(/^https?:\/\//, "").replace(/^www\./, "");
 
+/* 1021 x 1188, the lockup's own ink box; see components/ui/LogoMark.tsx. */
+const LOCKUP = `data:image/png;base64,${readFileSync(
+  join(process.cwd(), "public/brand/kofa-lockup.png"),
+).toString("base64")}`;
+const LOCKUP_H = 132;
+const LOCKUP_W = Math.round((LOCKUP_H * 1021) / 1188);
+
 export default function OpengraphImage() {
   return new ImageResponse(
     (
@@ -70,33 +80,9 @@ export default function OpengraphImage() {
         }}
       >
         {/* ---------- lockup ---------- */}
-        <div style={{ display: "flex", alignItems: "center" }}>
-          <svg
-            width={44}
-            height={38}
-            viewBox={KOFA_GLYPH_VIEWBOX}
-            fill={BRAND.kofaRed}
-            style={{ marginRight: 22 }}
-          >
-            <path fillRule="evenodd" d={KOFA_GLYPH_PATH} />
-          </svg>
-          {/* The wordmark and the descriptor are optically centred on one
-              another, the same call LogoMark.tsx makes and for the same
-              reason: at 19px against 38px, a shared baseline would drop the
-              descriptor visibly below the wordmark's optical centre. */}
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <span style={{ fontSize: 38, letterSpacing: -0.5 }}>KOFA</span>
-            <span
-              style={{
-                fontSize: 19,
-                letterSpacing: 3.4,
-                color: BRAND.inkSoft,
-                marginLeft: 18,
-              }}
-            >
-              HEALTHCARE
-            </span>
-          </div>
+        <div style={{ display: "flex" }}>
+          {/* eslint-disable-next-line @next/next/no-img-element -- satori renders <img>, not next/image */}
+          <img src={LOCKUP} width={LOCKUP_W} height={LOCKUP_H} alt="" />
         </div>
 
         {/* ---------- statement ---------- */}

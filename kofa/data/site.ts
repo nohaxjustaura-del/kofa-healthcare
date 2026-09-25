@@ -56,22 +56,41 @@ export const nav = [
  * `glyph` selects the drawn mark from components/visuals/plates.tsx; the
  * values are its FocusGlyphKind union, so a typo is a type error rather than
  * a blank space on the page.
+ *
+ * `image` is a real medical still, per the client's September 24 note: no
+ * people, and "still images of medical tools ... catheter tip, angiogram
+ * images, fetus ultrasound, and vascular flow". Each is matched to the area
+ * it illustrates, the electrophysiology catheters to the one whose copy
+ * names electrophysiology. Sources, licences and the edits made are in
+ * public/media/CREDITS.md.
  */
 export const focusAreas = [
   {
     title: "Cardiovascular Innovation",
     glyph: "cardiovascular",
     body: "We invest in differentiated technologies across structural heart, electrophysiology, minimally invasive intervention and other high-growth areas.",
+    image: {
+      src: "/media/home/catheter-tips.jpg",
+      alt: "Three electrophysiology catheter tips, their ring electrodes catching the light",
+    },
   },
   {
     title: "Advancing Women’s Health",
     glyph: "womens-health",
     body: "We invest across gynecology, maternal health, reproductive care and conditions that uniquely or disproportionately affect women.",
+    image: {
+      src: "/media/home/fetal-ultrasound.jpg",
+      alt: "Ultrasound scan of a fetus at twelve weeks, in profile",
+    },
   },
   {
     title: "Beyond Our Core",
     glyph: "beyond",
     body: "The most important innovations do not always fit neatly into a category. We remain open to exceptional opportunities across other clinical specialties.",
+    image: {
+      src: "/media/home/vessel-model.jpg",
+      alt: "3D-printed model of the blood vessels of the brain, made from scan data",
+    },
   },
 ] as const;
 
