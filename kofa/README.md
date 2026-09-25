@@ -111,10 +111,12 @@ The live content is stored in TypeScript files, not a CMS:
 | Contact validation and delivery | `app/api/contact/route.ts` |
 | Home photography | `public/media/home/` |
 
-The homepage photography currently uses `clinical-collaboration.png`,
-`device-research.png`, and `healthy-longevity.png`. The corresponding `-v2`
-files are alternatives and must be selected deliberately in the component that
-references them.
+The homepage photography is `hero-lab-research.jpg`,
+`portfolio-microscope.jpg` and `focus-clinician.jpg` — real photographs from
+Unsplash, which replaced an AI-generated set the client rejected. Before
+swapping any of them, read the selection rule in `public/media/CREDITS.md`:
+Unsplash now hosts a lot of generated work, so candidates are filtered to
+pre-2022 uploads by their `photo-<timestamp>` path.
 
 ## Inputs still needed before launch
 

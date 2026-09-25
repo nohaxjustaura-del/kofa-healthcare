@@ -6,6 +6,23 @@ const nextConfig: NextConfig = {
   outputFileTracingRoot: path.resolve(__dirname),
   images: {
     formats: ["image/avif", "image/webp"],
+    /*
+      EVERY quality the site asks for has to appear here, not just the
+      interesting ones. Next 15 only warns about an unlisted value, but
+      declaring this array opts into the Next 16 behaviour immediately: from
+      then on an unlisted quality is a thrown error, and because it throws
+      inside <Image> it takes the whole route down with a 500 rather than
+      degrading. Listing only [75, 90] broke /team and every
+      /portfolio/[slug] page, which use 88.
+
+        75  next/image's default, used by everything not named below
+        88  components/team/TeamGrid.tsx and
+            components/portfolio/CompanyVisual.tsx
+        90  the three homepage photographs in public/media/home
+
+      Adding a quality anywhere means adding it here in the same commit.
+    */
+    qualities: [75, 88, 90],
   },
   /*
     Dev and production builds get separate output directories.

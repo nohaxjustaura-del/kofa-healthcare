@@ -14,20 +14,43 @@ Nothing here carries a watermark or a stock-subscription licence.
 
 ## Homepage photography
 
-Restored on September 19, 2026 in response to the user's explicit request for
-healthcare photographs instead of the drawn placeholders. These original,
-generated illustrative scenes were recovered from commit `0a063b1`:
+**Real photographs, as of September 23, 2026.** The three images that stood
+here before were AI-generated, and the client's review said so in one line:
+"the pictures look AI". They were replaced outright, not retouched. The six
+generated files (`clinical-collaboration`, `device-research`,
+`healthy-longevity`, each with a `-v2`) are deleted; recover them from commit
+`4a3c04e` if they are ever needed for reference.
 
-- `home/clinical-collaboration.png`: two fictional clinicians collaborating;
-  the homepage hero, composed with people on the right.
-- `home/device-research.png`: a fictional researcher examining a device;
-  the portfolio introduction.
-- `home/healthy-longevity.png`: two fictional women walking outdoors;
-  the Focus Areas introduction.
+All three replacements are from Unsplash. The Unsplash Licence grants free
+commercial use, with modification, and does not require attribution or
+permission; credits are recorded here as good practice, not obligation.
 
-These are illustrative scenes, not photographs of KOFA staff, portfolio
-teams, or actual patients. No visible photo credit or attribution label is
-added to the website. This maintenance note records provenance only.
+| File | Unsplash ID | Photographer | Subject |
+| --- | --- | --- | --- |
+| `home/hero-lab-research.jpg` | `k9a7H43zhP4` (`photo-1581093577421`) | ThisisEngineering | Researcher at a laboratory bench. The hero. |
+| `home/portfolio-microscope.jpg` | `bcqDxjddPGk` (`photo-1581091007718`) | ThisisEngineering | Gloved hand placing a petri dish under a microscope. The portfolio introduction. |
+| `home/focus-clinician.jpg` | (`photo-1638202993928`) | Unsplash contributor | Clinician with a stethoscope. The Focus Areas introduction. |
+
+Two notes on the selection, because both were deliberate:
+
+- **`portfolio-microscope.jpg` is already KOFA's.** The same photograph runs
+  on kofahealthcare.com today, as
+  `thisisengineering-raeng-bcqDxjddPGk-unsplash-1.jpg`. It is the one image
+  on the page the client has already accepted in another context.
+- **Nothing uploaded after 2021 was considered.** Unsplash now carries a
+  great deal of AI-generated work, and an Unsplash URL is no guarantee of a
+  camera. Unsplash encodes the upload time in the image path
+  (`photo-1581093577421` is a millisecond timestamp, February 2020), so the
+  shortlist was filtered to pre-2022 uploads before anything was looked at.
+  **Apply the same rule to any replacement**, or the problem the client
+  raised comes straight back.
+
+Sources were downscaled and cropped to the shapes the page needs (hero
+2400x1067; the two circular crops 1500x1500) and re-encoded as progressive
+mozjpeg at quality 86. No generative editing of any kind was applied.
+
+None of these are photographs of KOFA staff, portfolio teams, or actual
+patients. No visible photo credit is rendered on the website.
 
 The shared technical linework remains available for interior page decoration;
 Focus Areas uses simple consistent outline icons.

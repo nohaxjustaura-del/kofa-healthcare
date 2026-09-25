@@ -43,3 +43,7 @@ yarn-error.log*
 Thumbs.db
 .idea/
 *.swp
+
+# Playwright MCP scratch: screenshots and page snapshots from browser-driven
+# verification. Debugging output, never part of the site.
+.playwright-mcp/

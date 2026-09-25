@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { HomePortfolio } from "@/components/home/HomePortfolio";
+import { PartnerMarquee } from "@/components/portfolio/PartnerMarquee";
 import { CTASection } from "@/components/ui/CTASection";
 import { Button, TextLink } from "@/components/ui/Button";
 import { Container, Section } from "@/components/ui/primitives";
@@ -24,10 +24,37 @@ export const metadata: Metadata = {
    teaser. Anything that wants to be on the homepage has to displace one of
    the four, which is the client's call and not a build decision.
 
-   The homepage combines original medical photography with the shared SVG
-   FocusGlyph icons. The three supplied photos provide the hero and its two
-   supporting circular crops; the glyphs keep the three Focus cards simple
-   and consistent.
+   PHOTOGRAPHY. The three images here are real photographs, which is a
+   correction rather than a preference: the previous set was generated, and
+   the client's note on it was one line — "the pictures look AI". They were.
+   Generated people have a particular plastic quality around skin and hair
+   that reads as fake to anyone who looks twice, and on a page whose whole
+   job is to make a fund look credible that is not a small problem.
+
+   What replaced them, and why each one:
+
+     hero-lab-research.jpg     a researcher at a bench, photographed for
+                               ThisisEngineering (the Royal Academy of
+                               Engineering's campaign). Subject right of
+                               centre, equipment filling the left, which is
+                               exactly the shape this hero needs.
+     portfolio-microscope.jpg  a gloved hand setting a dish under a
+                               microscope. This is the same photograph
+                               already running on kofahealthcare.com, so it
+                               is the one image on the page KOFA has
+                               already approved in another context.
+     focus-clinician.jpg       a clinician with a stethoscope. High-key and
+                               bright, which is what the pale Focus Areas
+                               ground wants; a darker operating-theatre
+                               frame was tried first and fought the band.
+
+   All three are Unsplash, whose licence grants commercial use with no
+   attribution required, and all three were uploaded before 2022 — that
+   cutoff was the selection rule, because Unsplash has since filled with
+   generated images and the point of this exercise was to stop shipping
+   them. Provenance is recorded in public/media/CREDITS.md.
+
+   The three Focus cards keep the shared SVG FocusGlyph icons.
 
    The type scale changed too. This page used to set every heading with its own
    one-off `text-[clamp(...)]` while the other eight pages used the scale in
@@ -48,13 +75,20 @@ export default function Home() {
       <section className="relative isolate mt-[104px] overflow-hidden bg-navy text-white">
         <div className="relative h-[250px] sm:h-[320px] lg:absolute lg:inset-0 lg:h-auto">
           <Image
-            src="/media/home/clinical-collaboration-v2.png"
+            src="/media/home/hero-lab-research.jpg"
             alt=""
             fill
             priority
             quality={90}
             sizes="100vw"
-            className="object-cover object-[68%_top]"
+            /* 72% across, vertically centred. The researcher stands just
+               right of centre in this frame and the bench fills the left,
+               which is what the navy gradient and the headline sit over.
+               `top` was right for the previous image and is wrong for this
+               one: on a wide desktop hero the crop is about 2.9:1 against a
+               2.25:1 file, so anchoring to the top would shave her off the
+               bottom of the band. */
+            className="object-cover object-[72%_center]"
           />
           <div
             aria-hidden
@@ -119,7 +153,7 @@ export default function Home() {
             <div className="mx-auto aspect-square w-full max-w-[380px] rounded-full border border-teal/30 bg-ice p-2 sm:p-3">
               <div className="relative h-full overflow-hidden rounded-full">
                 <Image
-                  src="/media/home/device-research-v2.png"
+                  src="/media/home/portfolio-microscope.jpg"
                   alt=""
                   fill
                   quality={90}
@@ -140,10 +174,22 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="mt-12">
-            <HomePortfolio />
-          </div>
+        </Container>
 
+        {/* The revolving strip, back at the client's request. It sits between
+            two <Container>s rather than inside one because it is full-bleed
+            by design: the row has to run out of both edges of the screen for
+            the loop to read as endless. See PartnerMarquee.tsx.
+
+            It replaces the static Active/Exits tab grid that stood here. The
+            grid showed the same sixteen companies in a fixed four-column
+            block; this shows all sixteen in a fifth of the height and moves,
+            which is what was asked for. The Active/Exits split has not been
+            lost — /portfolio still filters on it, and that page is the one
+            the client signed off. */}
+        <PartnerMarquee className="mt-12" />
+
+        <Container>
           <div className="mt-10">
             <TextLink href="/portfolio">View all portfolio companies</TextLink>
           </div>
@@ -165,7 +211,7 @@ export default function Home() {
             <div className="mx-auto aspect-square w-56 shrink-0 rounded-full border border-teal/30 bg-white p-2 sm:mx-0 sm:p-3">
               <div className="relative h-full overflow-hidden rounded-full">
                 <Image
-                  src="/media/home/healthy-longevity-v2.png"
+                  src="/media/home/focus-clinician.jpg"
                   alt=""
                   fill
                   quality={90}

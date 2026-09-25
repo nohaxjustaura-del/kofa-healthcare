@@ -1,6 +1,72 @@
 @import "tailwindcss";
 
 /* ============================================================
+   THE TEXT FACE
+   ------------------------------------------------------------
+   The client asked for "OrbiMed's font". OrbiMed sets its entire
+   site in GRAPHIK (Commercial Type): body 400/22px at 150%,
+   h1 300/56px at 120% with -0.02em, h2 300/32px on the same
+   ratios, ink #231f20. Graphik is a paid licence, so its files
+   cannot be shipped here.
+
+   What ships instead is General Sans (Indian Type Foundry,
+   ITF Free Font Licence: commercial use and self-hosting both
+   granted in writing — see LICENSE-ITF-FFL.txt beside the
+   woff2 files). It is the closest free face to Graphik in the
+   ways that decide how a page reads: near-monolinear strokes,
+   geometric round forms, flat terminals, and a light weight
+   that stays elegant at display size rather than going spindly.
+
+   The files are the official ITF release, byte for byte. The
+   licence forbids subsetting and format conversion, so they are
+   NOT run through next/font — they are served verbatim from
+   public/fonts and declared by hand below.
+
+   TO SWITCH TO REAL GRAPHIK, when KOFA buys the licence:
+   drop the woff2 files into public/fonts/graphik/, add a
+   matching @font-face block naming the family "Graphik", and
+   nothing else changes. "Graphik" is already first in the two
+   stacks in @theme, so the whole site moves the moment the
+   family resolves.
+   ============================================================ */
+
+@font-face {
+  font-family: "General Sans";
+  src: url("/fonts/general-sans/GeneralSans-Light.woff2") format("woff2");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "General Sans";
+  src: url("/fonts/general-sans/GeneralSans-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "General Sans";
+  src: url("/fonts/general-sans/GeneralSans-Italic.woff2") format("woff2");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "General Sans";
+  src: url("/fonts/general-sans/GeneralSans-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "General Sans";
+  src: url("/fonts/general-sans/GeneralSans-Semibold.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ============================================================
    KOFA HEALTHCARE: DESIGN SYSTEM
    "The Living Network"
    ============================================================ */
@@ -52,9 +118,19 @@
   --color-rule-strong: rgba(18, 26, 24, 0.2);
   --color-rule-teal: rgba(23, 109, 103, 0.35);
 
-  /* --- Type ------------------------------------------------- */
-  --font-serif: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, sans-serif;
+  /* --- Type -------------------------------------------------
+     "Graphik" leads both stacks deliberately. No @font-face
+     declares it today, so it is inert and every glyph comes from
+     General Sans; the day a licensed Graphik is added it takes
+     over the whole site without another edit. See the note at
+     the top of this file.
+
+     --font-serif is a misnomer kept for now: nothing on the site
+     has been set in a serif since Fraunces was dropped, and the
+     token is referenced by the four display classes below plus
+     a handful of components. Renaming it is a separate sweep. */
+  --font-serif: "Graphik", "General Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Graphik", "General Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
 
   /* --- Motion ----------------------------------------------- */
   --ease-kofa: cubic-bezier(0.22, 1, 0.36, 1);
@@ -122,37 +198,53 @@
    ============================================================ */
 
 @layer components {
-  /* Shared Geist display scales retained for interior page compatibility. */
+  /* ---------------------------------------------------------------
+     DISPLAY SCALE, on OrbiMed's ratios.
+
+     Measured off orbimed.com's own stylesheet rather than guessed:
+       h1  Graphik 300, 56px, line-height 120%, letter-spacing -1.12px
+       h2  Graphik 300, 32px, line-height 120%, letter-spacing -0.64px
+     -1.12/56 and -0.64/32 are both exactly -0.02em, so the tracking
+     is one ratio at every size and is written that way below.
+
+     Two things changed from the previous scale: weight 400 → 300,
+     and the hand-tuned per-size letter-spacing/line-height clamps
+     collapsed into the single -0.02em / 1.2 pair OrbiMed uses.
+     Those clamps were fitted to Geist's metrics and would fight a
+     light weight — at 300 they read loose at the top of the ramp
+     and cramped at the bottom. The size ramp itself is unchanged,
+     so nothing reflows.
+  --------------------------------------------------------------- */
   .type-display {
     font-family: var(--font-serif);
-    font-weight: 400;
+    font-weight: 300;
     font-size: clamp(2.875rem, 1.4rem + 5.4vw, 6.25rem); /* 46px → 100px */
-    letter-spacing: clamp(-1.9px, 0.3015px - 0.1532vw, -0.37px);
-    line-height: clamp(49.7px, 27.72px + 5.03vw, 100px);
+    letter-spacing: -0.02em;
+    line-height: 1.2;
   }
 
   .type-display-sm {
     font-family: var(--font-serif);
-    font-weight: 400;
+    font-weight: 300;
     font-size: clamp(2.25rem, 1.4rem + 3.2vw, 4rem); /* 36px → 64px */
-    letter-spacing: clamp(-1.02px, 0.123px - 0.0882vw, -0.25px);
-    line-height: clamp(39.6px, 27.12px + 2.94vw, 65.3px);
+    letter-spacing: -0.02em;
+    line-height: 1.2;
   }
 
   .type-section {
     font-family: var(--font-serif);
-    font-weight: 400;
+    font-weight: 300;
     font-size: clamp(1.875rem, 1.15rem + 2.6vw, 3.25rem); /* 30px → 52px */
-    letter-spacing: clamp(-0.76px, 0.1554px - 0.0705vw, -0.16px);
-    line-height: 1.1;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
   }
 
   .type-statement {
     font-family: var(--font-serif);
-    font-weight: 400;
+    font-weight: 300;
     font-size: clamp(1.5rem, 1rem + 1.9vw, 2.5rem); /* 24px → 40px */
-    letter-spacing: clamp(-0.48px, 0.0954px - 0.0453vw, -0.096px);
-    line-height: 1.18;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
   }
 
   /* Small uppercase metadata label, the connective tissue of the site */
@@ -173,34 +265,47 @@
     letter-spacing: 0.02em;
   }
 
-  /* Three body tiers, each carrying its own leading and tracking. Previously
+  /* Four body tiers, each carrying its own leading and tracking. Previously
      `.type-body` was paired with an ad-hoc `text-[…]` override at 17 of its 24
      call sites, which meant the leading stayed tuned for a size most of the
-     site no longer used. Pick a tier; never override the size. */
+     site no longer used. Pick a tier; never override the size.
+
+     Leading is now 1.5 across all four, which is OrbiMed's `body p`
+     line-height of 150%. The old values (1.58–1.62) were set for Geist,
+     whose larger x-height wants more air; General Sans sits lower and
+     reads tight-but-open at 1.5, the same as Graphik does there.
+
+     Tracking stays slightly negative and unchanged. OrbiMed declares none
+     on body copy, but it is running 22px everywhere — at the 14–16px this
+     site uses for most running text, zero tracking reads loose. */
   .type-body {
     font-size: 1rem;
-    line-height: 1.62;
+    line-height: 1.5;
     letter-spacing: -0.006em;
     color: var(--color-ink-soft);
   }
 
   .type-body-sm {
     font-size: 0.9375rem;
-    line-height: 1.6;
+    line-height: 1.5;
     letter-spacing: -0.005em;
     color: var(--color-ink-soft);
   }
 
   .type-body-xs {
     font-size: 0.875rem;
-    line-height: 1.58;
+    line-height: 1.5;
     letter-spacing: -0.003em;
     color: var(--color-ink-soft);
   }
 
+  /* The lead-paragraph tier, and the one place the site meets OrbiMed's
+     body size head on: this now tops out at 22px, exactly their `body p`.
+     It was 19px, which left every standfirst on the site a size below the
+     reference the client pointed at. */
   .type-body-lg {
-    font-size: clamp(1.0625rem, 1rem + 0.25vw, 1.1875rem);
-    line-height: 1.6;
+    font-size: clamp(1.125rem, 1rem + 0.5vw, 1.375rem); /* 18px → 22px */
+    line-height: 1.5;
     letter-spacing: -0.008em;
     color: var(--color-ink-soft);
   }

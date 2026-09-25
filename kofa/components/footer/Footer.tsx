@@ -22,7 +22,9 @@ export function Footer() {
       <div className={`${MEASURE} py-16`}>
         <div className="grid gap-12 lg:grid-cols-[1.4fr_1fr_1fr] lg:gap-16">
           <div>
-            <LogoMark size={56} />
+            {/* `size` is the whole lockup's height now, not the hexagon's,
+                so 72 here is roughly the 56 that stood before. */}
+            <LogoMark size={72} />
             <p className="mt-6 max-w-[38ch] text-sm leading-6 text-slate-600">
               Patient capital for early- to mid-stage medical device companies
               addressing significant unmet clinical needs.
