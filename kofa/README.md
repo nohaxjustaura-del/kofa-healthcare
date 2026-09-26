@@ -117,10 +117,13 @@ The live content is stored in TypeScript files, not a CMS:
 Per the client's September 24 note there are no people in the homepage
 imagery. The hero is a silent, looping film of real clinical imaging in the
 order the technology arrived: Röntgen's 1895 radiograph, catheterization,
-ultrasound, a 1960 heart valve, angioplasty and live 3D ultrasound, shown
-full-bleed and cinematic. Clips load one shot at a time, pause off-screen,
-and give way to a still of the 1895 radiograph when a visitor turns motion
-off. The four stills (a tissue heart valve, catheter tips, a fetal
+ultrasound, a 1960 heart valve and angioplasty, then three shots of today
+(a transcatheter heart valve opening, live 3D ultrasound, and a
+super-resolution ultrasound map of microvessels), shown full-bleed and
+cinematic. On any landscape screen from 1024px wide the copy sits left and
+the film right; phones and portrait tablets stack the film above the copy.
+Clips load one shot at a time, pause off-screen, and give way to a still of
+the 1895 radiograph when a visitor turns motion off. The four stills (a tissue heart valve, catheter tips, a fetal
 ultrasound, and a 3D-printed vessel model) are real, openly licensed medical
 imagery as well. Their licences require the
 attribution published at `/credits`. Read `public/media/CREDITS.md` before

@@ -1,5 +1,26 @@
 @import "tailwindcss";
 
+/* The homepage hero's two compositions, as variants so app/page.tsx and
+   the HERO FILM block below share one definition of "wide" (the media
+   queries there repeat these; change both together).
+
+   hero-wide   copy left, film right: any LANDSCAPE screen from 1024px.
+               It used to start at 1280px (xl), and that is where the
+               client's Windows laptop fell through. Windows scales the
+               desktop by 125 to 175% on most laptops, so a 1920px panel
+               gives the browser 1100 to 1536 CSS px, often under 1280,
+               and got the stacked tablet layout while every Mac showed
+               the side-by-side one. Landscape, because a portrait
+               tablet 1024px wide still reads better stacked.
+   hero-short  a landscape screen under 760px tall: the same Windows
+               scaling leaves about 600px of height under the browser
+               bar, so the copy tightens up to stay above the fold.
+
+   Custom variants sort after Tailwind's own and in the order written
+   here, so hero-short wins over hero-wide. */
+@custom-variant hero-wide (@media (min-width: 64rem) and (orientation: landscape));
+@custom-variant hero-short (@media (min-width: 64rem) and (orientation: landscape) and (max-height: 47.5rem));
+
 /* ============================================================
    THE TEXT FACE
    ------------------------------------------------------------
@@ -470,13 +491,15 @@ html[data-motion="off"] [data-lag] {
    Shot like a documentary title sequence, not a widget: the
    picture sits large on the right on the hero's near-black, its
    edges dissolving into it through a soft mask; grain rides on
-   the picture only; one quiet caption. Below lg the picture is a
-   square block above the copy and fades into it at the bottom.
-   The side-by-side composition starts at 1280px (xl): narrower,
-   the headline and the picture cannot share the width without one
-   of them being buried, so tablets get the stacked version.
+   the picture only; one quiet caption. On phones and portrait
+   tablets the picture is a square block above the copy and fades
+   into it at the bottom. The side-by-side composition starts at
+   1024px on any landscape screen (the hero-wide variant at the top
+   of this file; the queries below repeat it). Between 1024 and
+   1280px the copy column narrows with the window (--hero-copy) so
+   the headline and the picture can share the width.
    ============================================================ */
-/* Below xl: a centred square, never wider than the footage can hold
+/* Stacked: a centred square, never wider than the footage can hold
    sharply (the clips are 900px) nor taller than most of the screen. */
 .ev-film {
   position: relative;
@@ -506,7 +529,7 @@ html[data-motion="off"] [data-lag] {
   mask-composite: intersect;
 }
 
-@media (min-width: 1280px) {
+@media (min-width: 1024px) and (orientation: landscape) {
   .ev-film {
     position: absolute;
     inset: 0;
@@ -532,11 +555,13 @@ html[data-motion="off"] [data-lag] {
 .ev-shade {
   display: none;
 }
-@media (min-width: 1280px) {
+@media (min-width: 1024px) and (orientation: landscape) {
   /* Solid black behind the copy, fading out a little past it. The
      stops track the content column: its left edge is (100vw - 1200px)
-     / 2 plus the 2.5rem gutter, and the copy is 37.5rem wide. */
+     / 2 plus the 2.5rem gutter, never less than the gutter, and the
+     copy is --hero-copy wide (set on the hero in app/page.tsx). */
   .ev-shade {
+    --col: max(2.5rem, calc((100vw - 1200px) / 2 + 2.5rem));
     display: block;
     position: absolute;
     inset: 0;
@@ -544,9 +569,9 @@ html[data-motion="off"] [data-lag] {
     background: linear-gradient(
       90deg,
       #050d13 0%,
-      #050d13 max(2.5rem + 28rem, calc((100vw - 1200px) / 2 + 30.5rem)),
-      rgb(5 13 19 / 0.55) max(2.5rem + 38rem, calc((100vw - 1200px) / 2 + 40.5rem)),
-      rgb(5 13 19 / 0) max(2.5rem + 48rem, calc((100vw - 1200px) / 2 + 50.5rem))
+      #050d13 calc(var(--col) + var(--hero-copy) * 0.75),
+      rgb(5 13 19 / 0.55) calc(var(--col) + var(--hero-copy) + 0.5rem),
+      rgb(5 13 19 / 0) calc(var(--col) + var(--hero-copy) + 10.5rem)
     );
   }
 }
@@ -613,7 +638,7 @@ html[data-motion="off"] .ev-grain {
     left: 2.5rem;
   }
 }
-@media (min-width: 1280px) {
+@media (min-width: 1024px) and (orientation: landscape) {
   .ev-caption-host {
     left: auto;
     right: max(2.5rem, calc((100vw - 1200px) / 2 + 2.5rem));
@@ -624,7 +649,8 @@ html[data-motion="off"] .ev-grain {
   display: flex;
   align-items: center;
   gap: 0.85rem;
-  animation: ev-caption-in 1100ms var(--ease-kofa) both;
+  /* in step with the film's 0.8 s dissolves (EvolutionReel FADE) */
+  animation: ev-caption-in 800ms var(--ease-kofa) both;
 }
 .ev-caption__year {
   font-size: 0.78rem;

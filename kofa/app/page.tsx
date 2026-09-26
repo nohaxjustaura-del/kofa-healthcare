@@ -38,11 +38,13 @@ export const metadata: Metadata = {
      hero          <EvolutionReel>, a silent film of REAL clinical imaging
                    in the order the technology arrived: Röntgen's 1895
                    radiograph, cardiac catheterization, obstetric ultrasound,
-                   a 1960 mechanical heart valve, balloon angioplasty, and
-                   today's live 3D ultrasound, full-bleed and cinematic. Two
-                   earlier cuts (a line drawing, then footage in a HUD lens)
-                   were sent back as not realistic enough; see the note at
-                   the top of components/home/EvolutionReel.tsx.
+                   a 1960 mechanical heart valve, balloon angioplasty, and,
+                   today, a transcatheter heart valve opening, live 3D
+                   ultrasound and a super-resolution ultrasound map of
+                   microvessels, full-bleed and cinematic. Two earlier cuts
+                   (a line drawing, then footage in a HUD lens) were sent
+                   back as not realistic enough; see the note at the top of
+                   components/home/EvolutionReel.tsx.
      portfolio     tissue-heart-valve.jpg, a Carpentier-Edwards tissue heart
                    valve photographed as an object: a device, legible at a
                    glance, beside "Backing the Devices That Change Care". (An
@@ -77,22 +79,36 @@ export default function Home() {
           pages clear the same band with padding instead, because their teal
           ground runs up behind it.
 
-          From xl the film is the hero's background, full-bleed, with its
-          picture set right and the copy on the dark field to its left, the
-          way OrbiMed's photographic hero is composed. Below xl the film is a
-          square block that comes FIRST — the client called the picture "the
-          focal point of the entire website" — and fades into the copy.
+          On any landscape screen from 1024px (hero-wide, defined at the top
+          of app/globals.css) the film is the hero's background, full-bleed,
+          with its picture set right and the copy on the dark field to its
+          left, the way OrbiMed's photographic hero is composed. On phones
+          and portrait tablets the film is a square block that comes FIRST —
+          the client called the picture "the focal point of the entire
+          website" — and fades into the copy.
+
+          This used to switch at 1280px, and the client's Windows laptop
+          showed the stacked version: display scaling gave her browser about
+          1195 x 590 CSS px. --hero-copy narrows the copy column with the
+          window below 1280px so both halves fit, and hero-short tightens the
+          vertical rhythm on screens under 760px tall so the headline, the
+          paragraph and both actions stay above the fold.
 
           The ground is near-black rather than the site's navy: it is the
           black every clinical display uses, so real X-ray and ultrasound
           footage sits in it as it would on a monitor instead of floating on
           a colour. */}
-      <section className="relative isolate mt-[104px] overflow-hidden bg-[#050d13] text-white xl:flex xl:min-h-[clamp(660px,calc(100svh-104px),860px)] xl:items-center">
+      <section className="relative isolate mt-[104px] overflow-hidden bg-[#050d13] text-white [--hero-copy:min(37.5rem,47vw)] hero-wide:flex hero-wide:min-h-[clamp(520px,calc(100svh-104px),860px)] hero-wide:items-center">
         <EvolutionReel />
 
-        <Container className="relative pb-[clamp(5.5rem,10vw,7.5rem)] pt-4 xl:py-24">
-          <div className="max-w-[36rem] xl:max-w-[37.5rem]">
-            <h1 className="type-display-sm text-balance">{site.tagline}</h1>
+        <Container className="relative pb-[clamp(5.5rem,10vw,7.5rem)] pt-4 hero-wide:py-24 hero-short:pb-[4.5rem] hero-short:pt-12">
+          <div className="max-w-[36rem] hero-wide:max-w-(--hero-copy)">
+            {/* On a short screen the headline is sized by the height as well
+                as the width, so it never takes the fold's share from the
+                copy beneath it. */}
+            <h1 className="type-display-sm text-balance hero-short:text-[length:clamp(2.25rem,8svh,1.4rem+3.2vw)]">
+              {site.tagline}
+            </h1>
 
             {/* The rule is the one piece of ornament in the copy, and it is
                 the same gesture the interior page headers use to set off
@@ -102,7 +118,7 @@ export default function Home() {
                 against the pale grounds it sits on everywhere else; on this
                 dark field it all but disappears. --color-aqua is the
                 palette's light teal and holds its contrast here. */}
-            <p className="mt-8 max-w-[52ch] border-l-2 border-aqua pl-6 text-[1.125rem] leading-8 text-white/90">
+            <p className="mt-8 max-w-[52ch] border-l-2 border-aqua pl-6 text-[1.125rem] leading-8 text-white/90 hero-short:mt-6 hero-short:max-w-[58ch] hero-short:text-[1.0625rem] hero-short:leading-7">
               KOFA Healthcare is an evergreen investment fund that invests in
               early- to mid-stage medical device companies that solve a clear
               unmet need in high growth clinical markets. We invest in
@@ -115,7 +131,7 @@ export default function Home() {
                 to go. Two routes, weighted — the portfolio is the evidence
                 most visitors came for, the approach is for the founder who
                 wants to know how the fund behaves before they write in. */}
-            <div className="mt-11 flex flex-col items-start gap-6 sm:flex-row sm:items-center sm:gap-9">
+            <div className="mt-11 flex flex-col items-start gap-6 sm:flex-row sm:items-center sm:gap-9 hero-short:mt-8">
               <Button href="/portfolio" variant="onDark">
                 View the portfolio
               </Button>

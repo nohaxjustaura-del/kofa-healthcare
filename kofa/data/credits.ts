@@ -94,6 +94,20 @@ export const imageCredits: readonly ImageCredit[] = [
       "Trimmed, cropped in on the balloon, frame-averaged, inverted, locally tone-mapped, lightly sharpened, toned and re-encoded at 30 fps by frame blending. The adapted clip is licensed CC BY-SA 4.0.",
   },
   {
+    subject: "A self-expanding transcatheter heart valve opening, on a test bench",
+    usedOn: "Homepage film, today",
+    title:
+      "Comparison of Two Generations of Self-Expandable Transcatheter Heart Valves in Nine Surgical Valves: An In Vitro Study, Video S2",
+    author: "Najla Sadat, Michael Scharfschwerdt, Stephan Ensminger and Buntaro Fujita",
+    source: {
+      label: "Journal of Cardiovascular Development and Disease",
+      href: "https://doi.org/10.3390/jcdd11080244",
+    },
+    license: { label: "CC BY 4.0", href: "https://creativecommons.org/licenses/by/4.0/" },
+    changes:
+      "Trimmed, cropped to one of the two valves shown (the video’s labels are cropped out or fall in the darkened surround), the test lighting’s flicker evened out, its orange cast partly neutralized, brightened, set into a black surround, toned and re-encoded.",
+  },
+  {
     subject: "Live 3D ultrasound of a fetus yawning",
     usedOn: "Homepage film, today",
     title: "Fetal yawning 4D ultrasound ecografia 4D Dr. Wolfgang Moroder",
@@ -105,6 +119,19 @@ export const imageCredits: readonly ImageCredit[] = [
     license: { label: "CC BY-SA 3.0", href: "https://creativecommons.org/licenses/by-sa/3.0/" },
     changes:
       "Trimmed, cropped (the scanner’s on-screen text falls outside the crop), toned and re-encoded at 30 fps by frame blending. The adapted clip is licensed CC BY-SA 3.0.",
+  },
+  {
+    subject: "Super-resolution ultrasound of a brain’s microvessels, with flow direction",
+    usedOn: "Homepage film, today",
+    title: "ULM of the rat brain with flow directions",
+    author: "CoutureOlivier",
+    source: {
+      label: "Wikimedia Commons",
+      href: "https://commons.wikimedia.org/wiki/File:ULM_of_the_rat_brain_with_flow_directions.jpg",
+    },
+    license: { label: "CC BY-SA 4.0", href: "https://creativecommons.org/licenses/by-sa/4.0/" },
+    changes:
+      "Cropped, the scale bar and its label removed (they sat on plain black), darks deepened with a tone curve, and toned. The adapted image is licensed CC BY-SA 4.0.",
   },
 
   /* ---- the stills ---- */

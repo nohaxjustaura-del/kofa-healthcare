@@ -25,7 +25,7 @@ import {
    So this is shot like a documentary title sequence. Full-bleed, on the
    near-black every clinical display uses; the footage in its natural tones
    (silver for X-ray and ultrasound, true colour for the 3D ultrasound and
-   the valve); slow dissolves and a slow camera drift; film grain; and one
+   the valves); dissolves and a slow camera drift; film grain; and one
    quiet caption. Nothing is drawn over the pictures.
 
      1895  X-ray imaging            Röntgen's radiograph of his wife's hand,
@@ -36,8 +36,25 @@ import {
      1960  Mechanical heart valve   a Starr-Edwards ball-and-cage valve, the
                                     first to succeed, photographed as an object
      1977  Balloon angioplasty      the balloon inflating inside the artery
+     Today Transcatheter heart      the 1960 valve on the 1977 catheter: a
+           valve                    self-expanding valve opening on a test
+                                    bench, seen down its axis
      Today Live 3D ultrasound       the 1958 technology grown up: a fetus
                                     yawning, in real time, in three dimensions
+     Today Super-resolution         ultrasound again, past its own resolution
+           ultrasound               limit: a map of a brain's microvessels
+                                    down to the capillaries, arteries warm and
+                                    veins cool by flow direction
+
+   The client's September 25 note asked for "one or two additional images or
+   clips" in Today (her ideas: "a modern angiogram, AI-enabled microvascular
+   imaging, and a futuristic scene that represents the types of technologies
+   we are backing"), and for the whole sequence to "feel more dynamic". The
+   valve is the technology KOFA backs; the microvessel map is the
+   microvascular imaging. It is captioned for what it is, not "AI": this map
+   was made by localizing and tracking microbubbles, not by machine
+   learning, and "AI" beside a real image also reads as "AI-generated",
+   which the site promised it would never show.
 
    Dates are the published firsts; except 1895, the footage shows each
    technique as practised rather than the historic first case. Nothing is
@@ -61,7 +78,12 @@ import {
 type Shot = {
   year: string;
   label: string;
-  media: { kind: "image"; src: string } | { kind: "video"; name: string };
+  media:
+    | { kind: "image"; src: string }
+    /** rate: playback speed. The clip has to outlast its time on screen
+     *  (rate × (hold + 2 × FADE) ≤ its length) or it loops mid-shot, and
+     *  a clip jumping back to its first frame reads as a glitch. */
+    | { kind: "video"; name: string; rate: number };
   /** Seconds fully on screen; each shot also spends FADE arriving. */
   hold: number;
   /** Camera drift over the shot: [scale, x%, y%] from → to. */
@@ -73,21 +95,21 @@ const SHOTS: readonly Shot[] = [
     year: "1895",
     label: "X-ray imaging",
     media: { kind: "image", src: "/media/film/1895-x-ray.jpg" },
-    hold: 5.2,
+    hold: 2.4,
     drift: [[0.97, 0, 1], [1.04, 1.5, -1.5]],
   },
   {
     year: "1929",
     label: "Cardiac catheterization",
-    media: { kind: "video", name: "1929-catheterization" },
-    hold: 5.4,
+    media: { kind: "video", name: "1929-catheterization", rate: 1.25 },
+    hold: 2.6,
     drift: [[0.93, 0, 0], [0.97, -1, 0.5]],
   },
   {
     year: "1958",
     label: "Obstetric ultrasound",
-    media: { kind: "video", name: "1958-obstetric-ultrasound" },
-    hold: 5.4,
+    media: { kind: "video", name: "1958-obstetric-ultrasound", rate: 1.25 },
+    hold: 2.6,
     // Below 1 wherever the source is small: a clip sits a little inside the
     // frame, darkness around it, rather than being magnified into softness.
     // The rule of thumb is no more than ~1.5x its source pixels on screen.
@@ -97,34 +119,61 @@ const SHOTS: readonly Shot[] = [
     year: "1960",
     label: "Mechanical heart valve",
     media: { kind: "image", src: "/media/film/1960-heart-valve.jpg" },
-    hold: 5.0,
+    hold: 2.4,
     drift: [[0.94, 0, 1.5], [1.0, 0, -1]],
   },
   {
     year: "1977",
     label: "Balloon angioplasty",
-    media: { kind: "video", name: "1977-balloon-angioplasty" },
-    hold: 5.6,
+    media: { kind: "video", name: "1977-balloon-angioplasty", rate: 1.25 },
+    hold: 2.8,
     drift: [[0.9, 0, 0], [0.95, 0, -1]],
+  },
+  {
+    // the 1960 valve's descendant, delivered on the 1977 catheter: a
+    // self-expanding transcatheter valve, looking down its axis on a test
+    // bench as its leaflets open. The source is high-speed footage, already
+    // slowed, so it gets the smallest speed-up: the valve is seen closed once
+    // the dissolve lands, and opens about 0.85 s later.
+    year: "Today",
+    label: "Transcatheter heart valve",
+    media: { kind: "video", name: "today-transcatheter-valve", rate: 1.15 },
+    hold: 3.0,
+    drift: [[0.9, 0, 1], [0.96, 0, -1]],
   },
   {
     year: "Today",
     label: "Live 3D ultrasound",
-    media: { kind: "video", name: "today-live-3d-ultrasound" },
-    hold: 6.2,
+    media: { kind: "video", name: "today-live-3d-ultrasound", rate: 1.25 },
+    hold: 3.0,
     drift: [[0.88, 0, 0], [0.92, -1, 1]],
+  },
+  {
+    year: "Today",
+    label: "Super-resolution ultrasound",
+    media: { kind: "image", src: "/media/film/today-super-resolution-ultrasound.jpg" },
+    hold: 3.2,
+    // the one real push-in of the film: from the whole network toward the
+    // cortex's penetrating vessels. The still is 1600px so it stays sharp
+    // at the end of the move.
+    drift: [[0.95, 0, -1], [1.12, 0, 3]],
   },
 ];
 
-/** Dissolve length. Long on purpose: a cut reads as an edit, a slow
- *  dissolve reads as time passing, which is what the film is about. */
-const FADE = 1.4;
+/** Dissolve length. A dissolve rather than a cut: a cut reads as an edit,
+ *  a dissolve as time passing, which is what the film is about. It was
+ *  1.4 s, with holds of 5 to 6 s, a shot every 7 s or so. The client asked
+ *  for the sequence to "feel more dynamic", and then for faster still: a
+ *  shot now arrives every 3.2 to 4 s, and the whole loop runs about 29 s.
+ *  Much shorter and the dissolves turn into cuts and the captions stop
+ *  being readable. */
+const FADE = 0.8;
 
 /** The shot the still shows (motion off, no JS, first paint). */
 const STILL = 0;
 
 const DESCRIPTION =
-  "A silent film of real medical imaging, in the order the technology arrived: Wilhelm Röntgen's 1895 X-ray of a hand; a catheter in a coronary artery; an ultrasound of a fetus; a 1960 Starr-Edwards mechanical heart valve; a balloon inflating inside an artery; and a live 3D ultrasound of a fetus yawning.";
+  "A silent film of real medical imaging, in the order the technology arrived: Wilhelm Röntgen's 1895 X-ray of a hand; a catheter in a coronary artery; an ultrasound of a fetus; a 1960 Starr-Edwards mechanical heart valve; a balloon inflating inside an artery; and, today, a transcatheter heart valve opening, a live 3D ultrasound of a fetus yawning, and a super-resolution ultrasound map of a brain's smallest blood vessels.";
 
 const useIsomorphicLayoutEffect =
   typeof window === "undefined" ? useEffect : useLayoutEffect;
@@ -185,9 +234,13 @@ export function EvolutionReel({
     };
     const play = (i: number) => {
       const v = videos[i];
-      if (!v || saveData) return;
+      const m = SHOTS[i].media;
+      if (!v || saveData || m.kind !== "video") return;
       current = v;
       v.muted = true;
+      // both: load() resets playbackRate to defaultPlaybackRate
+      v.defaultPlaybackRate = m.rate;
+      v.playbackRate = m.rate;
       try {
         v.currentTime = 0;
       } catch {
@@ -292,7 +345,7 @@ export function EvolutionReel({
           at a line. */}
       <div aria-hidden className="ev-stage">
         {SHOTS.map((s, i) => (
-          <div key={s.year} className="ev-shot" style={{ opacity: i === stillIndex ? 1 : 0 }}>
+          <div key={`${s.year} ${s.label}`} className="ev-shot" style={{ opacity: i === stillIndex ? 1 : 0 }}>
             <div className="ev-drift">
               {s.media.kind === "image" ? (
                 <Image

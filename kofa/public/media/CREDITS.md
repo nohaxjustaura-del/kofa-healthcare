@@ -24,6 +24,13 @@ Nothing here carries a watermark or a stock-subscription licence.
   looping animation on an evolution of a medical equipment / medical field"
   for the hero, and "still images of medical tools ... catheter tip,
   angiogram images, fetus ultrasound, and vascular flow" elsewhere.
+- **September 25**, on the film: "one or two additional images or clips to
+  the 'Today' section, in addition to the live 3D ultrasound" (her ideas: "a
+  modern angiogram, AI-enabled microvascular imaging, and a futuristic scene
+  that represents the types of technologies we are backing"), and "speed up
+  the video slightly so the overall sequence feels more dynamic". Two were
+  added: a transcatheter valve, the kind of device KOFA backs, and a
+  super-resolution map of microvessels, the microvascular imaging.
 
 The Unsplash set (`hero-lab-research.jpg`, `portfolio-microscope.jpg`,
 `focus-clinician.jpg`) is deleted; recover it from commit `f3f4f7b` if ever
@@ -49,12 +56,22 @@ first.
 | `1958-obstetric-ultrasound.*` | 1958, obstetric ultrasound | [Commons, "Fetus playin with fingers ecografia ultrasuoni Dr. Wolfgang Moroder"](https://commons.wikimedia.org/wiki/File:Fetus_playin_with_fingers_ecografia_ultrasuoni_Dr._Wolfgang_Moroder.ogv) | Dr. Wolfgang Moroder | CC BY-SA 3.0 |
 | `1960-heart-valve.jpg` | 1960, mechanical heart valve | [Wellcome Collection, "Prosthetic heart valve, Starr Edwards"](https://wellcomecollection.org/works/z7jrgqf7) (image N0009646) | Wellcome Collection | CC BY 4.0 |
 | `1977-balloon-angioplasty.*` | 1977, balloon angioplasty | [Commons, "CAG+PTCA 67Yrs Male 10FPS (16)"](https://commons.wikimedia.org/wiki/File:CAG%2BPTCA_67Yrs_Male_10FPS_(16).webm) | Suyash Dwivedi | CC BY-SA 4.0 |
+| `today-transcatheter-valve.*` | Today, transcatheter heart valve | [Sadat N, Scharfschwerdt M, Ensminger S, Fujita B, "Comparison of Two Generations of Self-Expandable Transcatheter Heart Valves in Nine Surgical Valves: An In Vitro Study", *J. Cardiovasc. Dev. Dis.* 2024, 11(8), 244](https://doi.org/10.3390/jcdd11080244), Video S2 (from its supplementary zip on [PMC11354675](https://pmc.ncbi.nlm.nih.gov/articles/PMC11354675/)) | Najla Sadat, Michael Scharfschwerdt, Stephan Ensminger, Buntaro Fujita | CC BY 4.0 |
 | `today-live-3d-ultrasound.*` | Today, live 3D ultrasound | [Commons, "Fetal yawning 4D ultrasound ecografia 4D Dr. Wolfgang Moroder"](https://commons.wikimedia.org/wiki/File:Fetal_yawning_4D_ultrasound_ecografia_4D_Dr._Wolfgang_Moroder.theora.ogv) | Dr. Wolfgang Moroder | CC BY-SA 3.0 |
+| `today-super-resolution-ultrasound.jpg` | Today, super-resolution ultrasound | [Commons, "ULM of the rat brain with flow directions"](https://commons.wikimedia.org/wiki/File:ULM_of_the_rat_brain_with_flow_directions.jpg) (own work, from the open data of Heiles et al., *Nature Biomedical Engineering* 6, 605–616, 2022) | CoutureOlivier | CC BY-SA 4.0 |
 | `grain.png` | film grain tile | generated noise (seeded Gaussian), not an image of anything | — | — |
 
 Clips are 900 x 900, H.264 MP4 (CRF 23 to 27, `-tune film`) and VP9 WebM
-(CRF 33 to 38), each with a JPEG poster; the whole film is about 1.8 MB of
+(CRF 33 to 38), each with a JPEG poster; the whole film is about 2.2 MB of
 WebM, fetched one shot at a time as each approaches.
+
+The pacing (September 25, then made faster again): each shot holds 2.4 to
+3.2 s, with 0.8 s dissolves (they were 5 to 6 s and 1.4 s), so a shot
+arrives every 3.2 to 4 s and the loop runs about 29 s. The angiograms and
+ultrasounds play at 1.25x; the transcatheter valve, already slowed
+high-speed footage, at 1.15x. A clip must outlast its time on screen at its
+rate, rate x (hold + 2 x dissolve), or it would loop mid-shot; the rates
+are set per clip in `EvolutionReel.tsx` to fit.
 
 How each was made, exactly:
 
@@ -90,13 +107,50 @@ How each was made, exactly:
   wider square of its own studio darkness so it has room around it, with
   the grey table crushed by a tone curve rather than a spatial mask, so
   the object keeps its true edges.
+- **The transcatheter valve:** the paper's Video S2 shows two valves side
+  by side, each seated in a surgical valve in a pulse duplicator and filmed
+  down its axis. The shot is its first segment (0 to 7.4 s, "in
+  Trifecta"), the right-hand panel only, the Evolut PRO: a 600 px square
+  from x 670, y 72 of the 1280 x 720 frame, taken just under the panel's
+  "Evolut PRO" label, so the valve frame's topmost cells are cut and fade
+  out along the crop's edge. Nothing is painted out; the file name burned
+  in at the panel's bottom left falls in the surround that goes to black.
+  The high-speed recording was lit by mains lighting, so the slowed-down
+  footage pulses at 5 Hz by about +-8%: each frame is divided by its own
+  brightness gain, measured on the static rig around the valve against a
+  13-frame moving median (a deflicker; the 5 Hz component falls about
+  88%). The rig's orange light is taken halfway back toward neutral
+  (per-channel gains 0.81, 1.11, 1.25 from the surround), the picture is
+  lifted about a stop, and the colour grade and black point are the
+  film's. The crop is set, centred on the valve, into a 780 px square of
+  black, and the surround falls off radially outside the valve's own
+  frame, so the device sits whole in darkness like the 1960 valve at any
+  hero height. It is seen closed for the first 1.9 s, then opens.
+- **Super-resolution ultrasound:** ultrasound localization microscopy (ULM)
+  of a rat brain, 8000 x 7802; red and blue encode flow direction. The
+  yellow "0.1 mm" scale bar and its label sat on plain black and were
+  painted black (the only pixels changed). Cropped to the 6400 px square
+  from x 800, y 0 (the cortex's penetrating vessels, the midline and the
+  deep network), Lanczos to 1600 px so the shot's push-in stays sharp, and
+  a tone curve with no spatial component deepens the faint capillary haze
+  while the bright vessels barely move, then the film's colour grade. It is
+  captioned "Super-resolution ultrasound", not "AI-enabled": this map was
+  made by localizing and tracking microbubbles, not by machine learning.
 
-The ShareAlike clips are adapted works and are licensed under the same
-terms (CC BY-SA 4.0 and 3.0), as `/credits` states. Transcatheter valves
-and other post-2000 devices were considered for the film and left out: no
-openly licensed footage of them could be found, and a surgical valve shown
-under a transcatheter label would have been wrong. The Starr-Edwards valve
-is shown under 1960, the year the first one was implanted.
+The ShareAlike files are adapted works and are licensed under the same
+terms (CC BY-SA 4.0 and 3.0), as `/credits` states. The transcatheter valve
+(CC BY 4.0) needs attribution only. The September 24 search found no openly
+licensed footage of a transcatheter valve, and a surgical valve shown under
+a transcatheter label would have been wrong, so the film had none; the
+September 25 search found this bench study's supplementary video. The Starr-Edwards valve is shown
+under 1960, the year the first one was implanted.
+
+Considered for the September 25 additions and left out: a rotating CT
+angiogram of the chest (Commons, Hellerhoff; only 15 frames over 180°, so
+it stutters or doubles when blended), 4D-flow MRI pathline films from
+open-access papers (colour bars, time stamps and axis glyphs burned in, at
+600 to 800 px), and an ultrasound localization animation (368 px tall).
+The CT angiogram would make a fine still if a modern angiogram is wanted.
 
 ### The four stills
 
