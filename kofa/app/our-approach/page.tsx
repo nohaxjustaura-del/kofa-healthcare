@@ -24,8 +24,10 @@ export default function OurApproachPage() {
           <div className="grid grid-cols-12 gap-y-12">
             <p className="type-statement col-span-12 max-w-[30ch] text-ink lg:col-span-5">
               Backed by permanent family-office capital, we take a patient,
-              founder-aligned approach: investing in exceptional technologies,
-              clinical needs and teams rather than fixed fund timelines.
+              founder-aligned approach:
+              <br />
+              Investing in exceptional technologies, clinical needs and teams
+              rather than fixed fund timelines.
             </p>
             <div className="col-span-12 border-l border-rule pl-6 lg:col-span-6 lg:col-start-7 lg:pl-9">
               <BodyCopy size="lg" className="max-w-[47ch]">
