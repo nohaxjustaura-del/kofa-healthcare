@@ -1,13 +1,9 @@
 "use client";
 
 import { useRef, useState, type FormEvent } from "react";
-import { motion } from "framer-motion";
-import { useMotionOff } from "@/components/motion/MotionPreference";
 import { Arrow } from "@/components/ui/Arrow";
 import { Button } from "@/components/ui/Button";
 import { contactPrompts, contactReasons, site } from "@/data/site";
-
-const EASE = [0.22, 1, 0.36, 1] as const;
 
 type Status =
   | "idle"
@@ -151,7 +147,6 @@ export function ContactForm() {
   const [errors, setErrors] = useState<Partial<Record<keyof Fields, string>>>({});
   const [status, setStatus] = useState<Status>("idle");
   const formRef = useRef<HTMLFormElement>(null);
-  const reduced = useMotionOff();
 
   const set = (k: keyof Fields) => (v: string) => {
     setF((prev) => ({ ...prev, [k]: v }));
@@ -296,18 +291,14 @@ export function ContactForm() {
      case for this site: the fund's inbox fills with duplicates while the
      sender believes the form is broken and gives up.
 
-     components/motion/MotionProvider.tsx already documents this exact class
-     of failure — "AnimatePresence exits never complete, so nothing unmounts"
-     — from when a dismissed team panel stayed in the DOM holding an invisible
-     full-viewport overlay over the page. reducedMotion="never" was the fix
-     there and does not help here.
+     The team panel once failed the same way: an exit that never completed
+     left an invisible full-viewport overlay over the page.
 
      So the swap no longer depends on an exit animation completing at all.
      The form is plain markup and is simply replaced; only the confirmation
      animates, on entry, where a stalled animation can strand nothing. Do not
-     reintroduce AnimatePresence here to cross-fade the two. An exit
-     transition on a delivery confirmation buys 300ms of polish and risks the
-     whole submission.
+     reintroduce an exit transition here to cross-fade the two. It buys 300ms
+     of polish and risks the whole submission.
   ------------------------------------------------------------------------- */
 
   return (
@@ -315,29 +306,20 @@ export function ContactForm() {
       {/* The confirmation's entrance moves it but never fades it.
           ----------------------------------------------------------------
           It used to start at `opacity: 0` and animate to 1. That makes the
-          one message confirming a successful delivery invisible until a
-          JavaScript animation completes, and Framer drives its animations
-          from requestAnimationFrame. Any condition that starves rAF — a
+          one message confirming a successful delivery invisible until an
+          animation completes. Any condition that starves the frame loop, a
           backgrounded tab at the moment of submit, a throttled or occluded
-          window, a slow device mid-jank — leaves the panel mounted, correct
-          in the DOM, and completely blank on screen. Observed directly: with
-          the pane not painting, the committed element sat at
-          `opacity: 0; transform: translateY(14px)` indefinitely.
+          window, a slow device mid-jank, left the panel mounted, correct in
+          the DOM, and completely blank on screen. Observed directly.
 
-          Starting from `y: 14` alone degrades to nothing worse than the panel
+          Starting 14px low alone degrades to nothing worse than the panel
           appearing 14px lower than intended, which no one will ever notice.
           Starting from `opacity: 0` degrades to the visitor being told
-          nothing at all about a message that was in fact delivered — the same
-          class of failure as the AnimatePresence stall above, and the reason
-          both are gone. Do not put the opacity keyframe back. */}
+          nothing at all about a message that was in fact delivered. It is a
+          CSS animation now (.form-confirm in app/globals.css); do not put an
+          opacity keyframe in it. */}
       {done ? (
-        <motion.div
-          initial={reduced ? false : { y: 14 }}
-          animate={{ y: 0 }}
-          transition={{ duration: reduced ? 0 : 0.5, ease: EASE }}
-          role="status"
-          className="border-t border-teal pt-9"
-        >
+        <div role="status" className="form-confirm border-t border-teal pt-9">
           {/* teal-deep, not teal: .type-eyebrow is 11px, so WCAG 1.4.3 wants
               4.5:1 and --color-teal on white is only 3.96:1. This is the line
               that tells someone their message reached the fund, so it is the
@@ -355,10 +337,12 @@ export function ContactForm() {
               ? "Someone from KOFA reads every message that comes through this form."
               : `If nothing opened, write to ${site.email} directly and we'll pick it up from there.`}
           </p>
+          {/* hover:text-teal-deep, not teal: #008e95 on white is 3.96:1 and
+              this label is 14px, so the hover state would fail AA. */}
           <button
             type="button"
             onClick={() => setStatus("idle")}
-            className="group/link mt-9 inline-flex items-center gap-2.5 text-[0.875rem] font-medium text-ink transition-colors duration-300 ease-kofa hover:text-teal"
+            className="group/link mt-9 inline-flex min-h-11 items-center gap-2.5 text-[0.875rem] font-medium text-ink transition-colors duration-300 ease-kofa hover:text-teal-deep"
           >
             Send another message
             <Arrow
@@ -366,7 +350,7 @@ export function ContactForm() {
               className="transition-transform duration-300 ease-kofa group-hover/link:translate-x-1"
             />
           </button>
-        </motion.div>
+        </div>
       ) : (
         <form
           ref={formRef}
@@ -454,8 +438,10 @@ export function ContactForm() {
                   <label
                     key={r}
                     className={`cursor-pointer rounded-md border px-4 py-2.5 text-[0.8125rem] transition-colors duration-300 ease-kofa has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-teal ${
+                      /* teal-deep text: the label is 13px, and #008e95 on
+                         this pale wash measured under 4.5:1. */
                       on
-                        ? "border-teal bg-[rgba(23,109,103,0.06)] text-teal"
+                        ? "border-teal bg-[rgba(0,142,149,0.07)] text-teal-deep"
                         : "border-rule text-ink-soft hover:border-rule-strong hover:text-ink"
                     }`}
                   >

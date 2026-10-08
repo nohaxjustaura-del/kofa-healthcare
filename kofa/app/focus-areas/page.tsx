@@ -31,11 +31,15 @@ export default function FocusAreasPage() {
           {/* gap-px over a rule-coloured ground draws the dividers, so the
               three cards share one hairline grid instead of each carrying its
               own border and doubling up where they meet. */}
+          {/* From lg each card is a subgrid spanning the same five rows
+              (still, glyph, rule, title, body), so a title that wraps to two
+              lines pushes every card's body down with it and the paragraphs
+              start on one line across the row. */}
           <div className="grid grid-cols-1 gap-px bg-rule lg:grid-cols-3">
             {focusAreas.map((area, index) => (
               <article
                 key={area.title}
-                className="group relative flex min-h-[23rem] flex-col bg-white pb-10 pt-9 lg:px-9 lg:pt-11 lg:first:pl-0 lg:last:pr-0"
+                className="group relative flex min-h-[23rem] flex-col bg-white pb-10 pt-9 lg:row-span-5 lg:grid lg:min-h-0 lg:grid-rows-subgrid lg:gap-0 lg:px-9 lg:pt-11 lg:first:pl-0 lg:last:pr-0"
               >
                 {/* A fixed height from lg, not an aspect ratio: the middle
                     column is padded on both sides and the outer two on one,

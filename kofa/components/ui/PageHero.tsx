@@ -66,7 +66,10 @@ export function PageHero({
         <p className="type-eyebrow text-white/85">{eyebrow}</p>
 
         <div className="mt-7 grid gap-x-16 gap-y-8 lg:grid-cols-[minmax(0,1.45fr)_minmax(19rem,0.75fr)] lg:items-end">
-          <h1 className="max-w-[19ch] text-balance text-[clamp(2.5rem,4.1vw,3.4rem)] font-normal leading-[1.08] tracking-[-0.032em]">
+          {/* The 19ch measure is for single-string headlines, so the browser
+              balances where they break. Pass several lines and the breaks are
+              already chosen; the measure would only split them again. */}
+          <h1 className={`${lines.length > 1 ? "" : "max-w-[19ch] "}text-balance text-[clamp(2.5rem,4.1vw,3.4rem)] font-normal leading-[1.08] tracking-[-0.032em]`}>
             {lines.map((line, index) => (
               <span key={index} className="block">
                 {line}

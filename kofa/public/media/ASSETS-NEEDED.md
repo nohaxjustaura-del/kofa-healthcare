@@ -18,7 +18,7 @@ Two rules that apply to everything below:
 
 ## 1. Portfolio logos (highest impact)
 
-**16 files, in `public/logos/`. All exist; several want replacing.**
+**16 files, in `public/company-logos/`. All exist; several want replacing.**
 
 This is the biggest single win. The homepage portfolio grid and the
 `/portfolio` cards are white tiles where the logo *is* the card, so every
@@ -28,27 +28,34 @@ weakness in a logo file is shown at full size with nothing beside it.
 the long edge**, **trimmed hard to the ink** with no built-in padding, and the
 **horizontal lockup** rather than the stacked one where both exist.
 
-The trim matters more than the pixel count. The logo is drawn into a box of
-about 190 × 64 px and fitted with `object-contain`, so a logo delivered on a
-big padded canvas fits its *canvas* to that box and the mark inside it lands
-much smaller than its neighbours. Several of the current files are scraped
-social-share cards, which is why they look undersized in the grid.
+The trim matters more than the pixel count. Every logo is drawn at the same
+visual *area* (`components/portfolio/CompanyLogo.tsx`), computed from the
+file's width-to-height ratio, so a logo delivered on a big padded canvas is
+sized as if the padding were part of it and the mark inside lands much
+smaller than its neighbours. Several of the files were scraped social-share
+cards for exactly that reason. In September 2026 their blank margins were
+trimmed away (nothing else about the artwork changed), and each file's
+ratio is recorded as `logoAspect` in `data/portfolio.ts`.
+
+**When you replace a logo:** trim it to the ink, give it a new file name (an
+image cache keyed on the old name can otherwise keep serving the old file
+for a while), and update both `logo` and `logoAspect` for that company.
 
 | Replace | Have now | Problem |
 | --- | --- | --- |
 | Nectero | `nectero-medical.png` | **Wrong name.** The company is now Nectero Therapeutics; the file is the old Nectero Medical wordmark. Needs the current logo. (Keep the filename and the `nectero-medical` slug: they are the live URL and the key six news items join on.) |
 | Eyenuk | 137 × 24 PNG | far too small, visibly soft |
 | Biospectal | 150 × 56 PNG | too small |
-| CorFlow | 150 × 150 WebP | too small, square lockup |
+| CorFlow | 140 × 30 WebP (trimmed from a 150 × 150 square) | too small, visibly soft at 2× |
 | RIVANNA Medical | 196 × 30 PNG | too small |
 | IllumiCell AI | 200 × 200 JPEG | too small, square, no transparency |
 | Marrow Access | 400 × 257 JPEG | no transparency |
 | Zafrens | 533 × 468 JPEG | no transparency, stacked lockup |
 | Axena Health | 466 × 108 PNG | borderline at 2× displays |
-| Alydia Health | 1200 × 627 JPEG | social card: mark sits small in a padded canvas |
-| Axon Therapies | 1364 × 714 JPEG | same |
-| Caretaker Medical | 2088 × 1096 JPEG | same |
-| Cerapedics | 1496 × 785 JPEG | same |
+| Alydia Health | 848 × 343 JPEG | was a social card; trimmed, but still no transparency |
+| Axon Therapies | 1361 × 522 JPEG | same |
+| Caretaker Medical | 2088 × 388 JPEG | same |
+| Cerapedics | 1443 × 314 JPEG | same |
 
 **Already fine, leave alone:** Aria CV, Venova Medical, Raydiant Oximetry.
 

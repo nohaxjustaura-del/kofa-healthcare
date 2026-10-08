@@ -112,7 +112,7 @@ export const siteUrl = resolveSiteUrl();
  * app/opengraph-image.tsx and do not bump this number, everyone who has ever
  * shared a KOFA link keeps getting the old card.
  */
-const OG_IMAGE_URL = "/opengraph-image?v=1";
+const OG_IMAGE_URL = "/opengraph-image?v=2";
 
 /** 1200x630 is the size Twitter/X, LinkedIn and Slack all crop cleanly to. */
 export const OG_IMAGE_SIZE = { width: 1200, height: 630 };
@@ -140,15 +140,21 @@ export const KOFA_GLYPH_VIEWBOX = "0 0 1000 866.21";
 
 /** The brand tokens from app/globals.css, restated for satori, which has no
  *  stylesheet and cannot read a CSS custom property. Keep in sync with the
- *  @theme block there. */
+ *  @theme block there. (Until v=2 of the card these were a previous
+ *  palette's ivory, green-black and green-teal, so every link preview was
+ *  off-brand next to the site it pointed at.) */
 export const BRAND = {
-  ivory: "#f7f8f4",
-  ink: "#121a18",
-  inkSoft: "#59635f",
-  teal: "#176d67",
+  /** The site's white ground. */
+  ground: "#ffffff",
+  /** --color-navy / --color-ink. */
+  ink: "#12394b",
+  /** --color-ink-soft. */
+  inkSoft: "#4d626c",
+  /** --color-teal-deep, the accessible teal used for small text. */
+  teal: "#006a70",
   /** The mark's own red. Sampled from public/brand/kofa-mark.png. */
   kofaRed: "#d61319",
-  rule: "rgba(18, 26, 24, 0.12)",
+  rule: "rgba(18, 57, 75, 0.14)",
 };
 
 type SocialType = "website" | "article" | "profile";

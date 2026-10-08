@@ -74,7 +74,7 @@ export default function OpengraphImage() {
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
-          backgroundColor: BRAND.ivory,
+          backgroundColor: BRAND.ground,
           color: BRAND.ink,
           padding: "76px 88px",
         }}

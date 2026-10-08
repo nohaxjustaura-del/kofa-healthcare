@@ -95,9 +95,7 @@
 @theme {
   /* --- Surfaces --------------------------------------------- */
   --color-ivory: #ffffff;
-  --color-ivory-deep: #edf6f7;
   --color-sage-bg: #edf6f7;
-  --color-sage-bg-deep: #e4f0f1;
   --color-ice: #edf6f7;
   --color-navy: #12394b;
   --color-white: #ffffff;
@@ -153,12 +151,9 @@
   --font-serif: "Graphik", "General Sans", ui-sans-serif, system-ui, sans-serif;
   --font-sans: "Graphik", "General Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
 
-  /* --- Motion ----------------------------------------------- */
+  /* --- Motion -----------------------------------------------
+     Also generates the `ease-kofa` utility. */
   --ease-kofa: cubic-bezier(0.22, 1, 0.36, 1);
-  --ease-kofa-in: cubic-bezier(0.65, 0, 0.35, 1);
-
-  /* --- Layout ----------------------------------------------- */
-  --spacing-gutter: 1.5rem;
 }
 
 /* ============================================================
@@ -175,6 +170,14 @@
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
     scroll-behavior: smooth;
+    /* Anchors land below the fixed 104px header (native jumps and
+       scrollIntoView both honour this). */
+    scroll-padding-top: 104px;
+    /* The team profile locks page scrolling while it is open. With a
+       classic scrollbar, as on the client's Windows laptop, the page used
+       to jump sideways by the scrollbar's width at that moment; a stable
+       gutter keeps the space reserved. Overlay scrollbars are unaffected. */
+    scrollbar-gutter: stable;
   }
 
   body {
@@ -343,27 +346,8 @@
    ============================================================ */
 
 @layer utilities {
-  .ease-kofa {
-    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
-  }
-
-  /* Faint scientific grid, the "graph paper" substrate */
-  .bg-grid { background-image: none; }
-
-  /* Masked reveal container for line-by-line headline animation */
-  .clip-line {
-    display: block;
-    overflow: hidden;
-    padding-bottom: 0.09em;
-    margin-bottom: -0.09em;
-  }
-
-  .text-balance {
-    text-wrap: balance;
-  }
-  .text-pretty {
-    text-wrap: pretty;
-  }
+  /* `ease-kofa`, `text-balance` and `text-pretty` are Tailwind built-ins
+     (the first from --ease-kofa above), so they are not redeclared here. */
 
   /* Underline that draws left → right on hover */
   .link-draw {
@@ -387,23 +371,8 @@
     transform: scaleX(1);
   }
 
-  /* Logo normalisation: portfolio logos arrive as mixed JPEG/PNG/WebP
-     on white. Multiply blends the white away against ivory; the
-     grayscale/contrast pass unifies them into one muted system. */
-  .logo-mono {
-    mix-blend-mode: multiply;
-    filter: grayscale(1) contrast(0.82) brightness(1.04);
-    opacity: 0.68;
-    transition:
-      filter 500ms cubic-bezier(0.22, 1, 0.36, 1),
-      opacity 500ms cubic-bezier(0.22, 1, 0.36, 1);
-  }
-  .group:hover .logo-mono,
-  .logo-mono:hover {
-    filter: grayscale(0) contrast(1) brightness(1);
-    opacity: 1;
-  }
-
+  /* Portfolio logos arrive as mixed JPEG/PNG/WebP on white. Multiply
+     blends the white away against whatever ground the logo sits on. */
   .logo-plate {
     mix-blend-mode: multiply;
   }
@@ -442,24 +411,90 @@ html[data-motion="off"] *::after {
   scroll-behavior: auto !important;
 }
 
-/* ---------------------------------------------------------------------
-   Entrance elements render their hidden `initial` state into the server
-   HTML and rely on the animation library to reveal them. With motion off
-   the library is told to arrive with zero duration, but nothing may depend
-   on it having run: this page once had 47 of 56 revealed elements stuck at
-   opacity 0, i.e. mostly blank, for exactly the visitors least able to
-   tolerate that.
+/* ============================================================
+   ENTRANCES: components/motion/Reveal.tsx and Rise.tsx
+   ------------------------------------------------------------
+   Content must never depend on an animation running in order to be
+   visible. This page once had 47 of 56 revealed elements stuck at
+   opacity 0, i.e. mostly blank, for exactly the visitors least able
+   to tolerate that.
 
-   Content must never depend on an animation running in order to be visible.
-   These are the same declarations as the <noscript> fallback in
-   app/layout.tsx, for the same reason. Written flat rather than nested so
-   the compiled selector is unambiguous.
---------------------------------------------------------------------- */
-html[data-motion="off"] [data-reveal],
-html[data-motion="off"] [data-lag] {
-  opacity: 1 !important;
-  transform: none !important;
-  clip-path: none !important;
+   So nothing here hides anything by default. An element only goes
+   "armed" (hidden, waiting) when components/motion/useEnter.ts finds
+   it below the fold after hydration, and it is only hidden at all
+   while motion is on. "in" then transitions it home. The resting
+   state carries no transform, so a settled element is never a
+   containing block for fixed descendants.
+
+   The custom properties are set inline by the component; these are
+   the defaults. Transform order matches the framer-motion version
+   this replaced: translate, then scale, then skew.
+   ============================================================ */
+[data-enter] {
+  --enter-x: 0px;
+  --enter-y: 20px;
+  --enter-skew: 0deg;
+  --enter-scale: 1;
+  --enter-duration: 700ms;
+  --enter-delay: 0s;
+}
+html[data-motion="on"] [data-enter-state="armed"] {
+  opacity: 0;
+  transform: translate3d(var(--enter-x), var(--enter-y), 0)
+    scale(var(--enter-scale)) skewY(var(--enter-skew));
+}
+html[data-motion="on"] [data-enter-state="in"] {
+  transition:
+    opacity var(--enter-duration) var(--ease-kofa) var(--enter-delay),
+    transform var(--enter-duration) var(--ease-kofa) var(--enter-delay);
+}
+@media print {
+  [data-enter-state] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* ============================================================
+   ROUTE SWEEP: components/motion/RouteTransition.tsx
+   ------------------------------------------------------------
+   One narrow teal band crossing the top of the screen when a page
+   mounts. `both` parks it off-screen before and after; with motion
+   off the global rule above jumps straight to the end, which is
+   also off-screen, so it never shows.
+   ============================================================ */
+.route-sweep {
+  background-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    transparent 30%,
+    var(--color-teal) 50%,
+    transparent 70%,
+    transparent 100%
+  );
+  animation: route-sweep 720ms cubic-bezier(0.65, 0, 0.35, 1) both;
+}
+@keyframes route-sweep {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+/* ============================================================
+   MOTION CONTROL: components/ui/MotionToggle.tsx
+   ------------------------------------------------------------
+   The footer button names the action, and which name shows is read
+   from the attribute the pre-paint script writes, so it is right on
+   the first frame. No attribute means the script never ran, i.e. no
+   JavaScript, and then the button could not work, so it is hidden.
+   ============================================================ */
+html:not([data-motion]) .motion-toggle,
+html[data-motion="off"] .motion-toggle__on,
+html:not([data-motion="off"]) .motion-toggle__off {
+  display: none;
 }
 
 /* ============================================================
@@ -479,9 +514,6 @@ html[data-motion="off"] [data-lag] {
   [data-hover-reveal] {
     max-height: none !important;
     opacity: 1 !important;
-  }
-  [data-hover-reveal-gap] {
-    margin-top: 0.625rem !important;
   }
 }
 
@@ -624,14 +656,24 @@ html[data-motion="off"] [data-lag] {
 html[data-motion="off"] .ev-grain {
   animation: none !important;
 }
+.ev-film[data-paused="true"] .ev-grain {
+  animation-play-state: paused;
+}
 
 /* The caption: a year, a hairline, a name. Bottom-left of the picture
    on phones; on desktop it sits at the right edge of the content
-   column, clear of the white curve below. */
+   column, clear of the white curve below. The film's pause button
+   rides at its end. z-index lifts the pair above the copy column,
+   whose box overlaps this corner on wide screens and would otherwise
+   take the button's clicks. */
 .ev-caption-host {
   position: absolute;
+  z-index: 2;
   left: 1.5rem;
   bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
 }
 @media (min-width: 640px) {
   .ev-caption-host {
@@ -684,6 +726,37 @@ html[data-motion="off"] .ev-grain {
   }
 }
 
+/* Pause / play. Quiet enough to sit beside the caption as part of it:
+   a hairline ring the weight of the caption's own rule. The negative
+   margin keeps the caption on the line it always sat on; ::before
+   widens the target to 44px without widening the ring. */
+.ev-toggle {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  margin-block: -0.5rem;
+  border: 1px solid rgb(255 255 255 / 0.3);
+  border-radius: 999px;
+  color: rgb(255 255 255 / 0.78);
+  transition:
+    border-color 300ms var(--ease-kofa),
+    color 300ms var(--ease-kofa),
+    background-color 300ms var(--ease-kofa);
+  animation: ev-caption-in 800ms var(--ease-kofa) both;
+}
+.ev-toggle::before {
+  content: "";
+  position: absolute;
+  inset: -0.5rem;
+}
+.ev-toggle:hover {
+  border-color: rgb(255 255 255 / 0.7);
+  color: #fff;
+  background-color: rgb(255 255 255 / 0.06);
+}
+
 /* The server markup is the still (the 1895 radiograph), which is the
    picture for motion-off and no-JS visitors. With motion on, the film
    takes over after hydration and opens from darkness, so until it
@@ -710,10 +783,9 @@ html[data-motion="on"] .ev-film[data-animate="true"][data-live="false"] .ev-capt
   }
 }
 
-/* Two marquees now run on this rule at two different speeds, the thin
-   portfolio strip and the partner plates, so the duration is a custom property
-   set at the call site rather than a number buried here. Callers that set
-   nothing keep the original 78s. */
+/* The duration is a custom property set at the call site
+   (components/portfolio/PartnerMarquee.tsx) rather than a number buried
+   here. Callers that set nothing get 78s. */
 .animate-marquee {
   animation: kofa-marquee var(--marquee-duration, 78s) linear infinite;
   will-change: transform;
@@ -775,522 +847,6 @@ html[data-motion="off"] .marquee-host ul {
 
 
 
-/* ============================================================
-   TEAM NUMERALS
-   ------------------------------------------------------------
-   The counted columns in components/home/TeamNumbers.tsx. The
-   numeral is the largest thing in the section and the lightest:
-   an outline at rest that fills on hover, so a column is mostly
-   air until you point at it.
-
-   THE @supports IS LOAD-BEARING. The outline is a transparent
-   fill plus a text stroke, so a browser that ignores
-   -webkit-text-stroke would paint transparent text on ivory. The
-   numerals would not be faint, they would be GONE, and the
-   section would lose its only picture. Guarding the transparent
-   fill behind support for the stroke makes the fallback a pale
-   solid numeral, which is merely less interesting.
-
-   Every property that moves on hover is declared at rest here
-   too, otherwise there is nothing for the transition to run
-   from. The hover itself is keyed off the column's named group,
-   so focusing the name link lights the column exactly as
-   pointing at it does.
-   ============================================================ */
-.team-numeral {
-  display: block;
-  font-family: var(--font-sans);
-  font-weight: 200;
-  font-size: clamp(5rem, 10.5vw, 11rem);
-  line-height: 0.82;
-  letter-spacing: -0.045em;
-  font-variant-numeric: tabular-nums;
-  color: var(--color-rule-strong);
-  transition:
-    color 700ms cubic-bezier(0.22, 1, 0.36, 1),
-    -webkit-text-stroke-color 700ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-@supports (-webkit-text-stroke: 1px currentColor) {
-  .team-numeral {
-    color: transparent;
-    -webkit-text-stroke: 1.25px var(--color-rule-strong);
-  }
-}
-
-.group\/col:hover .team-numeral,
-.group\/col:focus-within .team-numeral {
-  color: var(--color-teal);
-  -webkit-text-stroke-color: transparent;
-}
-
-/* Slow morph for the translucent cellular form */
-@keyframes kofa-breathe {
-  0%,
-  100% {
-    transform: scale(1) rotate(0deg);
-    opacity: 0.85;
-  }
-  50% {
-    transform: scale(1.045) rotate(2.2deg);
-    opacity: 1;
-  }
-}
-
-.animate-breathe {
-  animation: kofa-breathe 26s ease-in-out infinite;
-}
-
-/* Membrane rotation for the cellular form */
-@keyframes kofa-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes kofa-drift {
-  0%,
-  100% {
-    transform: translate3d(0, 0, 0);
-  }
-  50% {
-    transform: translate3d(-1.6%, 2.4%, 0);
-  }
-}
-
-.animate-drift {
-  animation: kofa-drift 34s ease-in-out infinite;
-}
-
-
-/* ==========================================================
-   SMOOTH SCROLL
-   ========================================================== */
-
-/* ============================================================
-   LENIS
-   Inlined from node_modules/lenis/dist/lenis.css (v1.3.26) rather than
-   imported, so these rules sit with the rest of the design system and are
-   visible to whoever edits the base layer next. Lenis only ever ADDS the
-   `lenis` class to <html>, so every rule below is inert until
-   components/motion/SmoothScroll.tsx actually constructs an instance, i.e.
-   it costs nothing under reduced motion or with JavaScript off.
-   ============================================================ */
-
-/* Header clearance for anchors, stated once, here.
-   Lenis's scrollTo reads getComputedStyle(document.documentElement)
-   .scrollPaddingTop and subtracts it from the target, and native anchor jumps
-   and scrollIntoView honour it too. So the same landing point is produced with
-   Lenis running, with Lenis off under reduced motion, and with no JS at all.
-   The header is 84px (92px at sm) at rest and 66px once scrolled, which is the
-   state it will be in by the time an anchor scroll lands. Do NOT also pass an
-   `offset` to Lenis's `anchors` option: it would apply the clearance twice. */
-html {
-  scroll-padding-top: 96px;
-}
-
-/* Lenis writes the real window scroll position once a frame with
-   scrollTo({ behavior: "instant" }). `scroll-behavior: smooth` on html (set in
-   the base layer above) makes the browser animate towards each of those
-   writes, so two interpolators chase the same number and the page trails the
-   wheel by a fixed distance that never closes. Scoped to .lenis so the native
-   smooth behaviour survives for everyone Lenis is not running for. */
-html.lenis {
-  scroll-behavior: auto;
-}
-
-/* Lenis assumes the document, not a fixed-height box, owns the scroll. */
-html.lenis,
-html.lenis body {
-  height: auto;
-}
-
-/* Nested scrollers marked with data-lenis-prevent: Lenis bows out of these on
-   the attribute alone (onVirtualScroll matches the attribute before it ever
-   consults the allowNestedScroll heuristic), so the attribute is sufficient
-   for Lenis. This rule handles the other half: it stops the NATIVE scroll from
-   chaining out to the document once the nested scroller hits its end. Without
-   it, scrolling to the bottom of an open panel keeps going and takes the page
-   behind it with it. */
-.lenis [data-lenis-prevent],
-.lenis [data-lenis-prevent-wheel],
-.lenis [data-lenis-prevent-touch],
-.lenis [data-lenis-prevent-vertical],
-.lenis [data-lenis-prevent-horizontal] {
-  overscroll-behavior: contain;
-}
-
-/* An iframe swallows the wheel event, which strands the lerp mid-flight with
-   the page still moving. Only while actually smooth-scrolling, so an embed
-   stays interactive the rest of the time. */
-.lenis.lenis-smooth iframe {
-  pointer-events: none;
-}
-
-/* Set when lenis.stop() is called, e.g. to lock the page behind a modal. */
-.lenis:not(.lenis-autoToggle).lenis-stopped {
-  overflow: clip;
-}
-
-/* NOTE: the `.lenis.lenis-autoToggle { transition-property: overflow; ... }`
-   rule from lenis.css is deliberately omitted. `autoToggle` is false and
-   turning it on would make Lenis start/stop itself from html's computed
-   overflow, which is not a mode this project wants. */
-
-
-/* ==========================================================
-   ARRIVAL CURTAIN (REMOVED)
-   ----------------------------------------------------------
-   Two rules keyed to [data-arrival] stood here, escape hatches for a
-   full-viewport ivory layer that components/motion/Arrival.tsx rendered
-   into the server HTML and then took away on hydration.
-
-   Arrival.tsx has been deleted. Nothing renders [data-arrival] any more, so
-   both rules matched nothing, and the pre-paint <script> in app/layout.tsx
-   that set the [data-arrival-seen] half of the pair was reading a
-   sessionStorage key ("kofa:arrival") that no longer had a writer. That
-   script is gone too.
-
-   Left as a note rather than silently deleted because the comment that was
-   here described the mechanism in enough detail to look load-bearing.
-   Restoring the curtain means restoring Arrival.tsx, the pre-paint script,
-   the [data-arrival] clause in layout's <noscript> style, and these two
-   rules, together.
-
-   The data-motion="off" contract is unaffected and still live: see the
-   [data-reveal] / [data-lag] rules above, which are the ones that actually
-   enforce it.
-   ========================================================== */
-
-
-/* ==========================================================
-   CUSTOM CURSOR (REMOVED)
-   ----------------------------------------------------------
-   The drawn cursor was deleted along with components/ui/Cursor.tsx,
-   and the whole `[data-kofa-cursor="on"]` block that used to live
-   here went with it: `cursor: none` on <html> and everything under
-   it, the `cursor: text` reinstatement for text fields and
-   contenteditables, the `cursor: pointer` for <select>, the
-   `cursor: not-allowed` for disabled controls, and the
-   `[data-native-cursor]` escape hatch.
-
-   Every one of those rules was scoped to `[data-kofa-cursor="on"]`,
-   and Cursor.tsx was the only thing that ever wrote that attribute,
-   so the entire block had been unreachable from the moment the
-   `<Cursor />` line came out of app/layout.tsx. Dead CSS is worse
-   than dead TS: nothing type-checks it, so it survives every build
-   and reads as live behaviour to whoever opens this file next.
-
-   The note still sitting in app/layout.tsx says putting `<Cursor />`
-   back is the whole switch. It is not, any more. The component and
-   these rules are a pair and would have to be restored together,
-   from version control. Never reinstate this block on its own:
-   `cursor: none` with nothing drawing a pointer is a page with no
-   pointer at all, which is the failure the original rules spent
-   most of their length defending against.
-   ========================================================== */
-
-
-/* ==========================================================
-   CHAPTER RAIL
-   ========================================================== */
-
-
-
-
-/* ==========================================================
-   PROCESS TRACK
-   ========================================================== */
-
-/* ============================================================
-   HORIZONTAL PROCESS TRACK
-   components/home/ProcessTrack.tsx
-   ------------------------------------------------------------
-   Base = the stacked vertical list, which is what this section
-   falls back to below xl. Everything about the pinned horizontal
-   mode lives in the one guarded block below, so the stacked list is
-   what ships whenever any of three conditions fails:
-
-     · viewport < 1024px       five cards need the room
-     · reduced motion          pinning the viewport and moving the
-                               page sideways under a reader who
-                               asked for less motion is exactly the
-                               thing they asked us not to do
-     · JavaScript never ran    [data-ptrack-pin="true"] is written
-                               by React after mount
-
-   The third is the one no media query can express, and it is not
-   optional: without JS the transform never runs, and a clipped
-   horizontal track would leave three of five stages permanently
-   unreachable. All three are layout branches, never JS branches,
-   so the rendered tree is identical in every case and hydration
-   cannot mismatch.
-
-   Unlayered on purpose, so these sit above Tailwind's utility
-   layer. Nothing here sets a property that a utility on the same
-   element also sets.
-   ============================================================ */
-
-.ptrack__lane {
-  position: relative;
-  width: 100%;
-  max-width: 100rem;
-  margin-inline: auto;
-  padding-inline: 1.5rem;
-}
-@media (min-width: 640px) {
-  .ptrack__lane {
-    padding-inline: 2rem;
-  }
-}
-@media (min-width: 1024px) {
-  .ptrack__lane {
-    padding-inline: 3rem;
-  }
-}
-@media (min-width: 1280px) {
-  .ptrack__lane {
-    padding-inline: 5rem;
-  }
-}
-
-/* The drawn hairline, the nodes, the per-card rule and the custom
-   scrollbar belong to the pinned mode only. */
-.ptrack__line,
-.ptrack__node,
-.ptrack__cardrule,
-.ptrack__bar {
-  display: none;
-}
-
-.ptrack__list {
-  display: grid;
-  grid-template-columns: 1fr;
-  column-gap: 2rem;
-  row-gap: 0;
-}
-@media (min-width: 640px) {
-  .ptrack__list {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-.ptrack__card {
-  position: relative;
-  border-bottom: 1px solid var(--color-rule);
-  padding-block: 2rem 2.5rem;
-}
-
-.ptrack__title {
-  margin-top: 1rem;
-  font-family: var(--font-serif);
-  font-weight: 400;
-  font-size: clamp(1.3125rem, 0.95rem + 0.85vw, 1.75rem);
-  line-height: 1.14;
-  letter-spacing: -0.014em;
-  color: var(--color-ink);
-}
-
-.ptrack__body {
-  margin-top: 0.75rem;
-  max-width: 30ch;
-}
-
-.ptrack__n {
-  transition: color 600ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-/* ------------------------------------------------------------
-   PINNED MODE
-   ------------------------------------------------------------ */
-@media (min-width: 1024px) {
-  .ptrack[data-ptrack-pin="true"] {
-    /* Five of these have to exceed the viewport at every width the
-       mode is live at; 20rem × 5 already does so at 1024px. */
-    --ptrack-card: clamp(20rem, 26vw, 27rem);
-    --ptrack-gap: clamp(1.5rem, 2.4vw, 2.75rem);
-    --ptrack-pad: 1.75rem;
-    /* Overwritten inline by the component with the heading's own
-       measured inset, which is exact past 1600px where Container
-       starts centring. This is only the first-frame value. */
-    --ptrack-edge: 3rem;
-
-    /* The surplus over the sticky child's 100vh is the pinned
-       distance. Set inline once measured; 100vh until then means an
-       unmeasured track simply does not pin rather than reserving a
-       screenful of nothing. */
-    height: var(--ptrack-pin-h, 100vh);
-  }
-
-  .ptrack[data-ptrack-pin="true"] .ptrack__sticky {
-    position: sticky;
-    top: 0;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: clamp(2.5rem, 6vh, 4.5rem);
-  }
-
-  /* `clip` creates no scroll container, so a focused off-screen card
-     cannot leave the browser's own scrollIntoView holding a
-     scrollLeft the transform knows nothing about. `hidden` first for
-     anything that does not support it; the component also pins
-     scrollLeft to 0 for that case. */
-  .ptrack[data-ptrack-pin="true"] .ptrack__view {
-    width: 100%;
-    overflow: hidden;
-    overflow: clip;
-  }
-
-  .ptrack[data-ptrack-pin="true"] .ptrack__lane {
-    width: max-content;
-    max-width: none;
-    margin-inline: 0;
-    padding-inline: var(--ptrack-edge);
-    will-change: transform;
-  }
-
-  /* Spans the whole lane, end insets included, so the fill's scaleX
-     is the track's progress exactly and each node lights on the frame
-     the teal reaches it. */
-  .ptrack[data-ptrack-pin="true"] .ptrack__line {
-    display: block;
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background-color: var(--color-rule);
-  }
-  .ptrack[data-ptrack-pin="true"] .ptrack__line-fill {
-    position: absolute;
-    inset: 0;
-    transform-origin: left center;
-    background-color: var(--color-teal);
-  }
-
-  .ptrack[data-ptrack-pin="true"] .ptrack__list {
-    display: flex;
-    column-gap: var(--ptrack-gap);
-    /* stretch, not start: equal card heights are what line the five
-       bottom rules up into a second horizontal line. */
-    align-items: stretch;
-  }
-
-  .ptrack[data-ptrack-pin="true"] .ptrack__card {
-    display: flex;
-    flex-direction: column;
-    flex: 0 0 auto;
-    width: var(--ptrack-card);
-    min-height: clamp(15rem, 26vh, 20rem);
-    border-bottom: 0;
-    border-left: 1px solid var(--color-rule);
-    padding: 2.25rem var(--ptrack-pad) 0;
-  }
-  /* The first card carries no rule and no inset, so its text starts on
-     the heading's own left edge. */
-  .ptrack[data-ptrack-pin="true"] .ptrack__card:first-child {
-    border-left: 0;
-    padding-left: 0;
-  }
-
-  .ptrack[data-ptrack-pin="true"] .ptrack__node {
-    display: block;
-    position: absolute;
-    top: -3px;
-    left: -3px;
-    width: 7px;
-    height: 7px;
-    border-radius: 999px;
-    background-color: var(--color-rule-strong);
-    transition:
-      background-color 600ms cubic-bezier(0.22, 1, 0.36, 1),
-      transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
-  }
-  .ptrack[data-ptrack-pin="true"] .ptrack__card[data-on="true"] .ptrack__node {
-    background-color: var(--color-teal);
-    transform: scale(1.3);
-  }
-  .ptrack[data-ptrack-pin="true"] .ptrack__card[data-on="true"] .ptrack__n {
-    color: var(--color-teal);
-  }
-
-  /* margin-top:auto drops it to the card's foot; all five sit on one
-     line because the cards stretch to equal height. */
-  .ptrack[data-ptrack-pin="true"] .ptrack__cardrule {
-    display: block;
-    position: relative;
-    margin-top: auto;
-    height: 1px;
-    background-color: var(--color-rule);
-  }
-  .ptrack[data-ptrack-pin="true"] .ptrack__cardrule-fill {
-    position: absolute;
-    inset: 0;
-    background-color: var(--color-teal);
-    transform: scaleX(0);
-    transform-origin: left center;
-    transition: transform 900ms cubic-bezier(0.22, 1, 0.36, 1);
-  }
-  .ptrack[data-ptrack-pin="true"]
-    .ptrack__card[data-on="true"]
-    .ptrack__cardrule-fill {
-    transform: scaleX(1);
-  }
-
-  /* ---- the custom scrollbar ---- */
-  .ptrack[data-ptrack-pin="true"] .ptrack__bar {
-    display: block;
-    padding-inline: var(--ptrack-edge);
-  }
-  .ptrack__bar-head {
-    display: flex;
-    justify-content: flex-end;
-    margin-bottom: 0.9375rem;
-  }
-  .ptrack__bar-rail {
-    position: relative;
-    height: 1px;
-    background-color: var(--color-rule);
-  }
-  /* 24px tall so the drag target clears WCAG 2.2 SC 2.5.8; the visible
-     mark is the 2px bar drawn by ::after. width and x are written by
-     the component, min-width keeps it grabbable on a very wide track. */
-  .ptrack__thumb {
-    position: absolute;
-    left: 0;
-    top: -12px;
-    height: 24px;
-    min-width: 3rem;
-    touch-action: none;
-    will-change: transform;
-  }
-  .ptrack__thumb::after {
-    content: "";
-    position: absolute;
-    inset-block: 11px;
-    inset-inline: 0;
-    background-color: var(--color-teal);
-  }
-  @media (pointer: fine) {
-    .ptrack__thumb {
-      cursor: grab;
-    }
-    .ptrack__thumb:active {
-      cursor: grabbing;
-    }
-  }
-}
-
-@media (min-width: 1280px) {
-  .ptrack[data-ptrack-pin="true"] {
-    --ptrack-edge: 5rem;
-  }
-}
 /* ============================================================
    FOCUS AREA PANELS
    ------------------------------------------------------------
@@ -1430,5 +986,172 @@ html.lenis body {
     font-size: 0.9375rem;
     line-height: 1.7;
     color: var(--color-ink-soft);
+  }
+}
+
+/* ============================================================
+   CONTACT CONFIRMATION: components/ui/ContactForm.tsx
+   ------------------------------------------------------------
+   The "Message sent" panel settles 14px into place. Transform only,
+   never opacity: if the animation stalls, the confirmation is merely
+   14px low, never invisible. See the note in the component.
+   ============================================================ */
+.form-confirm {
+  animation: form-confirm-in 500ms var(--ease-kofa) both;
+}
+@keyframes form-confirm-in {
+  from {
+    transform: translateY(14px);
+  }
+}
+
+/* ============================================================
+   TEAM PROFILE SHEET: components/team/TeamGrid.tsx
+   ------------------------------------------------------------
+   A modal <dialog> styled as a sheet on the right. It slides in when
+   [open] appears and out while [data-closing] is set; the component
+   closes it for real on a timer matching the exit, so nothing here
+   has to finish for the page to become usable again.
+
+   ::backdrop does not inherit custom properties in every browser, so
+   its easing is written out rather than read from --ease-kofa, and
+   the global motion-off rule (which targets elements, not the
+   backdrop) is repeated for it.
+   ============================================================ */
+.team-sheet[open] {
+  animation: team-sheet-in 600ms var(--ease-kofa) both;
+}
+.team-sheet[data-closing] {
+  animation: team-sheet-out 600ms var(--ease-kofa) both;
+}
+.team-sheet::backdrop {
+  background-color: rgb(18 57 75 / 0.25);
+  backdrop-filter: blur(2px);
+}
+.team-sheet[open]::backdrop {
+  animation: team-fade-in 400ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.team-sheet[data-closing]::backdrop {
+  animation: team-fade-out 400ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+html[data-motion="off"] .team-sheet::backdrop {
+  animation: none;
+}
+@keyframes team-sheet-in {
+  from {
+    transform: translateX(100%);
+  }
+}
+@keyframes team-sheet-out {
+  to {
+    transform: translateX(100%);
+  }
+}
+@keyframes team-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes team-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+/* ============================================================
+   NEWS AND PORTFOLIO INDEXES
+   components/news/NewsBrowser.tsx, components/portfolio/PortfolioBrowser.tsx
+   ------------------------------------------------------------
+   Both lists are rendered in full on the server; the tabs only set
+   `data-filter` on the list, and these rules hide the rest. The news
+   index's "Show more" limit is a <style> the component writes itself,
+   since it changes with every press.
+   ============================================================ */
+.news-index[data-filter="kofa"] > .news-row:not([data-type="kofa"]),
+.news-index[data-filter="portfolio"] > .news-row:not([data-type="portfolio"]),
+.portfolio-index[data-filter="active"] > [data-status="exits"],
+.portfolio-index[data-filter="exits"] > [data-status="active"] {
+  display: none;
+}
+
+/* A /portfolio tile (components/portfolio/PortfolioCard.tsx) trades its logo
+   for the company's name and one-line summary on hover or keyboard focus.
+   Hover only where the device really hovers: on a touchscreen a first tap
+   would otherwise "hover" and a second tap would be needed to open the
+   page. Motion-off sessions keep the swap, just without the fade (the
+   global html[data-motion="off"] rule zeroes the transitions). */
+.portfolio-tile__logo,
+.portfolio-tile__blurb {
+  transition:
+    opacity 260ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.portfolio-tile__blurb {
+  opacity: 0;
+  transform: translateY(0.375rem);
+  pointer-events: none;
+}
+.portfolio-tile__summary {
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  letter-spacing: -0.003em;
+}
+@media (min-width: 40rem) {
+  .portfolio-tile__summary {
+    font-size: 0.875rem;
+  }
+}
+.portfolio-tile:focus-visible .portfolio-tile__logo {
+  opacity: 0;
+  transform: scale(0.94);
+}
+.portfolio-tile:focus-visible .portfolio-tile__blurb {
+  opacity: 1;
+  transform: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .portfolio-tile:hover .portfolio-tile__logo {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+  .portfolio-tile:hover .portfolio-tile__blurb {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ============================================================
+   COMPANY LOGOS: components/portfolio/CompanyLogo.tsx
+   ------------------------------------------------------------
+   Equal visual area for every logo: height = base / sqrt(aspect),
+   capped so a long wordmark never exceeds --logo-max-w and a square
+   mark never exceeds --logo-max-h. Width follows from the image's
+   own ratio. Where CSS sqrt() is unsupported the logo falls back to
+   fitting the same caps, which is how every logo used to be sized.
+   Call sites set the three properties; these are the defaults.
+   ============================================================ */
+.company-logo {
+  width: auto;
+  height: auto;
+  max-width: var(--logo-max-w, 10rem);
+  max-height: var(--logo-max-h, 4rem);
+  /* The box takes its shape from the recorded ratio, not from whatever
+     file arrives. Without this, an image cache still holding a logo's
+     old padded file (a square, say, where the trimmed logo is a long
+     wordmark) makes width:auto follow the file's own ratio, and the
+     logo collapses to a small square. `contain` then fits any file to
+     the box without distortion. */
+  aspect-ratio: var(--logo-r, auto);
+  object-fit: contain;
+}
+@supports (height: calc(1px / sqrt(2))) {
+  .company-logo {
+    max-width: none;
+    max-height: none;
+    height: min(
+      var(--logo-max-h, 4rem),
+      var(--logo-base, 4.25rem) / sqrt(var(--logo-r, 1)),
+      var(--logo-max-w, 10rem) / var(--logo-r, 1)
+    );
   }
 }

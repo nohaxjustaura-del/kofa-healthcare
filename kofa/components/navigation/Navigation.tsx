@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { nav } from "@/data/site";
-import { LogoMark } from "@/components/ui/LogoMark";
+import { LogoWide } from "@/components/ui/LogoMark";
 import { MEASURE } from "@/components/ui/primitives";
 
 /* ---------------------------------------------------------------------------
@@ -57,11 +57,9 @@ export function Navigation() {
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-slate-200 bg-white">
       <div className={`${MEASURE} flex h-[104px] items-center justify-between gap-6`}>
-        {/* 76px of the 104px band, leaving 14px of air above and below.
-            `size` is the height of the whole stacked lockup now, not of the
-            hexagon alone — see the note in LogoMark.tsx — so this is not the
-            same number as the 84 that stood here. */}
-        <LogoMark size={76} priority responsive />
+        {/* The wide "KOFA Healthcare" lockup; see LogoWide in LogoMark.tsx.
+            60px of the 104px band, leaving 22px of air above and below. */}
+        <LogoWide size={60} priority responsive />
 
         <nav aria-label="Primary" className="hidden items-center gap-1 lg:flex">
           {nav.map((item) => {

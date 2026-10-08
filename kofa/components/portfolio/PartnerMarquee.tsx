@@ -1,6 +1,6 @@
-import Image from "next/image";
 import Link from "next/link";
 import { Reveal } from "@/components/motion/Reveal";
+import { CompanyLogo } from "@/components/portfolio/CompanyLogo";
 import { portfolioSorted, type PortfolioCompany } from "@/data/portfolio";
 
 /* ===========================================================================
@@ -41,9 +41,9 @@ import { portfolioSorted, type PortfolioCompany } from "@/data/portfolio";
    makes the loop seamless; the duplicate is `aria-hidden` and holds no
    focusable content, so assistive technology and the keyboard meet the list
    once. Hovering or focusing anywhere in the strip pauses it, so nothing is
-   ever chased. With motion off in the footer the animation is cancelled in
-   CSS and the row becomes an ordinary horizontally scrollable shelf. See the
-   `.animate-marquee` rules in app/globals.css.
+   ever chased. With motion off (the footer control) the animation is
+   cancelled in CSS, the duplicate is dropped, and the plates wrap into a
+   static centred grid. See the `.animate-marquee` rules in app/globals.css.
 =========================================================================== */
 
 /** Duration of one full pass. Slower than it sounds: at sixteen cards this is
@@ -81,14 +81,17 @@ function Plate({
           Logos arrive as mixed JPEG/PNG/WebP on white grounds, so they are
           multiplied against the card rather than placed on it: the plate is
           white, the logo's own white disappears, and sixteen files from
-          sixteen design systems sit on one surface without haloes. */}
-      <div className="relative my-auto h-[clamp(2.75rem,4vw,3.5rem)] w-full">
-        <Image
-          src={company.logo}
-          alt={inert ? "" : `${company.name} logo`}
-          fill
-          sizes="(max-width: 640px) 190px, 240px"
-          className="logo-plate object-contain transition-transform duration-[700ms] ease-kofa group-hover/plate:scale-[1.04]"
+          sixteen design systems sit on one surface without haloes. Each is
+          drawn at the same visual area (CompanyLogo.tsx), with the caps
+          tracking the plate, which itself scales with the window. */}
+      <div className="my-auto flex h-[clamp(3.25rem,4.6vw,4rem)] w-full items-center justify-center [--logo-base:clamp(3.5rem,4.9vw,4.4rem)] [--logo-max-h:clamp(3.25rem,4.6vw,4rem)] [--logo-max-w:clamp(9.5rem,13.5vw,12.5rem)]">
+        {/* Decorative: the name is already the plate's first line, so the
+            link reads "Axon Therapies, Heart failure" rather than naming the
+            company twice. */}
+        <CompanyLogo
+          company={company}
+          decorative
+          className="logo-plate transition-transform duration-[700ms] ease-kofa group-hover/plate:scale-[1.04]"
         />
       </div>
 
@@ -141,10 +144,10 @@ function Track({ duplicate = false }: { duplicate?: boolean }) {
  */
 export function PartnerMarquee({ className = "" }: { className?: string }) {
   return (
-    /* Reveal rather than Rise: Rise carries a skew, and a skewed element
-       inside this overflow-hidden host would have its corners sheared off
-       for the length of the entrance. The rule is set out at the top of
-       components/motion/Rise.tsx. */
+    /* Reveal rather than Rise: Rise travels sideways and skews, and a
+       full-bleed strip that moves sideways shows its own end at the edge of
+       the screen for the length of the entrance. A straight rise keeps it
+       reading as endless. */
     <Reveal delay={0.16} y={28}>
       {/* overflow-CLIP, not overflow-hidden. `hidden` still creates a
           programmatically scrollable box, so the scroll-into-view the browser

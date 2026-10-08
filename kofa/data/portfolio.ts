@@ -59,6 +59,14 @@ export interface PortfolioCompany {
   slug: string;
   /** cms: field_logo, media library */
   logo: string;
+  /**
+   * The logo file's width divided by its height, measured on the file as it
+   * ships (the supplied artwork with its blank margin trimmed away, nothing
+   * else changed). components/portfolio/CompanyLogo.tsx sizes every logo to
+   * the same visual area from this, so update it whenever a logo file is
+   * replaced: open the file, divide width by height.
+   */
+  logoAspect: number;
   /** cms: field_featured_image, optional; omitted rather than faked */
   featuredImage?: string;
   /** Real company media (image or video). Falls back to the generative field. */
@@ -99,7 +107,8 @@ export const portfolio: PortfolioCompany[] = [
   {
     name: "Axon Therapies",
     slug: "axon-therapies",
-    logo: "/logos/axon-therapies.jpg",
+    logo: "/company-logos/axon-therapies.jpg",
+    logoAspect: 2.607,
     description:
       "The Satera Ablation System unilaterally ablates the Greater Splanchnic Nerve to calm sympathetic activity with the goal of normalizing volume balance, increasing cardiac functional capacity and improving symptoms for HF patients.",
     shortDescription:
@@ -122,7 +131,8 @@ export const portfolio: PortfolioCompany[] = [
   {
     name: "Venova Medical",
     slug: "venova-medical",
-    logo: "/logos/venova-medical.png",
+    logo: "/company-logos/venova-medical.png",
+    logoAspect: 3.08,
     description:
       "Venova is developing the Velocity System, a next generation percutaneous AVF technology designed to reduce the need for reinterventions to achieve fistula maturation and improve vascular access outcomes while reducing costs.",
     shortDescription:
@@ -145,7 +155,8 @@ export const portfolio: PortfolioCompany[] = [
   {
     name: "CorFlow Therapeutics",
     slug: "corflow",
-    logo: "/logos/corflow.webp",
+    logo: "/company-logos/corflow.webp",
+    logoAspect: 4.667,
     description:
       "CorFlow is developing a medical device that will be the first to diagnose MVO in real-time during PCI and serve as a treatment platform in the cath lab.",
     shortDescription:
@@ -169,7 +180,8 @@ export const portfolio: PortfolioCompany[] = [
   {
     name: "Zafrens",
     slug: "zafrens",
-    logo: "/logos/zafrens.jpeg",
+    logo: "/company-logos/zafrens.jpeg",
+    logoAspect: 1.135,
     description:
       "Zafrens uses nanofabrication to analyze and manipulate cells at the highest resolution and throughput possible.",
     shortDescription:
@@ -192,7 +204,8 @@ export const portfolio: PortfolioCompany[] = [
   {
     name: "IllumiCell AI",
     slug: "illumicell-ai",
-    logo: "/logos/illumicell-ai.jpeg",
+    logo: "/company-logos/illumicell-ai.jpeg",
+    logoAspect: 1.0,
     description:
       "Our device empowers doctors with advanced tools to offer comprehensive guidance, make complex fertility assessments simple, accurate, and accessible.",
     shortDescription:
@@ -216,7 +229,8 @@ export const portfolio: PortfolioCompany[] = [
   {
     name: "Aria CV",
     slug: "aria-cv",
-    logo: "/logos/aria-cv.png",
+    logo: "/company-logos/aria-cv.png",
+    logoAspect: 4.521,
     description:
       "Aria's device is designed to treat a form of PH called World Health Organization (WHO) Group 1 PH, also known as Pulmonary Arterial Hypertension (PAH).",
     shortDescription:
@@ -239,7 +253,8 @@ export const portfolio: PortfolioCompany[] = [
   {
     name: "Axena Health",
     slug: "axena-health",
-    logo: "/logos/axena-health.png",
+    logo: "/company-logos/axena-health.png",
+    logoAspect: 4.315,
     description:
       "Axena Health is a women-led company dedicated to improving the lives of women with pelvic floor disorders and is unapologetically focused on helping them live their best lives by harnessing the power of digital technology. Axena's Leva® Pelvic Health System helps women train and strengthen their pelvic floor muscles (at home, in just five minutes a day) to treat their stress, mixed and mild-to-moderate-urgency urinary incontinence (including overactive bladder) and chronic fecal incontinence.",
     shortDescription:
@@ -262,7 +277,8 @@ export const portfolio: PortfolioCompany[] = [
   {
     name: "BioSpectal",
     slug: "biospectal",
-    logo: "/logos/biospectal.png",
+    logo: "/company-logos/biospectal.png",
+    logoAspect: 2.679,
     description:
       "We are working relentlessly to democratize blood pressure management at global scale using breakthrough transdermal optical biosensing in mobile devices.",
     shortDescription:
@@ -285,7 +301,8 @@ export const portfolio: PortfolioCompany[] = [
   {
     name: "Eyenuk",
     slug: "eyenuk",
-    logo: "/logos/eyenuk.png",
+    logo: "/company-logos/eyenuk.png",
+    logoAspect: 5.708,
     description:
       "EyeArt is the first FDA cleared AI technology for autonomous detection of both more than mild and vision-threatening diabetic retinopathy. The EyeArt® AI Eye Screening System is the most extensively validated autonomous AI technology, tested on over half a million patient visits globally with over two million images collected in real-world clinical environments.",
     shortDescription:
@@ -308,7 +325,8 @@ export const portfolio: PortfolioCompany[] = [
   {
     name: "Raydiant Oximetry",
     slug: "raydiant-oximetry",
-    logo: "/logos/raydiant-oximetry.png",
+    logo: "/company-logos/raydiant-oximetry.png",
+    logoAspect: 1.038,
     description:
       "In developing Lumerah™, a noninvasive sensor technology that directly measures fetal oxygen levels, Raydiant Oximetry aims to profoundly reduce the rising mortality and morbidity rates among mothers and babies during childbirth.",
     shortDescription:
@@ -331,7 +349,8 @@ export const portfolio: PortfolioCompany[] = [
   {
     name: "Marrow Access Technologies",
     slug: "marrow-access",
-    logo: "/logos/marrow-access.jpg",
+    logo: "/company-logos/marrow-access.jpg",
+    logoAspect: 2.752,
     description:
       "Marrow Access Technologies was founded to develop natural biologic solutions for use in the knee, hip, ankle, spine, elbow, and shoulder.",
     shortDescription:
@@ -354,7 +373,8 @@ export const portfolio: PortfolioCompany[] = [
   {
     name: "CareTaker Medical",
     slug: "caretaker-medical",
-    logo: "/logos/caretaker-medical.jpg",
+    logo: "/company-logos/caretaker-medical.jpg",
+    logoAspect: 5.381,
     description:
       "CareTaker has developed the VitalStream monitoring system that sets a new standard in portability, simplicity, and medical-grade wearable wireless vital signs monitoring. VitalStream uses a small, comfortable finger cuff to accurately measure continuous, non-invasive beat-by-beat Blood Pressure (“cNIBP”), ECG-Accurate Heart Rate, and Respiration Rate. It can also be used to monitor Blood Volume (for hemorrhage detection), Arterial Stiffness, and other hemodynamic parameters.",
     shortDescription:
@@ -382,7 +402,8 @@ export const portfolio: PortfolioCompany[] = [
        you break inbound links and silently orphan six news items. */
     name: "Nectero Therapeutics",
     slug: "nectero-medical",
-    logo: "/logos/nectero-medical.png",
+    logo: "/company-logos/nectero-medical.png",
+    logoAspect: 4.209,
     description:
       "Nectero Therapeutics is developing a novel treatment to stabilize growth and prevent rupture of mid-sized abdominal aortic aneurysms (AAA). The Nectero EAST®, or Endovascular Aneurysm Stabilization Treatment System, delivers a compound with a proprietary molecule known as a Stabilizer Agent to the site of the aneurysm.",
     shortDescription:
@@ -406,7 +427,8 @@ export const portfolio: PortfolioCompany[] = [
   {
     name: "Alydia Health",
     slug: "alydia-health",
-    logo: "/logos/alydia-health.jpg",
+    logo: "/company-logos/alydia-health.jpg",
+    logoAspect: 2.472,
     description:
       "Alydia Health is a commercial-stage medical device company focused on preventing maternal morbidity and mortality caused by postpartum hemorrhage (PPH) or abnormal postpartum uterine bleeding.",
     shortDescription:
@@ -431,7 +453,8 @@ export const portfolio: PortfolioCompany[] = [
   {
     name: "Rivanna Medical",
     slug: "rivanna-medical",
-    logo: "/logos/rivanna-medical.png",
+    logo: "/company-logos/rivanna-medical.png",
+    logoAspect: 6.533,
     description:
       "RIVANNA develops and commercializes world-first, imaging-based medical technologies. Our automated clinician-assistance solutions help improve decision-making, clinician workflows, health outcomes, and patient satisfaction.",
     shortDescription:
@@ -454,7 +477,8 @@ export const portfolio: PortfolioCompany[] = [
   {
     name: "Cerapedics",
     slug: "cerapedics",
-    logo: "/logos/cerapedics.jpg",
+    logo: "/company-logos/cerapedics.jpg",
+    logoAspect: 4.596,
     description:
       "Cerapedics is a global, commercial-stage ortho-biologics company that aspires to transform the standard of care for bone repair, healing bones faster and at higher rates, without compromising safety, so that patients can live their healthiest lives.",
     shortDescription:

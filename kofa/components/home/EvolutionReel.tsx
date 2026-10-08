@@ -62,14 +62,24 @@ import {
    /credits; sources and every edit are in public/media/CREDITS.md.
 
    MOTION CONTRACT (same as the rest of the site)
-   · Motion on (the default): the film loops, each clip loading only as its
-     shot approaches, and everything pauses while the hero is off screen.
+   · Motion on (the default): the film loops, and everything pauses while
+     the hero is off screen. A small pause button beside the caption stops
+     the film where it is (WCAG 2.2.2); it appears only once the film is
+     running and affects only the film. The footer control stops all motion
+     on the site and remembers the choice.
    · Motion off (footer control), or no JavaScript: nothing plays. The server
      markup IS the still — the 1895 radiograph — so those visitors get a
      composed picture. The grain holds still too (app/globals.css).
    · Before hydration with motion on, CSS holds the still back (the HERO FILM
      block in app/globals.css) so the film opens from darkness.
    · Save-Data: posters drift instead of clips playing; no video is fetched.
+
+   LOADING. Only the still is in the server markup's network budget. Every
+   other picture waits for the film to reach it: a clip's poster and the
+   clip itself are requested one shot ahead, and the two later stills two
+   shots ahead, so none of them competes with the first paint. They used to
+   be requested with the page, about 390 KB of pictures, most of them for
+   shots twenty seconds away.
 
    GSAP is imported on demand after hydration; the film cannot start before
    then anyway, so bundling it would only add weight to the first load.
@@ -192,6 +202,11 @@ export function EvolutionReel({
   const rootRef = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState<number>(stillIndex);
   const [live, setLive] = useState(false);
+  const [paused, setPaused] = useState(false);
+  /** Stills other than the opening one, mounted as the film approaches them. */
+  const [warmStills, setWarmStills] = useState<readonly number[]>([]);
+  /** Set while the film is running; the pause button talks to it. */
+  const control = useRef<{ pause: () => void; resume: () => void } | null>(null);
 
   useIsomorphicLayoutEffect(() => {
     const root = rootRef.current;
@@ -214,6 +229,7 @@ export function EvolutionReel({
     let ctx: gsap.Context | null = null;
     let tl: gsap.core.Timeline | null = null;
     let visible = true;
+    let held = false;
     let current: HTMLVideoElement | null = null;
 
     const saveData =
@@ -224,11 +240,23 @@ export function EvolutionReel({
     const drifts = Array.from(root.querySelectorAll<HTMLDivElement>(".ev-drift"));
     const videos = shots.map((s) => s.querySelector("video"));
 
-    /** Clips load only as their shot approaches; posters cover any gap. */
-    const warm = (i: number) => {
-      const v = videos[i % videos.length];
-      if (!v || saveData || v.dataset.warm) return;
+    /** Fetch a shot's pictures ahead of it. A clip gets its poster (which
+     *  also covers any gap while the clip buffers) and, unless the visitor
+     *  has asked to save data, the clip; a still is mounted. */
+    const warm = (n: number) => {
+      const i = n % SHOTS.length;
+      const m = SHOTS[i].media;
+      if (m.kind === "image") {
+        if (i !== stillIndex) {
+          setWarmStills((prev) => (prev.includes(i) ? prev : [...prev, i]));
+        }
+        return;
+      }
+      const v = videos[i];
+      if (!v || v.dataset.warm) return;
       v.dataset.warm = "1";
+      v.poster = `/media/film/${m.name}.jpg`;
+      if (saveData) return;
       v.preload = "auto";
       v.load();
     };
@@ -246,7 +274,7 @@ export function EvolutionReel({
       } catch {
         /* not seekable yet; it starts from 0 anyway */
       }
-      if (visible) v.play().catch(() => {});
+      if (visible && !held) v.play().catch(() => {});
     };
     const pause = (i: number) => {
       const v = videos[i];
@@ -271,6 +299,9 @@ export function EvolutionReel({
             setActive(i);
             play(i);
             warm(i + 1);
+            // Stills are cheap to hold and slow to arrive at their largest
+            // size, so they get a second shot of lead time.
+            if (SHOTS[(i + 2) % SHOTS.length].media.kind === "image") warm(i + 2);
           }, [], at);
           T.fromTo(shots[i], { opacity: 0 }, { opacity: 1, duration: FADE, ease: "sine.inOut" }, at);
           T.fromTo(
@@ -286,23 +317,43 @@ export function EvolutionReel({
         });
         T.set({}, {}, t + FADE);
       }, root);
+      held = false;
+      setPaused(false);
+      control.current = {
+        pause() {
+          held = true;
+          tl?.pause();
+          current?.pause();
+          setPaused(true);
+        },
+        resume() {
+          held = false;
+          if (visible) {
+            tl?.resume();
+            current?.play().catch(() => {});
+          }
+          setPaused(false);
+        },
+      };
       setLive(true);
     }
 
     function destroy() {
       tl = null;
+      control.current = null;
       videos.forEach((v) => v?.pause());
       current = null;
       ctx?.revert();
       ctx = null;
       setLive(false);
+      setPaused(false);
       setActive(stillIndex);
     }
 
     const io = new IntersectionObserver(
       ([entry]) => {
         visible = entry.isIntersecting;
-        if (!tl) return;
+        if (!tl || held) return;
         if (visible) {
           tl.resume();
           current?.play().catch(() => {});
@@ -336,32 +387,38 @@ export function EvolutionReel({
       className={`ev-film ${className}`}
       data-animate={animate ? "true" : "false"}
       data-live={live ? "true" : "false"}
-      role="img"
-      aria-label={DESCRIPTION}
+      data-paused={paused ? "true" : "false"}
     >
       {/* The picture. Square, full height, set right on wide screens so the
           headline owns the left; its edges dissolve into the ground through
           a soft mask (see .ev-stage in app/globals.css) rather than ending
-          at a line. */}
-      <div aria-hidden className="ev-stage">
+          at a line.
+
+          role="img" lives here, on the picture, rather than on the whole
+          film, because the pause button below is a real control and an
+          image's contents are presentational to assistive technology. */}
+      <div className="ev-stage" role="img" aria-label={DESCRIPTION}>
         {SHOTS.map((s, i) => (
           <div key={`${s.year} ${s.label}`} className="ev-shot" style={{ opacity: i === stillIndex ? 1 : 0 }}>
             <div className="ev-drift">
               {s.media.kind === "image" ? (
-                <Image
-                  src={s.media.src}
-                  alt=""
-                  fill
-                  quality={90}
-                  priority={i === stillIndex}
-                  sizes="(min-width: 1024px) min(62vw, 880px), 100vw"
-                  className="object-cover"
-                />
+                (i === stillIndex || warmStills.includes(i)) && (
+                  <Image
+                    src={s.media.src}
+                    alt=""
+                    fill
+                    quality={90}
+                    priority={i === stillIndex}
+                    sizes="(min-width: 1024px) min(62vw, 880px), 100vw"
+                    className="object-cover"
+                  />
+                )
               ) : (
+                /* No poster attribute: warm() sets it when the film is a
+                   shot away, so it is not fetched with the page. */
                 <video
                   key={s.media.name}
                   className="absolute inset-0 h-full w-full object-cover"
-                  poster={`/media/film/${s.media.name}.jpg`}
                   muted
                   playsInline
                   loop
@@ -386,12 +443,37 @@ export function EvolutionReel({
       <div aria-hidden className="ev-shade" />
 
       {/* The caption: a year and a name, like a label beside an exhibit.
-          Re-keyed per shot so it re-runs its entrance. */}
-      <div aria-hidden className="ev-caption-host">
-        <div key={active} className="ev-caption">
+          Re-keyed per shot so it re-runs its entrance. The pause button
+          rides beside it, rendered only once the film is actually running:
+          with motion off or before the film starts there is nothing to
+          pause, and the server markup never offers a control that cannot
+          work. */}
+      <div className="ev-caption-host">
+        <div aria-hidden key={active} className="ev-caption">
           <span className="ev-caption__year">{shot.year}</span>
           <span className="ev-caption__label">{shot.label}</span>
         </div>
+        {live && (
+          <button
+            type="button"
+            className="ev-toggle"
+            aria-label={paused ? "Play the film" : "Pause the film"}
+            onClick={() =>
+              paused ? control.current?.resume() : control.current?.pause()
+            }
+          >
+            {paused ? (
+              <svg aria-hidden viewBox="0 0 12 12" className="h-2.5 w-2.5" fill="currentColor">
+                <path d="M3 1.6v8.8a.6.6 0 0 0 .92.5l6.6-4.4a.6.6 0 0 0 0-1L3.92 1.1A.6.6 0 0 0 3 1.6Z" />
+              </svg>
+            ) : (
+              <svg aria-hidden viewBox="0 0 12 12" className="h-2.5 w-2.5" fill="currentColor">
+                <rect x="2" y="1.5" width="2.6" height="9" rx="0.6" />
+                <rect x="7.4" y="1.5" width="2.6" height="9" rx="0.6" />
+              </svg>
+            )}
+          </button>
+        )}
       </div>
     </div>
   );

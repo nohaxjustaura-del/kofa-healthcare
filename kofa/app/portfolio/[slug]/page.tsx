@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
@@ -11,6 +10,7 @@ import {
 } from "@/components/ui/primitives";
 import { TextLink } from "@/components/ui/Button";
 import { Arrow } from "@/components/ui/Arrow";
+import { CompanyLogo } from "@/components/portfolio/CompanyLogo";
 import { CompanyVisual } from "@/components/portfolio/CompanyVisual";
 import { NewsCard } from "@/components/news/NewsCard";
 import { CTASection } from "@/components/ui/CTASection";
@@ -126,17 +126,11 @@ export default async function CompanyPage({ params }: Params) {
 
           <div className="mt-12 grid grid-cols-12 gap-y-10">
             <div className="col-span-12 lg:col-span-7">
-              <div>
-                <div className="relative h-9 w-[168px]">
-                  <Image
-                    src={company.logo}
-                    alt={`${company.name} logo`}
-                    fill
-                    priority
-                    sizes="168px"
-                    className="logo-plate object-contain object-left"
-                  />
-                </div>
+              {/* A fixed-height row, logos sitting on its floor, so the name
+                  below starts at the same height on every company's page
+                  whatever the shape of its logo. */}
+              <div className="flex h-16 items-end [--logo-base:4.5rem] [--logo-max-h:4rem] [--logo-max-w:13rem]">
+                <CompanyLogo company={company} priority className="logo-plate" />
               </div>
 
               <div>

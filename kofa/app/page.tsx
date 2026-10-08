@@ -219,10 +219,15 @@ export default function Home() {
               made twice and never was. See data/site.ts, which now also
               carries each card's image. The header's single circular photo is
               gone: with a still on every card it would have been a fourth
-              image saying less than the three below it. */}
+              image saying less than the three below it. From md each card is
+              a subgrid over the same four rows, so the bodies line up even
+              when one title wraps and its neighbours do not. */}
           <div className="mt-10 grid gap-5 md:grid-cols-3 md:gap-6">
             {focusAreas.map((area) => (
-              <article key={area.title} className="focus-area-panel group">
+              <article
+                key={area.title}
+                className="focus-area-panel group md:row-span-4 md:grid md:grid-rows-subgrid md:gap-0"
+              >
                 <div className="focus-area-panel__media">
                   <Image
                     src={area.image.src}

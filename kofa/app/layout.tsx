@@ -1,8 +1,7 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { Navigation } from "@/components/navigation/Navigation";
 import { Footer } from "@/components/footer/Footer";
-import { MotionProvider } from "@/components/motion/MotionProvider";
 import {
   MotionPreferenceProvider,
   MOTION_PREFERENCE_SCRIPT,
@@ -52,16 +51,21 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 };
 
+/* The header is white on every page, so the phone's browser chrome is too. */
+export const viewport: Viewport = {
+  themeColor: "#ffffff",
+};
+
 /** Organization schema, §31. */
 const orgSchema = {
   "@context": "https://schema.org",
   "@type": "Organization",
   name: site.name,
   url: siteUrl,
+  logo: `${siteUrl}/brand/kofa-lockup.png`,
   email: site.email,
   foundingDate: String(site.founded),
   description: site.intro,
-  sameAs: [] as string[],
 };
 
 export default function RootLayout({
@@ -92,14 +96,15 @@ export default function RootLayout({
     >
       <head>
         {/*
-          The two weights that are on screen before anything else: Light
-          carries every heading, Regular every paragraph. Because the faces
-          are declared in a hand-written @font-face block rather than through
-          next/font, the browser would not discover them until it had parsed
-          the stylesheet and matched a rule, which on a cold load is well
-          after first paint. These two hints move that to the head. The other
-          three weights (Italic, Medium, Semibold) are used sparsely enough
-          that font-display:swap covers them.
+          The three weights on screen before anything else: Light carries
+          every heading, Regular every paragraph, Medium the navigation and
+          every button. Because the faces are declared in a hand-written
+          @font-face block rather than through next/font, the browser would
+          not discover them until it had parsed the stylesheet and matched a
+          rule, which on a cold load is well after first paint; Medium used
+          to arrive late enough that the header visibly swapped typefaces.
+          Italic and Semibold are used sparsely enough that font-display:swap
+          covers them.
         */}
         <link
           rel="preload"
@@ -115,27 +120,13 @@ export default function RootLayout({
           type="font/woff2"
           crossOrigin="anonymous"
         />
-
-        {/*
-          Entrance animations render their `initial` state into the server HTML,
-          so every revealed element ships as opacity:0 and only becomes visible
-          once Framer Motion hydrates. If JavaScript fails or is switched off,
-          that would leave a blank page over fully-populated markup. This
-          un-hides everything carrying data-reveal in exactly that case.
-        */}
-        <noscript>
-          <style>{`[data-reveal],[data-lag]{opacity:1!important;transform:none!important;clip-path:none!important;height:auto!important}`}</style>
-        </noscript>
-
-        {/*
-          The arrival curtain is gone, and so is its pre-paint flash guard.
-          components/motion/Arrival.tsx was the only thing that rendered
-          [data-arrival] or wrote the "kofa:arrival" session key, so the guard
-          had become an inline script blocking first paint to read a key
-          nothing writes, and a [data-arrival] clause in the noscript style
-          above matching an element that no longer exists. Both are removed.
-          The matching ARRIVAL block in app/globals.css goes with them.
-        */}
+        <link
+          rel="preload"
+          href="/fonts/general-sans/GeneralSans-Medium.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
 
         {/*
           Motion preference, stamped on <html> before <body> renders so the
@@ -143,6 +134,11 @@ export default function RootLayout({
           default for everyone; this only reads a choice the visitor made
           earlier through the footer control. See
           components/motion/MotionPreference.tsx.
+
+          Nothing on the site is rendered hidden waiting for JavaScript, so
+          there is no <noscript> escape hatch any more: the entrances only
+          ever hide an element that is already off screen, after hydration
+          (components/motion/useEnter.ts).
         */}
         <script
           dangerouslySetInnerHTML={{ __html: MOTION_PREFERENCE_SCRIPT }}
@@ -155,54 +151,33 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }}
         />
         <MotionPreferenceProvider>
-          <MotionProvider>
-            {/*
-              Skip link. The header puts seven navigation stops in front of
-              the content on every page, and a keyboard visitor had no way
-              past them. Off-screen until focused, then it lands over the
-              header as a normal control. WCAG 2.4.1.
-            */}
-            {/*
-              Held off-screen by a transform rather than by sr-only /
-              focus:not-sr-only. That pairing has to flip five properties at
-              once (position, size, clip, overflow, whitespace) and depends on
-              two utilities in the same group resolving in the right order;
-              this flips one, so there is nothing to get wrong. The element
-              stays `fixed`, so it never affects layout whether focused or
-              not, and it stays in the accessibility tree either way.
-            */}
-            <a
-              href="#main"
-              className="fixed left-6 top-6 z-[60] inline-flex min-h-11 -translate-y-[200%] items-center rounded-sm bg-navy px-5 text-sm font-medium text-white transition-transform duration-200 focus:translate-y-0"
-            >
-              Skip to content
-            </a>
-            {/* SmoothScroll first: its mount effect constructs Lenis and puts the
-              "lenis" class on <html> before any scroll consumer subscribes, so
-              nobody measures a pre-Lenis frame and is then contradicted. */}
-            <Navigation />
-            {/* tabIndex -1 so the skip link actually moves focus here and not
-                just the scroll position; scroll-mt clears the fixed header. */}
-            <main id="main" tabIndex={-1} className="scroll-mt-[104px] focus:outline-none">
-              {children}
-            </main>
-            <Footer />
-            {/*
-              The drawn cursor is OFF. It replaced the OS pointer with two
-              rAF-followed bodies, and a pointer that trails your hand by even
-              a few frames reads as the whole page lagging, because the pointer
-              is the one element a person expects to be exactly where they put
-              it. The native cursor has no such budget to blow.
+          {/*
+            Skip link. The header puts seven navigation stops in front of
+            the content on every page, and a keyboard visitor had no way
+            past them. Off-screen until focused, then it lands over the
+            header as a normal control. WCAG 2.4.1.
 
-              components/ui/Cursor.tsx has since been deleted outright, along
-              with the CUSTOM CURSOR block in app/globals.css that was scoped to
-              the `data-kofa-cursor` attribute only that component ever wrote,
-              and components/ui/ViewCursor.tsx which depended on the same
-              machinery. This is therefore no longer a one-line switch: bringing
-              the drawn cursor back means restoring all three from version
-              control together. See the tombstone comment in app/globals.css.
-            */}
-          </MotionProvider>
+            Held off-screen by a transform rather than by sr-only /
+            focus:not-sr-only. That pairing has to flip five properties at
+            once (position, size, clip, overflow, whitespace) and depends on
+            two utilities in the same group resolving in the right order;
+            this flips one, so there is nothing to get wrong. The element
+            stays `fixed`, so it never affects layout whether focused or
+            not, and it stays in the accessibility tree either way.
+          */}
+          <a
+            href="#main"
+            className="fixed left-6 top-6 z-[60] inline-flex min-h-11 -translate-y-[200%] items-center rounded-sm bg-navy px-5 text-sm font-medium text-white transition-transform duration-200 focus:translate-y-0"
+          >
+            Skip to content
+          </a>
+          <Navigation />
+          {/* tabIndex -1 so the skip link actually moves focus here and not
+              just the scroll position; scroll-mt clears the fixed header. */}
+          <main id="main" tabIndex={-1} className="scroll-mt-[104px] focus:outline-none">
+            {children}
+          </main>
+          <Footer />
         </MotionPreferenceProvider>
       </body>
     </html>

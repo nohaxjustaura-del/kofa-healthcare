@@ -16,7 +16,7 @@ export default function AboutPage() {
     <>
       <PageHero
         eyebrow="About"
-        lines={["One Fund. A Long Horizon. An Enduring Commitment."]}
+        lines={["One Fund.", "A Long Horizon.", "An Enduring Commitment."]}
       />
 
       <Section className="border-t border-rule bg-white">

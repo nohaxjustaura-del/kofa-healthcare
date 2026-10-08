@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Container, Eyebrow, Section } from "@/components/ui/primitives";
@@ -8,6 +7,7 @@ import { Arrow } from "@/components/ui/Arrow";
 import { Reveal } from "@/components/motion/Reveal";
 import { Rise } from "@/components/motion/Rise";
 import { NewsCard } from "@/components/news/NewsCard";
+import { CompanyLogo } from "@/components/portfolio/CompanyLogo";
 import { currentNews, formatNewsDate, getNews, relatedNews } from "@/data/news";
 import { getCompany } from "@/data/portfolio";
 import { pageMetadata } from "@/lib/metadata";
@@ -72,17 +72,18 @@ export default async function ArticlePage({ params }: Params) {
       />
 
       <article>
-        {/* ---------- masthead ---------- */}
-        {/* Everything inside this section stays on Reveal. The section clips,
-            it is overflow-hidden so the background grid can be masked off at
-            its edges, and Rise's skew pushes the far corners outside the border
-            box for the length of the flight, which a clipping ancestor shears.
-            See hazard (1) at the top of components/motion/Rise.tsx. */}
-        <section className="relative overflow-hidden pb-[clamp(2.5rem,4vw,3.5rem)] pt-[clamp(7rem,11vw,10rem)]">
-          <div
-            aria-hidden
-            className="bg-grid absolute inset-0 -z-10 opacity-50 [mask-image:linear-gradient(to_bottom,black,transparent_92%)]"
-          />
+        {/* ---------- masthead ----------
+            Everything here stays on Reveal rather than Rise: this is the top
+            of a reading page, and it is on screen at load, where the entrances
+            leave content exactly as the server painted it anyway
+            (components/motion/useEnter.ts). The masthead used to be rendered
+            invisible until the animation library hydrated, which held every
+            article's headline back by about a second on a throttled phone.
+
+            The top padding clears the fixed 104px header with room to spare;
+            its floor was 112px, which left the back link 8px under the header
+            on a phone. */}
+        <section className="relative pb-[clamp(2.5rem,4vw,3.5rem)] pt-[clamp(8.5rem,11vw,10rem)]">
           <Container>
             <Reveal>
               <Link
@@ -192,13 +193,14 @@ export default async function ArticlePage({ params }: Params) {
                     className="group/co mt-7 flex items-start justify-between gap-8"
                   >
                     <div className="min-w-0">
-                      <div className="relative h-7 w-[132px]">
-                        <Image
-                          src={company.logo}
-                          alt={`${company.name} logo`}
-                          fill
-                          sizes="132px"
-                          className="logo-mono object-contain object-left"
+                      {/* Muted at rest and in colour on hover, like the rest
+                          of the card. Decorative: the heading below names the
+                          company. */}
+                      <div className="flex h-12 items-end [--logo-base:3.25rem] [--logo-max-h:3rem] [--logo-max-w:8.25rem]">
+                        <CompanyLogo
+                          company={company}
+                          decorative
+                          className="opacity-70 mix-blend-multiply grayscale transition-[filter,opacity] duration-500 ease-kofa group-hover/co:opacity-100 group-hover/co:grayscale-0"
                         />
                       </div>
                       <h2 className="mt-5 font-serif text-[1.375rem] tracking-[-0.017em] text-ink transition-colors duration-300 ease-kofa group-hover/co:text-teal-deep">

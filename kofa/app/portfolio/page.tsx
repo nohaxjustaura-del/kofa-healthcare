@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import { Container, Section } from "@/components/ui/primitives";
 import { PortfolioBrowser } from "@/components/portfolio/PortfolioBrowser";
+import { PortfolioCard } from "@/components/portfolio/PortfolioCard";
 import { PageHero } from "@/components/ui/PageHero";
 import { CTASection } from "@/components/ui/CTASection";
 import { pageMetadata } from "@/lib/metadata";
-import { portfolio } from "@/data/portfolio";
+import { portfolio, portfolioSorted } from "@/data/portfolio";
 
 /* See lib/metadata.ts: a hand-written page-level `openGraph` replaces the root
    layout's wholesale, taking og:site_name, og:locale, og:type and the share
@@ -16,6 +17,9 @@ export const metadata: Metadata = pageMetadata({
   socialDescription: `Companies advancing the future of health. ${portfolio.length} companies across medicine.`,
 });
 
+const count = (status: "Active" | "Exits") =>
+  portfolio.filter((company) => company.portfolioStatus === status).length;
+
 export default function PortfolioPage() {
   return (
     <>
@@ -23,7 +27,19 @@ export default function PortfolioPage() {
 
       <Section space="roomy" className="bg-[#edf6f7]">
         <Container>
-          <PortfolioBrowser />
+          {/* Cards are rendered here on the server; the browser component
+              only chooses which status shows. */}
+          <PortfolioBrowser counts={{ Active: count("Active"), Exits: count("Exits") }}>
+            {portfolioSorted.map((company) => (
+              <li
+                key={company.slug}
+                data-status={company.portfolioStatus.toLowerCase()}
+                className="grid"
+              >
+                <PortfolioCard company={company} />
+              </li>
+            ))}
+          </PortfolioBrowser>
         </Container>
       </Section>
 

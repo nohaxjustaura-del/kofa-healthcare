@@ -2,39 +2,22 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { AnimatePresence, motion } from "framer-motion";
-import { useMotionOff } from "@/components/motion/MotionPreference";
-import { RiseGroup, RiseItem } from "@/components/motion/Rise";
+import { isMotionOff } from "@/components/motion/MotionPreference";
+import { Rise } from "@/components/motion/Rise";
 import { Arrow } from "@/components/ui/Arrow";
 import { Eyebrow } from "@/components/ui/primitives";
 import { teamSorted, type TeamMember } from "@/data/team";
 
-const EASE = [0.22, 1, 0.36, 1] as const;
-
-/* ---------------------------------------------------------------------------
-   What Tab is allowed to land on inside the member panel.
-   Deliberately narrow: the panel is assembled from a close button, an optional
-   LinkedIn anchor and static text, so there is no need for the exhaustive
-   focusable-element list a general-purpose trap would carry. Anything added to
-   the panel later that takes focus is covered by these selectors as long as it
-   is a real control rather than a tabindex-juggling div.
---------------------------------------------------------------------------- */
-const PANEL_FOCUSABLE = [
-  "a[href]",
-  "button:not([disabled])",
-  "input:not([disabled])",
-  "select:not([disabled])",
-  "textarea:not([disabled])",
-  '[tabindex]:not([tabindex="-1"])',
-].join(",");
+/** Length of the sheet's slide-out; matches .team-sheet in app/globals.css. */
+const EXIT_MS = 600;
 
 /* ---------------------------------------------------------------------------
    Portrait plate.
-   KOFA has not supplied photography, so rather than a grey box or a stock
-   face, the plate carries the member's initials in the display serif over the
-   sage ground and says plainly what belongs there. It reads as a designed
+   KOFA has not supplied photography for everyone, so rather than a grey box
+   or a stock face, the plate carries the member's initials over the ice
+   ground and says plainly what belongs there. It reads as a designed
    element, not as a missing asset, and swaps for a real portrait the moment
-   `portrait` is set in the CMS.
+   `portrait` is set in data/team.ts.
 --------------------------------------------------------------------------- */
 function Portrait({ member }: { member: TeamMember }) {
   if (member.portrait) {
@@ -87,188 +70,105 @@ function Portrait({ member }: { member: TeamMember }) {
   );
 }
 
-function OpenSlot({ n }: { n: number }) {
-  return (
-    <div className="border-t border-dashed border-rule pt-8">
-      <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[10px] border border-dashed border-rule">
-        <div className="absolute inset-0 flex items-center justify-center bg-ivory-deep">
-          <span className="type-eyebrow text-ink-soft">
-            Team member {String(n).padStart(2, "0")}
-          </span>
-        </div>
-      </div>
-      <p className="type-eyebrow mt-6 text-ink-soft">Awaiting KOFA content</p>
-      <p className="type-body-xs mt-3 max-w-[32ch]">
-        Add a member in the CMS with name, role, portrait, biography and LinkedIn,
-        and a profile renders here automatically.
-      </p>
-    </div>
-  );
-}
-
 /* ---------------------------------------------------------------------------
    Entrance lean, read off a card's position in the grid flow.
    The lean is composed for the three-up row, the widest layout the grid
    reaches: the row opens outward from its own middle, first column in from
-   the left, the centre with no side to come from, the last in from the right.
-   Taking the flow index rather than hard-coding a direction per member is
-   what keeps that true as the CMS fills the roster in and the open slots
-   shuffle along behind it. At the two-column breakpoint the sequence walks
-   around the pairs instead of closing them, which at RiseItem's 16px of
-   travel is well under the threshold where the pairing reads either way.
+   the left, the centre with no side to come from, the last in from the
+   right, each a beat after the one before. Cards already on screen when the
+   page loads do not move at all (components/motion/useEnter.ts).
 --------------------------------------------------------------------------- */
 const COLUMN_LEAN = ["left", "up", "right"] as const;
 
 export function TeamGrid() {
-  const [open, setOpen] = useState<TeamMember | null>(null);
-  const reduced = useMotionOff();
+  const [member, setMember] = useState<TeamMember | null>(null);
+  const [closing, setClosing] = useState(false);
+  const dialogRef = useRef<HTMLDialogElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
-  const panelRef = useRef<HTMLDivElement>(null);
-  const backdropRef = useRef<HTMLDivElement>(null);
   const lastTrigger = useRef<HTMLElement | null>(null);
+  const pressStartedOnBackdrop = useRef(false);
 
-  /* The single close path.
-     Escape used to restore focus to the card that opened the panel while the
-     backdrop click just cleared state, so dismissing by backdrop dropped focus
-     onto <body> and the next Tab restarted from the top of the document, a
-     keyboard user who opened a profile from the last card was thrown back to
-     the skip link. Every dismissal now goes through here, so there is only one
-     place that can ever get the restore wrong.
-     Focusing synchronously is safe even though AnimatePresence keeps the panel
-     mounted for its exit: the trigger is outside the panel and never leaves the
-     DOM, and moving focus out first is exactly what we want before the panel
-     goes away. */
-  const closePanel = useCallback(() => {
-    setOpen(null);
+  /* ---------------------------------------------------------------------
+     THE PANEL IS A NATIVE <dialog>, opened with showModal().
+
+     It used to be two framer-motion layers under AnimatePresence plus a
+     hand-written focus trap, and most of that component's length was spent
+     defending against one failure: an exit animation that never completed
+     left a fixed, full-viewport backdrop over the page, invisible and
+     swallowing every click. That was seen, not theorised.
+
+     A modal <dialog> removes the whole class of problem. The browser traps
+     focus, makes the rest of the page inert for the mouse, the keyboard
+     and assistive technology alike, and renders the sheet and its backdrop
+     in the top layer, which disappears the instant close() runs. The slide
+     is a CSS animation, and closing waits for it on a timer rather than on
+     an animation event, so a starved frame loop can delay the close by at
+     most EXIT_MS but can never strand it.
+  --------------------------------------------------------------------- */
+
+  // Opening: once a member is chosen and the sheet has rendered, show it.
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!member || !dialog || dialog.open) return;
+    dialog.showModal();
+    // Explicit, rather than trusting each browser's initial-focus rules.
+    closeRef.current?.focus();
+  }, [member]);
+
+  // The page behind should not scroll while a profile is open.
+  // html has scrollbar-gutter: stable, so the page does not shift sideways
+  // when its scrollbar goes (app/globals.css).
+  useEffect(() => {
+    if (!member) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previous;
+    };
+  }, [member]);
+
+  // Closing: slide out, then close for real. With motion off, at once.
+  const requestClose = useCallback(() => {
+    const dialog = dialogRef.current;
+    if (!dialog?.open || closing) return;
+    if (isMotionOff()) dialog.close();
+    else setClosing(true);
+  }, [closing]);
+
+  useEffect(() => {
+    if (!closing) return;
+    const timer = window.setTimeout(() => dialogRef.current?.close(), EXIT_MS);
+    return () => window.clearTimeout(timer);
+  }, [closing]);
+
+  // Every way the dialog can close (the button, Escape, the backdrop, or the
+  // browser itself) ends in this one event, so state and focus are restored
+  // in exactly one place.
+  const onClosed = useCallback(() => {
+    setClosing(false);
+    setMember(null);
     lastTrigger.current?.focus();
   }, []);
 
-  useEffect(() => {
-    if (!open) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-
-    /* Cleared BEFORE the focus call, never after. The cleanup below marks the
-       panel `inert` on the way out, and reopening inside the exit window hands
-       AnimatePresence the same key, so it reuses the very same DOM node rather
-       than mounting a fresh one. Leaving the attribute on would make the focus
-       call below fail silently and drop the visitor into a dialog they cannot
-       reach with the keyboard at all. */
-    panelRef.current?.removeAttribute("inert");
-    /* Same reasoning for the backdrop: reopening inside the exit window
-       reuses the same node, so anything the cleanup put on it has to come
-       back off or the overlay stays click-through and un-dismissable. */
-    backdropRef.current?.removeAttribute("inert");
-    if (backdropRef.current) backdropRef.current.style.pointerEvents = "";
-    closeRef.current?.focus();
-
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        closePanel();
-        return;
-      }
-
-      /* Focus containment.
-         The panel claims aria-modal="true", which tells assistive tech the rest
-         of the page is unavailable. Nothing outside is inert or aria-hidden, so
-         without this trap Tab walked straight out of the panel and into the
-         card grid behind it, the claim was a lie, which is worse for a screen
-         reader user than never having made it. The trap lives in the same
-         effect as Escape so it is installed and torn down with the panel and
-         cannot outlive it. */
-      if (e.key !== "Tab") return;
-
-      const panel = panelRef.current;
-      if (!panel) return;
-
-      // Recomputed on every Tab rather than captured when the effect runs: the
-      // LinkedIn link renders only for members who have one, so the set is not
-      // fixed, and a cached list would eventually hand focus to a detached node.
-      const focusables = Array.from(
-        panel.querySelectorAll<HTMLElement>(PANEL_FOCUSABLE),
-      ).filter((el) => el.getClientRects().length > 0);
-
-      if (focusables.length === 0) {
-        // Should not happen, the close button is unconditional, but swallow
-        // the Tab rather than let it escape a dialog that says it is modal.
-        e.preventDefault();
-        return;
-      }
-
-      const first = focusables[0];
-      const last = focusables[focusables.length - 1];
-      const active = document.activeElement;
-
-      // The `!panel.contains(active)` arm also recovers focus if something
-      // outside stole it while the panel was open.
-      if (e.shiftKey) {
-        if (active === first || !panel.contains(active)) {
-          e.preventDefault();
-          last.focus();
-        }
-      } else if (active === last || !panel.contains(active)) {
-        e.preventDefault();
-        first.focus();
-      }
-    };
-
-    document.addEventListener("keydown", onKey);
-    return () => {
-      document.body.style.overflow = prev;
-      document.removeEventListener("keydown", onKey);
-
-      /* The trap dies with this effect, but AnimatePresence deliberately keeps
-         the panel mounted for its 600ms slide-out, so for that window the close
-         button and the LinkedIn link were still in the tab order of a dialog
-         that had already been dismissed and whose Escape handler had just been
-         removed. A visitor who dismissed a profile and kept tabbing could land
-         back inside it with no way out but more tabbing.
-         `inert` takes the exiting subtree out of the tab order and the
-         accessibility tree without touching layout, paint, or the exit
-         animation, so AnimatePresence behaves exactly as before. Focus has
-         already been moved to the trigger by closePanel, so nothing is
-         displaced here. Browsers without `inert` simply ignore the attribute
-         and fall back to the old behaviour. */
-      panelRef.current?.setAttribute("inert", "");
-
-      /* The backdrop needs the same treatment, and for a worse failure.
-         It is `fixed inset-0`, so while AnimatePresence holds it mounted for
-         its exit it covers the entire viewport and takes every click. That is
-         harmless when the exit completes in 400ms. It is not harmless if the
-         exit never completes: with the frame loop starved, the overlay stays
-         at whatever opacity it reached, which can be near zero, and the page
-         then looks completely normal while swallowing every click on it. The
-         keyboard path was already covered by the panel's `inert` above; this
-         is the pointer path, and it is the one a visitor would report as
-         "the site froze".
-
-         Two mechanisms because they cover different browsers. `inert` is the
-         correct declaration and also removes the subtree from the
-         accessibility tree; `pointerEvents` is the guarantee, since it is
-         universally supported and is exactly the property in question.
-         Neither touches layout, paint or the exit animation, so
-         AnimatePresence is unaffected. Both are undone on reopen above. */
-      const backdrop = backdropRef.current;
-      if (backdrop) {
-        backdrop.setAttribute("inert", "");
-        backdrop.style.pointerEvents = "none";
-      }
-    };
-  }, [open, closePanel]);
-
   return (
     <>
-      <RiseGroup className="grid grid-cols-1 gap-x-8 gap-y-16 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-x-8 gap-y-16 md:grid-cols-2 lg:grid-cols-3">
         {teamSorted.map((member, i) => (
           // The lean goes on the card, never on the portrait frame below it:
           // that frame is overflow-hidden and would shear the skewed corners
           // off mid-flight.
-          <RiseItem key={member.slug} as="article" from={COLUMN_LEAN[i % 3]}>
+          <Rise
+            key={member.slug}
+            as="article"
+            from={COLUMN_LEAN[i % 3]}
+            delay={0.05 + (i % 3) * 0.08}
+            duration={1}
+          >
             <button
               type="button"
               onClick={(e) => {
                 lastTrigger.current = e.currentTarget;
-                setOpen(member);
+                setMember(member);
               }}
               aria-haspopup="dialog"
               className="group/member block w-full text-left"
@@ -308,114 +208,108 @@ export function TeamGrid() {
                 <span className="block h-px w-full origin-left scale-x-0 bg-teal transition-transform duration-[600ms] ease-kofa group-hover/member:scale-x-100" />
               </span>
             </button>
-          </RiseItem>
+          </Rise>
         ))}
-
-      </RiseGroup>
+      </div>
 
       {/* ---------- side panel ----------
-           Stays outside the RiseGroup and gets no entrance of its own. It is
-           position: fixed, and a transformed ancestor becomes the containing
-           block for a fixed descendant, so a Rise anywhere above it would pin
-           the overlay to the card grid instead of the viewport. */}
-      <AnimatePresence>
-        {open && (
-          <>
-            <motion.div
-              ref={backdropRef}
-              className="fixed inset-0 z-[70] bg-ink/25 backdrop-blur-[2px]"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              // No exit under reduced motion => AnimatePresence unmounts at
-              // once. Previously the overlay lingered, invisible, over the
-              // whole viewport and swallowed every click.
-              exit={reduced ? undefined : { opacity: 0 }}
-              transition={{ duration: reduced ? 0 : 0.4, ease: EASE }}
-              onClick={closePanel}
-            />
+           Rendered once and kept in the tree; a closed <dialog> draws
+           nothing and is absent from the accessibility tree. Only its
+           contents come and go with `member`.
 
-            <motion.div
-              ref={panelRef}
-              role="dialog"
-              aria-modal="true"
-              aria-labelledby="panel-name"
-              className="fixed inset-y-0 right-0 z-[71] flex w-full max-w-[34rem] flex-col overflow-y-auto border-l border-rule bg-ivory"
-              initial={reduced ? { opacity: 0 } : { x: "100%" }}
-              animate={reduced ? { opacity: 1 } : { x: 0 }}
-              exit={reduced ? undefined : { x: "100%" }}
-              transition={{ duration: reduced ? 0 : 0.6, ease: EASE }}
-            >
-              <div className="flex items-center justify-between border-b border-rule px-7 py-5">
-                <Eyebrow tone="mute">Profile</Eyebrow>
-                <button
-                  ref={closeRef}
-                  type="button"
-                  onClick={closePanel}
-                  className="-mr-2 flex h-11 w-11 items-center justify-center text-ink-soft transition-colors duration-300 ease-kofa hover:text-teal-deep"
-                >
-                  <span className="sr-only">Close profile</span>
-                  <span aria-hidden className="relative block h-4 w-4">
-                    <span className="absolute left-0 top-1/2 block h-px w-full rotate-45 bg-current" />
-                    <span className="absolute left-0 top-1/2 block h-px w-full -rotate-45 bg-current" />
-                  </span>
-                </button>
+           The dialog box itself is never the click target inside the sheet:
+           the inner wrapper fills it and owns the scrolling, so a click
+           whose target is the <dialog> can only have landed on ::backdrop.
+           The press has to START there too, so a text selection dragged out
+           of the panel does not dismiss it. */}
+      <dialog
+        ref={dialogRef}
+        aria-labelledby="panel-name"
+        data-closing={closing || undefined}
+        onCancel={(e) => {
+          // Escape. Animate out instead of vanishing; if the browser insists
+          // on closing anyway, onClose still restores everything.
+          e.preventDefault();
+          requestClose();
+        }}
+        onClose={onClosed}
+        onPointerDown={(e) => {
+          pressStartedOnBackdrop.current = e.target === e.currentTarget;
+        }}
+        onClick={(e) => {
+          if (pressStartedOnBackdrop.current && e.target === e.currentTarget) {
+            requestClose();
+          }
+        }}
+        className="team-sheet fixed inset-y-0 left-auto right-0 m-0 h-full max-h-full w-full max-w-[34rem] overflow-hidden border-0 border-l border-rule bg-white p-0 text-ink"
+      >
+        {member && (
+          <div className="h-full overflow-y-auto overscroll-contain">
+            <div className="flex items-center justify-between border-b border-rule px-7 py-5">
+              <Eyebrow tone="mute">Profile</Eyebrow>
+              <button
+                ref={closeRef}
+                type="button"
+                onClick={requestClose}
+                className="-mr-2 flex h-11 w-11 items-center justify-center text-ink-soft transition-colors duration-300 ease-kofa hover:text-teal-deep"
+              >
+                <span className="sr-only">Close profile</span>
+                <span aria-hidden className="relative block h-4 w-4">
+                  <span className="absolute left-0 top-1/2 block h-px w-full rotate-45 bg-current" />
+                  <span className="absolute left-0 top-1/2 block h-px w-full -rotate-45 bg-current" />
+                </span>
+              </button>
+            </div>
+
+            <div className="px-7 py-9">
+              <div className="relative aspect-[4/5] w-full max-w-[16rem] overflow-hidden rounded-[10px] border border-rule-soft">
+                <Portrait member={member} />
               </div>
 
-              <div className="px-7 py-9">
-                <div className="relative aspect-[4/5] w-full max-w-[16rem] overflow-hidden rounded-[10px] border border-rule-soft">
-                  <Portrait member={open} />
+              <h2 id="panel-name" className="type-display-sm mt-9 text-ink">
+                {member.name}
+              </h2>
+              <p className="type-eyebrow mt-4 text-teal-deep">{member.role}</p>
+
+              {member.standfirst && (
+                <p className="type-body-lg mt-7">{member.standfirst}</p>
+              )}
+
+              <div className="mt-8 h-px w-full bg-rule" />
+
+              {member.bioStatus === "placeholder" ? (
+                <div className="mt-8 border-l-2 border-dashed border-sage pl-6">
+                  <p className="type-body-sm mt-3">{member.biography}</p>
                 </div>
-
-                <h2
-                  id="panel-name"
-                  className="type-display-sm mt-9 text-ink"
-                >
-                  {open.name}
-                </h2>
-                <p className="type-eyebrow mt-4 text-teal-deep">{open.role}</p>
-
-                {open.standfirst && (
-                  <p className="type-body-lg mt-7">{open.standfirst}</p>
-                )}
-
-                <div className="mt-8 h-px w-full bg-rule" />
-
-                {open.bioStatus === "placeholder" ? (
-                  <div className="mt-8 border-l-2 border-dashed border-sage pl-6">
-                    <p className="type-body-sm mt-3">
-                      {open.biography}
+              ) : (
+                <div className="mt-8 space-y-5">
+                  {member.biography.split("\n\n").map((p, i) => (
+                    <p key={i} className="type-body-sm">
+                      {p}
                     </p>
-                  </div>
-                ) : (
-                  <div className="mt-8 space-y-5">
-                    {open.biography.split("\n\n").map((p, i) => (
-                      <p key={i} className="type-body-sm">
-                        {p}
-                      </p>
-                    ))}
-                  </div>
-                )}
+                  ))}
+                </div>
+              )}
 
-                {open.linkedin && (
-                  <a
-                    href={open.linkedin}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="group/link mt-9 inline-flex items-center gap-2.5 text-[0.875rem] font-medium text-ink transition-colors duration-300 ease-kofa hover:text-teal-deep"
-                  >
-                    LinkedIn
-                    <Arrow
-                      size={14}
-                      dir="up-right"
-                      className="transition-transform duration-300 ease-kofa group-hover/link:translate-x-1 group-hover/link:-translate-y-1"
-                    />
-                  </a>
-                )}
-              </div>
-            </motion.div>
-          </>
+              {member.linkedin && (
+                <a
+                  href={member.linkedin}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group/link mt-9 inline-flex min-h-11 items-center gap-2.5 text-[0.875rem] font-medium text-ink transition-colors duration-300 ease-kofa hover:text-teal-deep"
+                >
+                  LinkedIn
+                  <Arrow
+                    size={14}
+                    dir="up-right"
+                    className="transition-transform duration-300 ease-kofa group-hover/link:translate-x-1 group-hover/link:-translate-y-1"
+                  />
+                </a>
+              )}
+            </div>
+          </div>
         )}
-      </AnimatePresence>
+      </dialog>
     </>
   );
 }

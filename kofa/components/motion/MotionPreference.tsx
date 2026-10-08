@@ -14,17 +14,16 @@ import {
 /* ===========================================================================
    MOTION PREFERENCE
    ---------------------------------------------------------------------------
-   The single source of truth for "should this animate?", replacing
-   framer-motion's `useReducedMotion()` and every hand-rolled
-   `matchMedia("(prefers-reduced-motion: reduce)")` check in the project.
+   The single source of truth for "should this animate?", replacing every
+   hand-rolled `matchMedia("(prefers-reduced-motion: reduce)")` check the
+   project used to have.
 
    WHY THIS EXISTS, AND WHAT CHANGED.
 
    The site previously took `prefers-reduced-motion` as the whole answer, so a
    visitor whose operating system had animation effects switched off got a
-   near-static page: no entrances, no marquee, a single static frame of the
-   canvas field, and none of the scroll behaviour. That is a defensible
-   reading of the preference, and it is what the code did.
+   near-static page: no entrances, no marquee and no film. That is a
+   defensible reading of the preference, and it is what the code did.
 
    It is not what this site wants. The Windows "Animation effects" toggle is
    commonly switched off for perceived speed rather than for a vestibular
@@ -44,17 +43,17 @@ import {
    The preference lives in `data-motion` on <html>, written before first paint
    by the inline script in app/layout.tsx. Everything else mirrors it:
      · CSS reads `html[data-motion="off"]` directly, so the stylesheet is
-       correct on the very first frame with no flash.
-     · React components read it through `useMotionOff()`.
-     · Effects that are not React-rendered (the Lenis instance, the canvas
-       field, the cursor) read `isMotionOff()` and subscribe with
-       `onMotionChange()`.
+       correct on the very first frame with no flash. That covers the
+       marquee, the grain, the route sweep and every entrance's hidden state.
+     · React components read it through `useMotionOff()` (PortfolioVideo).
+     · Code outside React rendering (the hero film's timeline, the entrance
+       observer, the team sheet's exit) reads `isMotionOff()` and, where it
+       must react mid-visit, subscribes with `onMotionChange()`.
    One attribute, three readers, no chance of the three disagreeing.
 
    HYDRATION. `motionOff` is `false` on the server AND on the first client
    render, always. The real value is adopted in a layout effect, i.e. after
-   hydration has matched and before the browser paints. This is the same rule
-   documented at the top of components/motion/Reveal.tsx and it is why the
+   hydration has matched and before the browser paints. That is why the
    pre-paint script exists: the script makes the FIRST PAINT correct via CSS,
    this provider makes REACT correct one tick later, and neither has to lie to
    the other in between.
@@ -155,12 +154,9 @@ export function MotionPreferenceProvider({ children }: { children: ReactNode }) 
 }
 
 /**
- * The replacement for framer-motion's `useReducedMotion()`.
- *
- * Same contract at every call site, "true means do not travel", so the swap
- * is a change of import and nothing else. Keep obeying the hydration rule:
- * this value may feed `transition`, `animate` and `whileInView`, and must
- * never feed `initial` or any other prop that reaches the DOM.
+ * "True means do not travel." Keep obeying the hydration rule: this value is
+ * false on the server and on the first client render, so it may decide what
+ * an effect does, and must never decide markup that reaches the DOM.
  */
 export function useMotionOff(): boolean {
   return useContext(MotionPreferenceContext).motionOff;

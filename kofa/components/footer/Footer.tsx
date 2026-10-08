@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { nav, site } from "@/data/site";
 import { LogoMark } from "@/components/ui/LogoMark";
+import { MotionToggle } from "@/components/ui/MotionToggle";
 import { MEASURE } from "@/components/ui/primitives";
 
 /* ---------------------------------------------------------------------------
@@ -90,8 +91,11 @@ export function Footer() {
           </p>
           {/* The smallest targets on the site at 16px tall before this.
               WCAG 2.2 SC 2.5.8, as above. Image Credits is where the
-              homepage imagery's licences are honoured; see /credits. */}
-          <div className="flex items-center gap-6">
+              homepage imagery's licences are honoured; see /credits. The
+              motion control sits with them because, like them, it is about
+              the site rather than about KOFA. */}
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+            <MotionToggle />
             <Link
               href="/credits"
               className="-my-2 inline-block py-2 text-xs text-slate-500 transition-colors hover:text-teal-deep"

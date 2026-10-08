@@ -1,9 +1,52 @@
 import type { NextConfig } from "next";
 import path from "node:path";
 
+/*
+  Files in public/ are served with `max-age=0, must-revalidate` unless told
+  otherwise, so every page view re-asked the server about every font, logo
+  and film clip it had already downloaded.
+
+    fonts   The official General Sans files never change (the licence
+            forbids modifying them), so they are cached for a year.
+    media   Images and film clips DO get replaced under the same names, the
+            hero film has been re-graded in place several times, so they are
+            cached for an hour and then revalidated in the background. A
+            reviewer looking for a change made minutes ago is at most one
+            reload away from seeing it, while a visitor moving between pages
+            stops re-requesting the same pictures.
+*/
+const MEDIA_CACHE = "public, max-age=3600, stale-while-revalidate=86400";
+
+const SECURITY_HEADERS = [
+  { key: "X-Content-Type-Options", value: "nosniff" },
+  { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+  // The site has no reason to be framed by anyone else's page.
+  { key: "X-Frame-Options", value: "SAMEORIGIN" },
+  {
+    key: "Permissions-Policy",
+    value: "camera=(), microphone=(), geolocation=(), browsing-topics=()",
+  },
+];
+
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  poweredByHeader: false,
   outputFileTracingRoot: path.resolve(__dirname),
+  async headers() {
+    return [
+      { source: "/:path*", headers: SECURITY_HEADERS },
+      {
+        source: "/fonts/:path*",
+        headers: [
+          { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
+        ],
+      },
+      ...["media", "company-logos", "portfolio", "brand", "team"].map((dir) => ({
+        source: `/${dir}/:path*`,
+        headers: [{ key: "Cache-Control", value: MEDIA_CACHE }],
+      })),
+    ];
+  },
   images: {
     formats: ["image/avif", "image/webp"],
     /*

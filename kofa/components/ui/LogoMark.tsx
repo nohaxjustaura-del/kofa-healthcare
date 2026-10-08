@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import type { ReactNode } from "react";
 
 /* ---------------------------------------------------------------------------
    THE LOGO
@@ -118,7 +119,63 @@ export function LogoMark({
     />
   );
 
-  if (!href) return inner;
+  return <LogoLink href={href}>{inner}</LogoLink>;
+}
+
+/** kofa-healthcare.png: the client's horizontal "KOFA Healthcare" artwork,
+ *  with the red bars that flanked it in the supplied file cut away, the white
+ *  background keyed out to transparency in the logo's own red, and the
+ *  result trimmed to its ink. */
+const WIDE_W = 413;
+const WIDE_H = 111;
+const WIDE_RATIO = WIDE_W / WIDE_H; // 3.721, landscape
+
+/**
+ * The header logo: hexagon beside "KOFA Healthcare", as supplied by the
+ * client. `size` is its height; `responsive` clamps it so the header still
+ * fits a 320px phone beside the menu button.
+ */
+export function LogoWide({
+  size = 60,
+  href = "/",
+  priority = false,
+  responsive = false,
+}: {
+  size?: number;
+  href?: string | null;
+  priority?: boolean;
+  responsive?: boolean;
+}) {
+  const height = responsive
+    ? `clamp(${Math.min(44, size)}px, 13vw, ${size}px)`
+    : `${size}px`;
+
+  const inner = (
+    <Image
+      src="/brand/kofa-healthcare.png"
+      alt="KOFA Healthcare"
+      width={Math.round(size * WIDE_RATIO)}
+      height={size}
+      priority={priority}
+      /* Served as the original 9KB PNG. Run through the optimiser it comes
+         back as lossy WebP, which smears the red edges of flat artwork for
+         no saving worth having. */
+      unoptimized
+      style={{ height, width: "auto" }}
+    />
+  );
+
+  return <LogoLink href={href}>{inner}</LogoLink>;
+}
+
+function LogoLink({
+  href,
+  children,
+}: {
+  href: string | null;
+  children: ReactNode;
+}) {
+  if (!href) return <>{children}</>;
 
   return (
     <Link
@@ -130,7 +187,7 @@ export function LogoMark({
          screens; the flex algorithm is not invited to have an opinion. */
       className="inline-flex shrink-0 items-center rounded-sm"
     >
-      {inner}
+      {children}
     </Link>
   );
 }
