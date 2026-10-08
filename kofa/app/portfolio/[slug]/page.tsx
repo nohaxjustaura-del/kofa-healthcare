@@ -26,6 +26,10 @@ import { site } from "@/data/site";
 
 type Params = { params: Promise<{ slug: string }> };
 
+/* Re-rendered daily so news older than the window in data/news.ts drops
+   out of the "Latest from" list without a new deploy. */
+export const revalidate = 86400;
+
 export function generateStaticParams() {
   return portfolio.map((c) => ({ slug: c.slug }));
 }

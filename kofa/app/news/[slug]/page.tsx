@@ -8,15 +8,19 @@ import { Arrow } from "@/components/ui/Arrow";
 import { Reveal } from "@/components/motion/Reveal";
 import { Rise } from "@/components/motion/Rise";
 import { NewsCard } from "@/components/news/NewsCard";
-import { formatNewsDate, getNews, news, relatedNews } from "@/data/news";
+import { currentNews, formatNewsDate, getNews, relatedNews } from "@/data/news";
 import { getCompany } from "@/data/portfolio";
 import { pageMetadata } from "@/lib/metadata";
 import { site } from "@/data/site";
 
 type Params = { params: Promise<{ slug: string }> };
 
+/* Re-rendered daily: once an item ages out of the window in data/news.ts,
+   getNews() stops returning it and its page becomes a 404. */
+export const revalidate = 86400;
+
 export function generateStaticParams() {
-  return news.map((n) => ({ slug: n.slug }));
+  return currentNews().map((n) => ({ slug: n.slug }));
 }
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {

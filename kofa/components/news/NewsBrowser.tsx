@@ -4,13 +4,15 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTablist } from "@/components/ui/useTablist";
-import { formatNewsDate, newsSorted, type NewsType } from "@/data/news";
+import { formatNewsDate, type NewsItem, type NewsType } from "@/data/news";
 import { getCompany } from "@/data/portfolio";
 
 const TYPES: (NewsType | null)[] = [null, "KOFA News", "Portfolio News"];
 
-/** A concise, article-first index. The actual filter controls remain keyboard tabs. */
-export function NewsBrowser() {
+/** A concise, article-first index. The actual filter controls remain keyboard tabs.
+    `items` comes from the server so the 12-month window in data/news.ts is
+    applied there, not against the visitor's clock. */
+export function NewsBrowser({ items: newsSorted }: { items: NewsItem[] }) {
   const router = useRouter();
   const [type, setType] = useState<NewsType | null>(null);
 
@@ -33,7 +35,7 @@ export function NewsBrowser() {
 
   const visible = useMemo(
     () => newsSorted.filter((item) => !type || item.type === type),
-    [type],
+    [newsSorted, type],
   );
   const { register, onKeyDown } = useTablist(TYPES, select);
 

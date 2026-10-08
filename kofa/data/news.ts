@@ -918,34 +918,56 @@ export function mergeNews(
   return [...curated, ...automated];
 }
 
-export const news = mergeNews(curatedNews, generatedNews);
+/** Everything on file, current or not. The site only shows `currentNews()`. */
+export const allNews = mergeNews(curatedNews, generatedNews);
+
+/* --- Freshness window ------------------------------------------------------
+   Portfolio News drops off the site once it is older than this many months,
+   so /news stays a current feed rather than an archive of every company.
+   KOFA's own posts are never expired. Nothing is deleted: the records stay
+   on file and simply stop rendering, so widening the window brings them
+   back. Every page that shows news sets `revalidate = 86400`, so items age
+   out daily on their own, even on days the news sync finds nothing new. */
+export const PORTFOLIO_NEWS_WINDOW_MONTHS = 12;
+
+/** Oldest publication date still shown, ISO yyyy-mm-dd. */
+export function newsCutoff(now = new Date()): string {
+  const cutoff = new Date(
+    Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - PORTFOLIO_NEWS_WINDOW_MONTHS, now.getUTCDate()),
+  );
+  return cutoff.toISOString().slice(0, 10);
+}
+
+export function isCurrentNews(item: NewsItem, now = new Date()): boolean {
+  return item.type === "KOFA News" || item.date >= newsCutoff(now);
+}
 
 /* --- Selectors ----------------------------------------------------------- */
 
-export const newsSorted = [...news].sort((a, b) =>
-  a.date < b.date ? 1 : a.date > b.date ? -1 : 0,
-);
+/** Current news, newest first. */
+export function currentNews(now = new Date()): NewsItem[] {
+  return allNews
+    .filter((n) => isCurrentNews(n, now))
+    .sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
+}
 
-export const kofaNews = newsSorted.filter((n) => n.type === "KOFA News");
-export const portfolioNews = newsSorted.filter(
-  (n) => n.type === "Portfolio News",
-);
-
-export function getNews(slug: string): NewsItem | undefined {
-  return news.find((n) => n.slug === slug);
+export function getNews(slug: string, now = new Date()): NewsItem | undefined {
+  const item = allNews.find((n) => n.slug === slug);
+  return item && isCurrentNews(item, now) ? item : undefined;
 }
 
 /** Powers "Latest from [Company]" on each portfolio detail page. */
 export function newsForCompany(companySlug: string): NewsItem[] {
-  return newsSorted.filter((n) => n.company === companySlug);
+  return currentNews().filter((n) => n.company === companySlug);
 }
 
 /** Companies that actually have news, for the news-page filter. */
 export function companiesWithNews(): string[] {
-  return [...new Set(newsSorted.map((n) => n.company).filter(Boolean))] as string[];
+  return [...new Set(currentNews().map((n) => n.company).filter(Boolean))] as string[];
 }
 
 export function relatedNews(item: NewsItem, limit = 3): NewsItem[] {
+  const newsSorted = currentNews();
   const sameCompany = item.company
     ? newsSorted.filter((n) => n.company === item.company && n.slug !== item.slug)
     : [];

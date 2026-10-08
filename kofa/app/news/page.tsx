@@ -4,6 +4,11 @@ import { NewsBrowser } from "@/components/news/NewsBrowser";
 import { PageHero } from "@/components/ui/PageHero";
 import { CTASection } from "@/components/ui/CTASection";
 import { pageMetadata } from "@/lib/metadata";
+import { currentNews } from "@/data/news";
+
+/* Re-rendered daily so Portfolio News older than the window in
+   data/news.ts drops off without a new deploy. */
+export const revalidate = 86400;
 
 /* See lib/metadata.ts: a hand-written page-level `openGraph` replaces the root
    layout's wholesale, taking og:site_name, og:locale, og:type and the share
@@ -24,7 +29,7 @@ export default function NewsPage() {
 
       <Section space="roomy" className="bg-white">
         <Container>
-          <NewsBrowser />
+          <NewsBrowser items={currentNews()} />
         </Container>
       </Section>
 

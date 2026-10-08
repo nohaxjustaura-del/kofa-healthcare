@@ -1,7 +1,9 @@
 import type { MetadataRoute } from "next";
 import { portfolio } from "@/data/portfolio";
-import { news } from "@/data/news";
+import { currentNews } from "@/data/news";
 import { siteUrl } from "@/lib/metadata";
+
+export const revalidate = 86400;
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const base = siteUrl;
@@ -30,7 +32,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.7,
   }));
 
-  const articles = news.map((n) => ({
+  const articles = currentNews().map((n) => ({
     url: `${base}/news/${n.slug}`,
     lastModified: new Date(n.date),
     changeFrequency: "yearly" as const,
