@@ -104,6 +104,19 @@ export const contactReasons = [
   "General Inquiry",
 ] as const;
 
+/**
+ * Message-box prompt for each reason, so the placeholder asks the question
+ * that visitor is actually there to answer.
+ */
+export const contactPrompts: Record<(typeof contactReasons)[number], string> = {
+  "Seeking Investment":
+    "What are you building, and what clinical problem does it solve?",
+  "Portfolio / Partnership":
+    "Who are you, and how would you like to work with KOFA or our portfolio companies?",
+  Media: "Which outlet are you with, and what's the story you're working on?",
+  "General Inquiry": "How can we help?",
+};
+
 /* An `investmentProcess` export used to sit here: five numbered stages
    (Clinical Need / Breakthrough Innovation / Partnership / Growth / Patient
    Impact) with a sentence of copy each. It was deleted rather than wired up.

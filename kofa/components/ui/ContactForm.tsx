@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { useMotionOff } from "@/components/motion/MotionPreference";
 import { Arrow } from "@/components/ui/Arrow";
 import { Button } from "@/components/ui/Button";
-import { contactReasons, site } from "@/data/site";
+import { contactPrompts, contactReasons, site } from "@/data/site";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -503,7 +503,10 @@ export function ContactForm() {
               aria-invalid={errors.message ? true : undefined}
               aria-describedby={errors.message ? "message-error" : undefined}
               onChange={(e) => set("message")(e.target.value)}
-              placeholder="What are you building, and what clinical problem does it solve?"
+              placeholder={
+                contactPrompts[f.reason as keyof typeof contactPrompts] ??
+                contactPrompts["General Inquiry"]
+              }
               className={`mt-3 w-full resize-y border-0 border-b bg-transparent pb-3 text-[1.0625rem] leading-[1.6] text-ink transition-colors duration-300 ease-kofa placeholder:text-ink-mute/60 ${
                 errors.message
                   ? "border-b-error"
