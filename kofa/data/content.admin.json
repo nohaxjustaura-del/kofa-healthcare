@@ -1,5 +1,19 @@
 {
   "version": 1,
   "companies": [],
-  "news": []
+  "news": [
+    {
+      "slug": "axon-therapies-closes-32m-oversubscribed-series-a-and-names",
+      "published": true,
+      "title": "Axon Therapies closes $32M oversubscribed Series A and names Zoar Engelman CEO",
+      "type": "KOFA News",
+      "date": "2025-09-25",
+      "excerpt": "Axon Therapies raised $32 million in a Series A co-led by Earlybird Venture Capital and Santé Ventures, with participation from Deerfield Management, CD Capital and KOFA Healthcare. Proceeds fund two double-blinded randomized feasibility studies of its Satera Ablation System in HFpEF and HFrEF; co-founder Zoar Engelman was appointed CEO and the company opened a UK-based European headquarters.",
+      "company": "axon-therapies",
+      "externalUrl": "https://www.biospace.com/press-releases/axon-therapies-raises-32m-in-oversubscribed-series-a-to-transform-heart-failure-treatment",
+      "source": "BioSpace",
+      "body": "",
+      "subheadline": ""
+    }
+  ]
 }
