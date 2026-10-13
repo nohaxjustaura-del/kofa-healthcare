@@ -28,6 +28,14 @@ export const FEEDS = [
     source: "Caretaker Medical",
     company: "caretaker-medical",
   },
+  {
+    id: "eyenuk",
+    feedUrl: "https://www.eyenuk.com/en/resources",
+    host: "eyenuk.com",
+    source: "Eyenuk",
+    company: "eyenuk",
+    format: "eyenuk-resources",
+  },
 ];
 
 function unwrapCdata(value) {
@@ -160,9 +168,32 @@ export function parseRss(xml, feed, now = new Date()) {
       source: feed.source,
       url,
       company: feed.company,
+      ...(/\bkofa\s+healthcare\b/i.test(normalizeText(`${title} ${xmlValue(rawItem, "description")} ${xmlValue(rawItem, "content:encoded")}`)) ? { type: "KOFA News" } : {}),
     });
   }
 
+  return entries;
+}
+
+/** Only dated news/blog cards on Eyenuk's official resources page. */
+export function parseEyenukResources(html, feed, now = new Date()) {
+  const entries = [];
+  const seen = new Set();
+  const cards = html.match(/<a\b[^>]*data-card-hover=["'](?:news|blog)["'][^>]*>[\s\S]*?<\/a>/gi) ?? [];
+  for (const card of cards.slice(0, MAX_ITEMS_PER_FEED)) {
+    const href = card.match(/\bhref=["']([^"']+)["']/i)?.[1];
+    let url;
+    try { url = allowedUrl(new URL(decodeEntities(href ?? ""), feed.feedUrl).href, feed.host); } catch { continue; }
+    if (!url || !/^\/en\/(?:news|blog)\/[^/]+$/.test(new URL(url).pathname) || seen.has(url)) continue;
+    const titleMarkup = card.match(/<h3\b[^>]*>([\s\S]*?)<\/h3>/i)?.[1]
+      ?? card.match(/<p\b[^>]*class=["'][^"']*heading-style-h3[^"']*["'][^>]*>([\s\S]*?)<\/p>/i)?.[1];
+    const dateMarkup = card.match(/<p\b[^>]*class=["'][^"']*text-size-small[^"']*["'][^>]*>([\s\S]*?)<\/p>/i)?.[1];
+    const title = normalizeText(titleMarkup ?? "");
+    const date = publishedDate(dateMarkup ?? "", now);
+    if (!title || !date) continue;
+    seen.add(url);
+    entries.push({ slug: stableSlug({ company: feed.company, date, title, url }), title, date, source: feed.source, url, company: feed.company });
+  }
   return entries;
 }
 
@@ -197,12 +228,12 @@ export async function fetchFeed(feed, { fetchImpl = fetch, now = new Date() } = 
   try {
     const response = await fetchImpl(feed.feedUrl, {
       signal: controller.signal,
-      headers: { accept: "application/rss+xml, application/xml, text/xml;q=0.9" },
+      headers: { accept: feed.format ? "text/html" : "application/rss+xml, application/xml, text/xml;q=0.9" },
     });
     if (!response.ok) throw new Error(`Feed returned ${response.status}.`);
     const xml = await readBoundedText(response);
-    if (!/<(?:rss|feed)\b/i.test(xml)) throw new Error("Feed was not RSS or Atom XML.");
-    const entries = parseRss(xml, feed, now);
+    if (!feed.format && !/<(?:rss|feed)\b/i.test(xml)) throw new Error("Feed was not RSS or Atom XML.");
+    const entries = feed.format === "eyenuk-resources" ? parseEyenukResources(xml, feed, now) : parseRss(xml, feed, now);
     if (entries.length === 0) throw new Error("Feed had no valid items.");
     return entries;
   } finally {
@@ -231,7 +262,7 @@ function sourceEntries(snapshot, id, feed, now) {
       title,
       url,
     });
-    byUrl.set(url, { slug, title, date, source: feed.source, url, company: feed.company });
+    byUrl.set(url, { slug, title, date, source: feed.source, url, company: feed.company, ...(item.type === "KOFA News" ? { type: "KOFA News" } : {}) });
   }
   return [...byUrl.values()];
 }

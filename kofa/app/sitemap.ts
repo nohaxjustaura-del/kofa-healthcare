@@ -1,11 +1,12 @@
 import type { MetadataRoute } from "next";
-import { portfolio } from "@/data/portfolio";
 import { currentNews } from "@/data/news";
 import { siteUrl } from "@/lib/metadata";
+import { getSiteContent } from "@/lib/site-content";
 
-export const revalidate = 86400;
+export const revalidate = 60;
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const { companies: portfolio, news } = await getSiteContent();
   const base = siteUrl;
   const now = new Date();
 
@@ -32,7 +33,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.7,
   }));
 
-  const articles = currentNews().map((n) => ({
+  const articles = currentNews(now, news).map((n) => ({
     url: `${base}/news/${n.slug}`,
     lastModified: new Date(n.date),
     changeFrequency: "yearly" as const,

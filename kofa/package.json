@@ -8,6 +8,7 @@
     "start": "next start -p 3200",
     "typecheck": "tsc --noEmit",
     "test:news": "node --test tests/news-sync.test.mjs",
+    "test:admin": "node --test tests/admin.test.mjs",
     "test:contact": "node tests/contact-delivery.mjs",
     "news:sync": "node scripts/sync-news.mjs",
     "dev:auto": "next dev"

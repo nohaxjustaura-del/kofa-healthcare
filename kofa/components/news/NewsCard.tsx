@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { formatNewsDate, type NewsItem } from "@/data/news";
 import { getCompany } from "@/data/portfolio";
+import { getSiteContent } from "@/lib/site-content";
 import { CompanyVisual } from "@/components/portfolio/CompanyVisual";
 import { Arrow } from "@/components/ui/Arrow";
 
@@ -17,8 +18,9 @@ import { Arrow } from "@/components/ui/Arrow";
    which, at this scale of headline, reads better anyway.
 =========================================================================== */
 
-function Kicker({ item }: { item: NewsItem }) {
-  const company = item.company ? getCompany(item.company) : undefined;
+async function Kicker({ item }: { item: NewsItem }) {
+  const { companies } = await getSiteContent();
+  const company = item.company ? getCompany(item.company, companies) : undefined;
   return (
     <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
       <span className="type-eyebrow text-teal-deep">
@@ -34,14 +36,15 @@ function Kicker({ item }: { item: NewsItem }) {
   );
 }
 
-export function NewsCard({
+export async function NewsCard({
   item,
   variant = "stack",
 }: {
   item: NewsItem;
   variant?: "feature" | "stack" | "row";
 }) {
-  const company = item.company ? getCompany(item.company) : undefined;
+  const { companies } = await getSiteContent();
+  const company = item.company ? getCompany(item.company, companies) : undefined;
   const href = `/news/${item.slug}`;
 
   if (variant === "feature") {

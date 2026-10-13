@@ -3,8 +3,16 @@
   "sources": {
     "rivanna": [
       {
+        "slug": "rivanna-medical-2026-09-22-rivanna-crosses-100-patent-threshold-estate-protects-shared-platform-spa-d1628f053e",
+        "title": "RIVANNA Crosses 100-patent Threshold: Estate Protects Shared Platform Spanning Multiple FDA-cleared Product Lines",
+        "date": "2026-09-22",
+        "source": "RIVANNA",
+        "url": "https://rivannamedical.com/rivanna-crosses-100-patent-threshold-estate-protects-shared-platform-spanning-multiple-fda-cleared-product-lines",
+        "company": "rivanna-medical"
+      },
+      {
         "slug": "rivanna-medical-2026-09-16-rivanna-announces-new-cms-procedure-code-for-computer-aided-neuraxial-gu-9a3a2da9cb",
-        "title": "Rivanna Announces New CMS Procedure Code for Computer-aided Neuraxial Guidance",
+        "title": "RIVANNA Announces New CMS Procedure Code for Computer-aided Neuraxial Guidance",
         "date": "2026-09-16",
         "source": "RIVANNA",
         "url": "https://rivannamedical.com/rivanna-announces-new-cms-procedure-code-for-computer-aided-neuraxial-guidance",
@@ -245,6 +253,64 @@
         "source": "Caretaker Medical",
         "url": "https://caretakermedical.net/blog/bp-cuff-a-line-or-vitalstream-noninvasive-hemodynamic-monitor",
         "company": "caretaker-medical"
+      }
+    ],
+    "eyenuk": [
+      {
+        "slug": "eyenuk-2026-10-05-eyenuk-named-to-time-s-world-s-top-healthtech-companies-of-2026-eb5380e107",
+        "title": "Eyenuk named to TIME's World's Top HealthTech Companies of 2026",
+        "date": "2026-10-05",
+        "source": "Eyenuk",
+        "url": "https://eyenuk.com/en/blog/eyenuk-times-worlds-top-healthtech-companies-2026",
+        "company": "eyenuk"
+      },
+      {
+        "slug": "eyenuk-2026-10-01-instant-visibility-introducing-the-new-eyenuk-0b26b3bb28",
+        "title": "Instant Visibility: Introducing the New Eyenuk",
+        "date": "2026-10-01",
+        "source": "Eyenuk",
+        "url": "https://eyenuk.com/en/blog/introducing-the-new-eyenuk-brand",
+        "company": "eyenuk"
+      },
+      {
+        "slug": "eyenuk-2026-09-28-protecting-vision-together-eyenuk-and-unmc-support-the-2026-cattlemen-s-57c1687304",
+        "title": "Protecting Vision Together: Eyenuk and UNMC Support the 2026 Cattlemen’s Ball",
+        "date": "2026-09-28",
+        "source": "Eyenuk",
+        "url": "https://eyenuk.com/en/blog/protecting-vision-together-eyenuk-and-unmc-support-2026-cattlemens-ball",
+        "company": "eyenuk"
+      },
+      {
+        "slug": "eyenuk-2025-09-17-eyenuk-secures-world-s-first-national-health-system-deployment-of-autono-41e3b54762",
+        "title": "Eyenuk Secures World's First National Health System Deployment of Autonomous AI Eye Screening Technology",
+        "date": "2025-09-17",
+        "source": "Eyenuk",
+        "url": "https://eyenuk.com/en/news/eyenuk-secures-worlds-first-national-health-system-deployment-of-autonomous-ai-eye-screening-technology",
+        "company": "eyenuk"
+      },
+      {
+        "slug": "eyenuk-2025-01-06-eyenuk-appoints-mads-dall-as-chairman-of-the-board-and-gaurav-agarwal-as-d2371b5c5a",
+        "title": "Eyenuk Appoints Mads Dall as Chairman of the Board and Gaurav Agarwal as Chief Executive Officer",
+        "date": "2025-01-06",
+        "source": "Eyenuk",
+        "url": "https://eyenuk.com/en/news/eyenuk-appoints-mads-dall-as-chairman-of-the-board-and-gaurav-agarwal-as-chief-executive-officer",
+        "company": "eyenuk"
+      },
+      {
+        "slug": "eyenuk-2023-06-22-new-fda-clearance-makes-eyenuk-the-first-company-with-multiple-cameras-f-4157e9fa91",
+        "title": "New FDA Clearance Makes Eyenuk the First Company with Multiple Cameras for Autonomous AI Detection of Diabetic Retinopathy",
+        "date": "2023-06-22",
+        "source": "Eyenuk",
+        "url": "https://eyenuk.com/en/news/new-fda-clearance-makes-eyenuk-the-first-company-with-multiple-cameras-for-autonomous-ai-detection-of-diabetic-retinopathy",
+        "company": "eyenuk"
+      },
+      {
+        "slug": "eyenuk-2023-01-31-eyenuk-secures-the-first-european-union-mdr-certification-for-autonomous-b33cbf82ae",
+        "title": "Eyenuk Secures the First European Union MDR Certification for Autonomous AI Detection of Diabetic Retinopathy, Age-Related Macular Degeneration, and Glaucoma",
+        "date": "2023-01-31",
+        "source": "Eyenuk",
+        "url": "https://eyenuk.com/en/news/eyenuk-secures-the-first-european-union-mdr-certification-for-autonomous-ai-detection-of-diabetic-retinopathy-age-related-macular-degeneration-and-glaucoma",
+        "company": "eyenuk"
       }
     ]
   }

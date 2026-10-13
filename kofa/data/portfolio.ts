@@ -508,8 +508,8 @@ export const portfolioSorted = [...portfolio].sort(
 
 export const featuredPortfolio = portfolioSorted.filter((c) => c.featured);
 
-export function getCompany(slug: string): PortfolioCompany | undefined {
-  return portfolio.find((c) => c.slug === slug);
+export function getCompany(slug: string, companies = portfolio): PortfolioCompany | undefined {
+  return companies.find((c) => c.slug === slug);
 }
 
 /** Only categories actually represented in the portfolio are ever offered. */
@@ -550,12 +550,12 @@ export function matchesPortfolioFilter(
 }
 
 /** Neighbours for the prev / next footer on a company page. */
-export function companyNeighbours(slug: string) {
-  const i = portfolioSorted.findIndex((c) => c.slug === slug);
+export function companyNeighbours(slug: string, companies = portfolioSorted) {
+  const i = companies.findIndex((c) => c.slug === slug);
   if (i === -1) return { prev: undefined, next: undefined };
-  const len = portfolioSorted.length;
+  const len = companies.length;
   return {
-    prev: portfolioSorted[(i - 1 + len) % len],
-    next: portfolioSorted[(i + 1) % len],
+    prev: companies[(i - 1 + len) % len],
+    next: companies[(i + 1) % len],
   };
 }

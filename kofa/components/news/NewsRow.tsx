@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { formatNewsDate, type NewsItem } from "@/data/news";
 import { getCompany } from "@/data/portfolio";
+import { getSiteContent } from "@/lib/site-content";
 
 /* One row of the /news index. A server component: the index's client code
    (components/news/NewsBrowser.tsx) only filters rows, it never renders
@@ -8,8 +9,9 @@ import { getCompany } from "@/data/portfolio";
 
    `data-type` is what the filter's stylesheet rules key on. The excerpt is
    clamped to three lines here; the article page carries it in full. */
-export function NewsRow({ item }: { item: NewsItem }) {
-  const company = item.company ? getCompany(item.company) : undefined;
+export async function NewsRow({ item }: { item: NewsItem }) {
+  const { companies } = await getSiteContent();
+  const company = item.company ? getCompany(item.company, companies) : undefined;
   return (
     <li
       className="news-row"

@@ -30,6 +30,7 @@ jobs:
           cache-dependency-path: kofa/package-lock.json
       - run: npm ci
       - run: npm run test:news
+      - run: npm run test:admin
       - run: npm run news:sync
       - run: npm run build
       - run: npm run typecheck

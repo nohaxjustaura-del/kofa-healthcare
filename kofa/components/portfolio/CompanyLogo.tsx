@@ -42,6 +42,7 @@ export function CompanyLogo({
   /** Empty alt, for a logo whose link or heading already names the company. */
   decorative?: boolean;
 }) {
+  if (!company.logo) return <span className={`text-lg font-medium text-ink ${className}`} aria-hidden={decorative || undefined}>{company.name}</span>;
   const r = company.logoAspect;
   const height = Math.round(Math.min(72, 76 / Math.sqrt(r), 210 / r));
   const width = Math.round(height * r);
@@ -53,6 +54,7 @@ export function CompanyLogo({
       width={width}
       height={height}
       priority={priority}
+      unoptimized={company.logo.startsWith("https://") || company.logo.startsWith("data:")}
       className={`company-logo ${className}`}
       style={{ "--logo-r": r } as CSSProperties}
     />
