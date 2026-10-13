@@ -5,22 +5,26 @@ import { PortfolioCard } from "@/components/portfolio/PortfolioCard";
 import { PageHero } from "@/components/ui/PageHero";
 import { CTASection } from "@/components/ui/CTASection";
 import { pageMetadata } from "@/lib/metadata";
-import { portfolio, portfolioSorted } from "@/data/portfolio";
+import { getSiteContent } from "@/lib/site-content";
+
+export const revalidate = 60;
 
 /* See lib/metadata.ts: a hand-written page-level `openGraph` replaces the root
    layout's wholesale, taking og:site_name, og:locale, og:type and the share
    card with it. The helper is the only place that block gets assembled. */
-export const metadata: Metadata = pageMetadata({
+export async function generateMetadata(): Promise<Metadata> {
+  const { companies: portfolio } = await getSiteContent();
+  return pageMetadata({
   title: "Portfolio",
   description: `The ${portfolio.length} companies KOFA Healthcare has backed across cardiovascular, women's health, diagnostics, orthopedics and digital health.`,
   path: "/portfolio",
   socialDescription: `Companies advancing the future of health. ${portfolio.length} companies across medicine.`,
-});
+  });
+}
 
-const count = (status: "Active" | "Exits") =>
-  portfolio.filter((company) => company.portfolioStatus === status).length;
-
-export default function PortfolioPage() {
+export default async function PortfolioPage() {
+  const { companies: portfolioSorted } = await getSiteContent();
+  const count = (status: "Active" | "Exits") => portfolioSorted.filter((company) => company.portfolioStatus === status).length;
   return (
     <>
       <PageHero eyebrow="Portfolio" lines={["Portfolio"]} intro="We invest in early- to mid-stage medical device companies developing differentiated technologies for significant unmet clinical needs." />

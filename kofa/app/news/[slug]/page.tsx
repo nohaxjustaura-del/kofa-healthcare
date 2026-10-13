@@ -10,6 +10,7 @@ import { NewsCard } from "@/components/news/NewsCard";
 import { CompanyLogo } from "@/components/portfolio/CompanyLogo";
 import { currentNews, formatNewsDate, getNews, relatedNews } from "@/data/news";
 import { getCompany } from "@/data/portfolio";
+import { getSiteContent } from "@/lib/site-content";
 import { pageMetadata } from "@/lib/metadata";
 import { site } from "@/data/site";
 
@@ -17,15 +18,17 @@ type Params = { params: Promise<{ slug: string }> };
 
 /* Re-rendered daily: once an item ages out of the window in data/news.ts,
    getNews() stops returning it and its page becomes a 404. */
-export const revalidate = 86400;
+export const revalidate = 60;
 
-export function generateStaticParams() {
-  return currentNews().map((n) => ({ slug: n.slug }));
+export async function generateStaticParams() {
+  const { news } = await getSiteContent();
+  return currentNews(new Date(), news).map((n) => ({ slug: n.slug }));
 }
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
-  const item = getNews(slug);
+  const { news } = await getSiteContent();
+  const item = getNews(slug, new Date(), news);
   if (!item) return { title: "Not found" };
 
   /* socialTitle is the headline on its own, with no "· KOFA Healthcare"
@@ -45,11 +48,12 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 
 export default async function ArticlePage({ params }: Params) {
   const { slug } = await params;
-  const item = getNews(slug);
+  const { companies, news } = await getSiteContent();
+  const item = getNews(slug, new Date(), news);
   if (!item) notFound();
 
-  const company = item.company ? getCompany(item.company) : undefined;
-  const related = relatedNews(item, 3);
+  const company = item.company ? getCompany(item.company, companies) : undefined;
+  const related = relatedNews(item, 3, news);
 
   const schema = {
     "@context": "https://schema.org",

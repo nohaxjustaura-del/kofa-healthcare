@@ -95,6 +95,7 @@ export function Footer() {
               motion control sits with them because, like them, it is about
               the site rather than about KOFA. */}
           <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+            <Link href="/admin" className="inline-flex min-h-11 items-center text-xs text-slate-500 transition-colors hover:text-teal-deep">Partner sign-in</Link>
             <MotionToggle />
             <Link
               href="/credits"

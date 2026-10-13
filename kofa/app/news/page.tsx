@@ -6,10 +6,10 @@ import { PageHero } from "@/components/ui/PageHero";
 import { CTASection } from "@/components/ui/CTASection";
 import { pageMetadata } from "@/lib/metadata";
 import { currentNews } from "@/data/news";
+import { getSiteContent } from "@/lib/site-content";
 
-/* Re-rendered daily so Portfolio News older than the window in
-   data/news.ts drops off without a new deploy. */
-export const revalidate = 86400;
+/* Partner saves invalidate content; the publication window refreshes too. */
+export const revalidate = 60;
 
 
 /* See lib/metadata.ts: a hand-written page-level `openGraph` replaces the root
@@ -24,8 +24,9 @@ export const metadata: Metadata = pageMetadata({
     "News from KOFA Healthcare and progress across its portfolio companies.",
 });
 
-export default function NewsPage() {
-  const newsSorted = currentNews();
+export default async function NewsPage() {
+  const { news } = await getSiteContent();
+  const newsSorted = currentNews(new Date(), news);
   const kofaCount = newsSorted.filter((n) => n.type === "KOFA News").length;
   return (
     <>

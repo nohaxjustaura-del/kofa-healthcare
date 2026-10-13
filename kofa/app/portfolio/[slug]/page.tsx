@@ -17,26 +17,27 @@ import { CTASection } from "@/components/ui/CTASection";
 import {
   companyNeighbours,
   getCompany,
-  portfolio,
-  portfolioSorted,
 } from "@/data/portfolio";
 import { newsForCompany } from "@/data/news";
 import { pageMetadata, siteUrl } from "@/lib/metadata";
 import { site } from "@/data/site";
+import { getSiteContent } from "@/lib/site-content";
 
 type Params = { params: Promise<{ slug: string }> };
 
-/* Re-rendered daily so news older than the window in data/news.ts drops
-   out of the "Latest from" list without a new deploy. */
-export const revalidate = 86400;
+/* Partner saves invalidate the shared content cache; freshness also refreshes
+   every minute, including the news publication window. */
+export const revalidate = 60;
 
-export function generateStaticParams() {
-  return portfolio.map((c) => ({ slug: c.slug }));
+export async function generateStaticParams() {
+  const { companies } = await getSiteContent();
+  return companies.map((c) => ({ slug: c.slug }));
 }
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
-  const company = getCompany(slug);
+  const { companies } = await getSiteContent();
+  const company = getCompany(slug, companies);
   if (!company) return { title: "Not found" };
 
   /* Company pages are the ones that actually get forwarded, a partner sends
@@ -56,11 +57,12 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 
 export default async function CompanyPage({ params }: Params) {
   const { slug } = await params;
-  const company = getCompany(slug);
+  const { companies: portfolioSorted, news } = await getSiteContent();
+  const company = getCompany(slug, portfolioSorted);
   if (!company) notFound();
 
-  const related = newsForCompany(company.slug);
-  const { prev, next } = companyNeighbours(company.slug);
+  const related = newsForCompany(company.slug, new Date(), news);
+  const { prev, next } = companyNeighbours(company.slug, portfolioSorted);
   const position = portfolioSorted.findIndex((c) => c.slug === company.slug) + 1;
 
   const facts = [
@@ -104,7 +106,7 @@ export default async function CompanyPage({ params }: Params) {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schema).replace(/</g, "\\u003c") }}
       />
 
       <section className="relative overflow-hidden pb-[clamp(2.5rem,4vw,4rem)] pt-[clamp(9rem,13vw,12rem)]">
@@ -229,8 +231,7 @@ export default async function CompanyPage({ params }: Params) {
         </Container>
       </Section>
 
-      {related.length > 0 && (
-        <Section className="border-t border-rule bg-sage-bg">
+      <Section className="border-t border-rule bg-sage-bg">
           <Container>
 
             <div className="grid grid-cols-12 items-baseline gap-y-6">
@@ -254,6 +255,7 @@ export default async function CompanyPage({ params }: Params) {
             </div>
 
             <div className="mt-12">
+              {related.length === 0 && <p className="type-body-sm text-ink-soft">No news updates have been added for the past 12 months. <Link href={company.website} target="_blank" rel="noopener noreferrer" className="text-teal-deep underline underline-offset-4">Visit the company website</Link> for more information.</p>}
 
               {related.map((item) => (
                 <div key={item.slug}>
@@ -263,8 +265,7 @@ export default async function CompanyPage({ params }: Params) {
               <div className="h-px w-full bg-rule" />
             </div>
           </Container>
-        </Section>
-      )}
+      </Section>
 
       <Section space="tight" className="border-t border-rule">
         <Container>

@@ -1,9 +1,10 @@
 # KOFA Healthcare website
 
 This is the Next.js 15 application for the KOFA Healthcare website. Approved
-firm, portfolio, team, and editorial content is managed in code. A daily GitHub
-Actions workflow can add source-linked portfolio announcements from three
-allowlisted official company feeds.
+firm and team content is managed in code. General partners can manage portfolio
+companies and news through `/admin` once access and publishing are configured.
+A daily GitHub Actions workflow adds source-linked announcements from four
+allowlisted official company sources.
 
 ## Run locally
 
@@ -20,7 +21,8 @@ The development server uses <http://localhost:3200>. From the repository root,
 starts the same server.
 
 Use `npm run typecheck` for TypeScript, `npm run test:news` for the offline news
-parser tests, and `npm run test:contact` for contact delivery tests against a
+parser tests, `npm run test:admin` for authentication/content/storage checks,
+and `npm run test:contact` for contact delivery tests against a
 loopback mock sink. The contact test does not send a real message.
 
 Use `npm run build` for the production build, then `npm start` to serve it on
@@ -59,11 +61,15 @@ test it in that environment with a controlled recipient.
 ## Automatic sourced news
 
 `npm run news:sync` refreshes `data/news.generated.json` from official RSS
-feeds for RIVANNA, Nectero Therapeutics, and Caretaker Medical. The synchronizer
+feeds for RIVANNA, Nectero Therapeutics, and Caretaker Medical, plus dated news
+and blog cards on Eyenuk's official resources page. The synchronizer
 accepts only HTTPS article links on the configured official hosts, strips markup
 from titles, rejects invalid or future dates, limits response size and item
 count, and retains the previous snapshot for a source when that source fails.
-Curated records in `data/news.ts` win when URLs or slugs overlap.
+Curated records in `data/news.ts` win when URLs or slugs overlap. Manual admin
+records take precedence over both and are stored separately, so refreshes do
+not overwrite partner edits. Explicit KOFA Healthcare mentions in RSS titles
+or descriptions are categorized as KOFA News.
 
 Generated entries contain only source metadata and the neutral excerpt “Read
 the original announcement from [source].” Article cards and pages link to the
@@ -74,7 +80,7 @@ summaries.
 at 14:23 UTC; it can also be started manually. Its first scheduled run has not
 yet been verified. It runs on the repository default branch, installs locked
 dependencies, type-checks, runs the offline parser tests, refreshes the snapshot,
-builds the site, and commits only a changed snapshot. The automation becomes
+builds the site, runs admin checks, and commits only a changed snapshot. The automation becomes
 active after this repository is pushed to GitHub with Actions enabled and the
 hosting project is connected to the repository. Branch protection must allow
 runs. The GitHub Actions bot must be allowed to update the default branch. GitHub may delay scheduled
@@ -96,17 +102,34 @@ prove delivery with a controlled recipient. A successful mock test proves the
 application behavior, not inbox delivery, sender-domain verification, webhook
 authorization, or production DNS.
 
-## Edit approved site content
+## Partner editing
 
-The live content is stored in TypeScript files, not a CMS:
+Use **Partner sign-in** in the footer or open `/admin`. Partners can add/edit
+companies, upload logos, publish external coverage or KOFA-authored articles,
+and save private drafts. Company relationships add news to the corresponding
+portfolio page. Portfolio News expires from public views after 12 months;
+KOFA News stays available. Empty company news sections explain this window.
+
+Follow [partner-admin.md](docs/partner-admin.md) for the one-time production
+setup, daily use and local preview. Production needs a partner password, a
+random session secret and a fine-grained repository publishing token. These
+are server-only settings. This feature is implemented and locally verified;
+live partner access requires configuring those values and deploying it.
+
+## Edit approved site content in code
+
+The approved baseline lives in TypeScript files. Partner changes are persisted
+in `data/content.admin.json` and merged into every public portfolio/news view:
 
 | Change | Location |
 | --- | --- |
 | Firm name, navigation, focus areas, contact reasons, public email | `data/site.ts` |
 | Portfolio records | `data/portfolio.ts` |
 | Curated news records | `data/news.ts` |
+| Partner company/news overrides and drafts | `data/content.admin.json`, edited through `/admin` |
 | Generated source snapshot | `data/news.generated.json` |
 | Official feed configuration and sanitization | `scripts/sync-news.mjs` |
+| Partner access and persistent publishing | `lib/admin-core.mjs`, `app/api/admin/` |
 | Team names, roles, biographies, portraits, LinkedIn links | `data/team.ts` |
 | Contact form fields and mailto fallback | `components/ui/ContactForm.tsx` |
 | Contact validation and delivery | `app/api/contact/route.ts` |

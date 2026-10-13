@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { Reveal } from "@/components/motion/Reveal";
 import { CompanyLogo } from "@/components/portfolio/CompanyLogo";
-import { portfolioSorted, type PortfolioCompany } from "@/data/portfolio";
+import type { PortfolioCompany } from "@/data/portfolio";
+import { getSiteContent } from "@/lib/site-content";
 
 /* ===========================================================================
    PARTNER MARQUEE — the revolving portfolio strip
@@ -116,7 +117,7 @@ function Plate({
 }
 
 /** One pass of every company. Rendered twice; see the note on MOTION above. */
-function Track({ duplicate = false }: { duplicate?: boolean }) {
+function Track({ duplicate = false, companies }: { duplicate?: boolean; companies: PortfolioCompany[] }) {
   return (
     <ul
       /* marquee-dupe is not decoration. With motion off the strip stops being
@@ -127,7 +128,7 @@ function Track({ duplicate = false }: { duplicate?: boolean }) {
       }`}
       aria-hidden={duplicate || undefined}
     >
-      {portfolioSorted.map((company) => (
+      {companies.map((company) => (
         <li key={company.slug} className="shrink-0">
           <Plate company={company} inert={duplicate} />
         </li>
@@ -142,7 +143,8 @@ function Track({ duplicate = false }: { duplicate?: boolean }) {
  * that happens to be clipped. The mask is what sells it — cards dissolve into
  * the ground instead of meeting a hard cut.
  */
-export function PartnerMarquee({ className = "" }: { className?: string }) {
+export async function PartnerMarquee({ className = "" }: { className?: string }) {
+  const { companies } = await getSiteContent();
   return (
     /* Reveal rather than Rise: Rise travels sideways and skews, and a
        full-bleed strip that moves sideways shows its own end at the edge of
@@ -171,8 +173,8 @@ export function PartnerMarquee({ className = "" }: { className?: string }) {
           className="animate-marquee flex w-max"
           style={{ ["--marquee-duration" as string]: `${PASS_SECONDS}s` }}
         >
-          <Track />
-          <Track duplicate />
+          <Track companies={companies} />
+          <Track companies={companies} duplicate />
         </div>
       </div>
     </Reveal>

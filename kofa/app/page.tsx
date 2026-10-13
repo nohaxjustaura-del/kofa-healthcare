@@ -70,6 +70,8 @@ export const metadata: Metadata = {
    CTASection and PageHero sit on.
 --------------------------------------------------------------------------- */
 
+export const revalidate = 60;
+
 export default function Home() {
   return (
     <>

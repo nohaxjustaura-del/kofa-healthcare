@@ -46,6 +46,7 @@ export interface NewsItem {
 }
 
 export interface GeneratedNewsItem {
+  type?: NewsType;
   slug: string;
   title: string;
   date: string;
@@ -332,7 +333,7 @@ const curatedNews: NewsItem[] = [
     slug: "axon-therapies-closes-32m-oversubscribed-series-a-and-names",
     title:
       "Axon Therapies closes $32M oversubscribed Series A and names Zoar Engelman CEO",
-    type: "Portfolio News",
+    type: "KOFA News",
     date: "2025-09-25",
     excerpt:
       "Axon Therapies raised $32 million in a Series A co-led by Earlybird Venture Capital and Santé Ventures, with participation from Deerfield Management, CD Capital and KOFA Healthcare. Proceeds fund two double-blinded randomized feasibility studies of its Satera Ablation System in HFpEF and HFrEF; co-founder Zoar Engelman was appointed CEO and the company opened a UK-based European headquarters.",
@@ -864,7 +865,7 @@ const generatedNews = Object.values(generatedNewsSnapshot.sources)
 
 const TRACKING_QUERY_NAMES = new Set(["dclid", "fbclid", "gclid", "mc_cid", "mc_eid"]);
 
-function canonicalNewsUrl(value: string | undefined): string | undefined {
+export function canonicalNewsUrl(value: string | undefined): string | undefined {
   if (!value) return undefined;
   try {
     const url = new URL(value);
@@ -906,7 +907,7 @@ export function mergeNews(
     automated.push({
       slug: item.slug,
       title: item.title,
-      type: "Portfolio News",
+      type: item.type === "KOFA News" ? "KOFA News" : "Portfolio News",
       date: item.date,
       excerpt: `Read the original announcement from ${item.source}.`,
       source: item.source,
@@ -926,8 +927,8 @@ export const allNews = mergeNews(curatedNews, generatedNews);
    so /news stays a current feed rather than an archive of every company.
    KOFA's own posts are never expired. Nothing is deleted: the records stay
    on file and simply stop rendering, so widening the window brings them
-   back. Every page that shows news sets `revalidate = 86400`, so items age
-   out daily on their own, even on days the news sync finds nothing new. */
+   back. News views refresh on their own even when the news sync finds no new
+   items; partner saves also invalidate the shared content cache. */
 export const PORTFOLIO_NEWS_WINDOW_MONTHS = 12;
 
 /** Oldest publication date still shown, ISO yyyy-mm-dd. */
@@ -939,26 +940,26 @@ export function newsCutoff(now = new Date()): string {
 }
 
 export function isCurrentNews(item: NewsItem, now = new Date()): boolean {
-  return item.type === "KOFA News" || item.date >= newsCutoff(now);
+  return item.date <= now.toISOString().slice(0, 10) && (item.type === "KOFA News" || item.date >= newsCutoff(now));
 }
 
 /* --- Selectors ----------------------------------------------------------- */
 
 /** Current news, newest first. */
-export function currentNews(now = new Date()): NewsItem[] {
-  return allNews
+export function currentNews(now = new Date(), records = allNews): NewsItem[] {
+  return records
     .filter((n) => isCurrentNews(n, now))
     .sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
 }
 
-export function getNews(slug: string, now = new Date()): NewsItem | undefined {
-  const item = allNews.find((n) => n.slug === slug);
+export function getNews(slug: string, now = new Date(), records = allNews): NewsItem | undefined {
+  const item = records.find((n) => n.slug === slug);
   return item && isCurrentNews(item, now) ? item : undefined;
 }
 
 /** Powers "Latest from [Company]" on each portfolio detail page. */
-export function newsForCompany(companySlug: string): NewsItem[] {
-  return currentNews().filter((n) => n.company === companySlug);
+export function newsForCompany(companySlug: string, now = new Date(), records = allNews): NewsItem[] {
+  return currentNews(now, records).filter((n) => n.company === companySlug);
 }
 
 /** Companies that actually have news, for the news-page filter. */
@@ -966,8 +967,8 @@ export function companiesWithNews(): string[] {
   return [...new Set(currentNews().map((n) => n.company).filter(Boolean))] as string[];
 }
 
-export function relatedNews(item: NewsItem, limit = 3): NewsItem[] {
-  const newsSorted = currentNews();
+export function relatedNews(item: NewsItem, limit = 3, records = allNews): NewsItem[] {
+  const newsSorted = currentNews(new Date(), records);
   const sameCompany = item.company
     ? newsSorted.filter((n) => n.company === item.company && n.slug !== item.slug)
     : [];
