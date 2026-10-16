@@ -57,8 +57,6 @@ export async function NewsCard({
                 <CompanyVisual
                   slug={company.slug}
                   category={company.category}
-                  media={item.heroImage ? undefined : company.media}
-                  featuredImage={item.heroImage}
                   name={company.name}
                   sizes="(max-width: 1024px) 100vw, 58vw"
                 />

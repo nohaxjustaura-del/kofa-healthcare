@@ -70,3 +70,10 @@ Do not treat this as a parser failure or suppress it with a workflow change.
 The daily job watches four configured official sources, rather than every
 portfolio company. Manual article publishing is available in the admin.
 Existing published data is retained while automatic refresh is blocked.
+
+## Portfolio media restriction
+
+Do not reintroduce portfolio-company technology photos, product renders,
+screenshots or video. The owner requested their removal on October 16.
+The public company-media files and their data references have been removed;
+portfolio pages retain company logos, descriptions and official website links.

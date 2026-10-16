@@ -11,7 +11,6 @@ import {
 import { TextLink } from "@/components/ui/Button";
 import { Arrow } from "@/components/ui/Arrow";
 import { CompanyLogo } from "@/components/portfolio/CompanyLogo";
-import { CompanyVisual } from "@/components/portfolio/CompanyVisual";
 import { NewsCard } from "@/components/news/NewsCard";
 import { CTASection } from "@/components/ui/CTASection";
 import {
@@ -177,29 +176,6 @@ export default async function CompanyPage({ params }: Params) {
           </div>
         </Container>
       </section>
-
-      <Container>
-        <div>
-        <div className="relative aspect-[21/9] w-full overflow-hidden rounded-[12px] border border-rule-soft">
-          <CompanyVisual
-            slug={company.slug}
-            category={company.category}
-            media={company.media}
-            featuredImage={company.featuredImage}
-            name={company.name}
-            reactive={false}
-            playable
-            priority
-            sizes="(max-width: 1280px) 100vw, 1200px"
-          />
-        </div>
-        </div>
-        {!company.media && !company.featuredImage && (
-          <p className="type-meta mt-3 text-ink-soft">
-            Abstract visualisation. Company imagery renders here when supplied.
-          </p>
-        )}
-      </Container>
 
       <Section className="border-t border-rule mt-[clamp(4rem,7vw,6.5rem)]">
         <Container>

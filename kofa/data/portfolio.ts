@@ -119,14 +119,6 @@ export const portfolio: PortfolioCompany[] = [
     portfolioStatus: "Active",
     featured: true,
     sortOrder: 1,
-    media: {
-      kind: "image",
-      src: "/portfolio/axon-therapies.png",
-      fit: "cover",
-      position: "center",
-      alt: "The Satera catheter, Axon Therapies' splanchnic nerve ablation device.",
-      source: "https://axontherapies.com/savm/",
-    },
   },
   {
     name: "Venova Medical",
@@ -143,14 +135,6 @@ export const portfolio: PortfolioCompany[] = [
     portfolioStatus: "Active",
     featured: true,
     sortOrder: 2,
-    media: {
-      kind: "image",
-      src: "/portfolio/venova-medical.png",
-      fit: "cover",
-      position: "center",
-      alt: "A render of Venova Medical's Velocity System percutaneous fistula.",
-      source: "https://venovamedical.com/",
-    },
   },
   {
     name: "CorFlow Therapeutics",
@@ -167,15 +151,6 @@ export const portfolio: PortfolioCompany[] = [
     portfolioStatus: "Active",
     featured: false,
     sortOrder: 3,
-    media: {
-      kind: "video",
-      src: "/portfolio/corflow.mp4",
-      poster: "/portfolio/corflow.jpg",
-      fit: "contain",
-      position: "center",
-      alt: "CorFlow's CoFI console, the platform for real-time diagnosis during PCI.",
-      source: "https://corflow.com/",
-    },
   },
   {
     name: "Zafrens",
@@ -192,14 +167,6 @@ export const portfolio: PortfolioCompany[] = [
     portfolioStatus: "Active",
     featured: false,
     sortOrder: 4,
-    media: {
-      kind: "image",
-      src: "/portfolio/zafrens.jpg",
-      fit: "cover",
-      position: "center",
-      alt: "Cellular assay wells and single-cell imaging from Zafrens' Z-Screen platform.",
-      source: "https://www.zafrens.com/technology",
-    },
   },
   {
     name: "IllumiCell AI",
@@ -216,15 +183,6 @@ export const portfolio: PortfolioCompany[] = [
     portfolioStatus: "Active",
     featured: false,
     sortOrder: 5,
-    media: {
-      kind: "video",
-      src: "/portfolio/illumicell-ai.mp4",
-      poster: "/portfolio/illumicell-ai.jpg",
-      fit: "cover",
-      position: "center",
-      alt: "Cellular microscopy from IllumiCell AI's fertility diagnostics platform.",
-      source: "https://www.illumicell.ai/fertility",
-    },
   },
   {
     name: "Aria CV",
@@ -241,14 +199,6 @@ export const portfolio: PortfolioCompany[] = [
     portfolioStatus: "Exits",
     featured: false,
     sortOrder: 6,
-    media: {
-      kind: "image",
-      src: "/portfolio/aria-cv.jpg",
-      fit: "cover",
-      position: "center",
-      alt: "Aria CV's balloon, catheter, anchor and subcutaneous gas reservoir.",
-      source: "https://ariacv.com/technology/",
-    },
   },
   {
     name: "Axena Health",
@@ -265,14 +215,6 @@ export const portfolio: PortfolioCompany[] = [
     portfolioStatus: "Active",
     featured: true,
     sortOrder: 7,
-    media: {
-      kind: "image",
-      src: "/portfolio/axena-health.jpg",
-      fit: "cover",
-      position: "center",
-      alt: "The Leva wand, Axena Health's at-home pelvic floor training device.",
-      source: "https://levacares.com/for-women/how-leva-works/",
-    },
   },
   {
     name: "BioSpectal",
@@ -289,14 +231,6 @@ export const portfolio: PortfolioCompany[] = [
     portfolioStatus: "Active",
     featured: false,
     sortOrder: 8,
-    media: {
-      kind: "image",
-      src: "/portfolio/biospectal.png",
-      fit: "contain",
-      position: "center",
-      alt: "BioSpectal's OptiBP app measuring blood pressure on a smartphone.",
-      source: "https://biospectal.com/",
-    },
   },
   {
     name: "Eyenuk",
@@ -313,14 +247,6 @@ export const portfolio: PortfolioCompany[] = [
     portfolioStatus: "Active",
     featured: true,
     sortOrder: 9,
-    media: {
-      kind: "image",
-      src: "/portfolio/eyenuk.jpg",
-      fit: "cover",
-      position: "right center",
-      alt: "A patient undergoing an EyeArt autonomous retinal screening.",
-      source: "https://www.eyenuk.com/en/solutions",
-    },
   },
   {
     name: "Raydiant Oximetry",
@@ -337,14 +263,6 @@ export const portfolio: PortfolioCompany[] = [
     portfolioStatus: "Active",
     featured: true,
     sortOrder: 10,
-    media: {
-      kind: "image",
-      src: "/portfolio/raydiant-oximetry.png",
-      fit: "cover",
-      position: "left center",
-      alt: "A mother holding her newborn, from Raydiant Oximetry's Lumerah.",
-      source: "https://raydiantoximetry.com/technology/",
-    },
   },
   {
     name: "Marrow Access Technologies",
@@ -361,14 +279,6 @@ export const portfolio: PortfolioCompany[] = [
     portfolioStatus: "Active",
     featured: false,
     sortOrder: 11,
-    media: {
-      kind: "image",
-      src: "/portfolio/marrow-access.png",
-      fit: "contain",
-      position: "center",
-      alt: "A gloved hand holding Marrow Access Technologies' SmartShot device.",
-      source: "https://marrowaccess.com/",
-    },
   },
   {
     name: "CareTaker Medical",
@@ -385,14 +295,6 @@ export const portfolio: PortfolioCompany[] = [
     portfolioStatus: "Active",
     featured: false,
     sortOrder: 12,
-    media: {
-      kind: "image",
-      src: "/portfolio/caretaker-medical.webp",
-      fit: "contain",
-      position: "center",
-      alt: "CareTaker's VitalStream wearable monitor and A-Line dock.",
-      source: "https://caretakermedical.net/vitalstream/",
-    },
   },
   {
     /* The company now trades as Nectero Therapeutics; Nectero Medical, Inc.
@@ -414,15 +316,6 @@ export const portfolio: PortfolioCompany[] = [
     portfolioStatus: "Active",
     featured: false,
     sortOrder: 13,
-    media: {
-      kind: "video",
-      src: "/portfolio/nectero-medical.mp4",
-      poster: "/portfolio/nectero-medical.jpg",
-      fit: "cover",
-      position: "center",
-      alt: "Nectero's EAST System stabilizing an abdominal aortic aneurysm.",
-      source: "https://necterotherapeutics.com/products/",
-    },
   },
   {
     name: "Alydia Health",
@@ -441,14 +334,6 @@ export const portfolio: PortfolioCompany[] = [
     status: "Acquired by Organon",
     featured: false,
     sortOrder: 14,
-    media: {
-      kind: "image",
-      src: "/portfolio/alydia-health.png",
-      fit: "contain",
-      position: "center",
-      alt: "The JADA System, Alydia Health's device for postpartum hemorrhage.",
-      source: "https://www.laborie.com/product/jada-system/",
-    },
   },
   {
     name: "Rivanna Medical",
@@ -465,14 +350,6 @@ export const portfolio: PortfolioCompany[] = [
     portfolioStatus: "Active",
     featured: false,
     sortOrder: 15,
-    media: {
-      kind: "image",
-      src: "/portfolio/rivanna-medical.png",
-      fit: "contain",
-      position: "center",
-      alt: "RIVANNA's Accuro 3S imaging-based clinician assistance system.",
-      source: "https://rivannamedical.com/accuro-3s/",
-    },
   },
   {
     name: "Cerapedics",
@@ -489,14 +366,6 @@ export const portfolio: PortfolioCompany[] = [
     portfolioStatus: "Active",
     featured: true,
     sortOrder: 16,
-    media: {
-      kind: "image",
-      src: "/portfolio/cerapedics.png",
-      fit: "cover",
-      position: "center",
-      alt: "Cerapedics' P-15 peptide binding to bone, from its mechanism of action.",
-      source: "https://www.cerapedics.com/science/p-15",
-    },
   },
 ];
 

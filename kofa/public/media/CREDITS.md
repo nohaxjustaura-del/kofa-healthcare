@@ -259,42 +259,16 @@ state the author and licence per file, which a stock search does not. Avoid
 anything licensed NC (non-commercial): KOFA is a commercial site. Update
 `data/credits.ts` and this table in the same change.
 
-## Portfolio company media, `public/portfolio/`
+## Portfolio company media
 
-One asset per company, taken from the company's own official site. Videos are
-trimmed, muted, stripped of audio and re-encoded to web weight; each has a
-still poster so the grid never loads video and the detail page falls back
-cleanly when autoplay is refused.
-
-| Company | File(s) | Official source |
-| --- | --- | --- |
-| Axon Therapies | `axon-therapies.png` | axontherapies.com, Satera Ablation System illustration |
-| Venova Medical | `venova-medical.png` | venovamedical.com, Velocity System render |
-| CorFlow Therapeutics | `corflow.mp4` + `corflow.jpg` | corflow.com, CoFI console product loop (trimmed, muted) |
-| Zafrens | `zafrens.jpg` | zafrens.com, optimized still from the official Z-Screen cellular-assay animation |
-| IllumiCell AI | `illumicell-ai.mp4` + `illumicell-ai.jpg` | illumicell.ai, cellular microscopy loop (muted) |
-| Aria CV | `aria-cv.jpg` | Aria CV device photograph (balloon, anchor, catheter and reservoir), credited to Aria CV via implantable-device.com; official technology page: ariacv.com/technology |
-| Axena Health | `axena-health.jpg` | levacares.com, Leva wand sensors |
-| BioSpectal | `biospectal.png` | biospectal.com, OptiBP phone mockups |
-| Eyenuk | `eyenuk.jpg` | eyenuk.com, EyeArt retinal exam in use (AVIF converted to JPG) |
-| Raydiant Oximetry | `raydiant-oximetry.png` | raydiantoximetry.com, Lumerah technology visual |
-| Marrow Access Technologies | `marrow-access.png` | marrowaccess.com, SmartShot device-in-hand |
-| CareTaker Medical | `caretaker-medical.webp` | caretakermedical.net, VitalStream system |
-| Nectero Medical | `nectero-medical.mp4` + `nectero-medical.jpg` | necterotherapeutics.com, EAST System animation (trimmed to the occlusion-balloon segment, muted) |
-| Alydia Health | `alydia-health.png` | laborie.com, JADA System (current official product owner) |
-| Rivanna Medical | `rivanna-medical.png` | rivannamedical.com, Accuro 3S system render |
-| Cerapedics | `cerapedics.png` | cerapedics.com, P-15 mechanism-of-action frame |
-
-All 16 companies now have a real company-specific visual. The built-in
-generative "living network" remains as a graceful fallback if any local asset
-is removed or an additional company is added before approved imagery arrives.
+Removed October 16, 2026 at the owner's request. Portfolio company technology
+photographs, product renders, screenshots and videos are not displayed. The
+company-sourced files have been removed from public/portfolio, and individual
+company pages use logos and written descriptions only. News cards use abstract
+visuals rather than reusing company technology images. Company logos remain.
 
 ## Replacing any of these
 
-- **A company still**: drop the file in `public/portfolio/` and point the
-  company's `media` entry in `data/portfolio.ts` at it.
-- **A company video**: add `mp4` + a `poster` still, muted and audio-stripped,
-  and set `kind: "video"` on that company's `media` entry.
 - **A film clip**: grade it the same way (see "The hero film" above), drop
   the `.webm`, `.mp4` and poster `.jpg` in `public/media/film/`, and point
   the milestone in `components/home/EvolutionReel.tsx` at it.
