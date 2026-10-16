@@ -1,5 +1,55 @@
 # Media credits
 
+## October 16, 2026 update
+
+Jing's October 12 request supersedes the earlier all-real-imagery direction
+for the final hero shot only. The active sequence replaces super-resolution
+ultrasound with an empty future operating-room concept focused on precision
+surgery. Its caption reads **Future — Precision surgery · AI-generated
+concept**. The existing dissolve and camera drift animate this original still;
+it is not independently moving surgical footage. The historical milestone
+dates remain separate from this undated concept.
+
+`film/future-precision-surgery.jpg` was generated with the built-in OpenAI
+image-generation tool on October 16, 2026, then exported as a 1536×1024 JPEG
+(quality 90). No stock image or screenshot was copied into the result.
+It is an illustrative scene, not a real hospital or a clinically validated
+product. Output use is governed by OpenAI's applicable terms; no Creative
+Commons licence or exclusive copyright is asserted for the generated asset.
+The former microvessel image remains in the repository as an unused asset;
+its source and attribution are retained below for provenance.
+
+Generation prompt: "An EMPTY plausible near-future operating room, compact
+precision surgical robotic arms folded beside a central unoccupied surgical
+table, ceiling mounted surgical lights, integrated equipment carts, brushed
+metal and ceramic surfaces, cool blue clinical light with natural white
+highlights and deep navy shadows. Calm realistic materials, documentary
+aesthetic, wide lens, balanced composition that crops to square. No people,
+patient, scanner, MRI tunnel, CT ring, ultrasound, radiographs, anatomy images,
+holograms, HUD, logos, text or watermark. Original fictional non-imaging
+MedTech concept; mechanically plausible equipment, not crowded."
+
+`company-logos/raydiant-oximetry.png` is the unchanged
+`raydiant-oximetry-logo-sept-2024.png` attachment supplied by Jing on
+October 12. The layout aspect ratio is updated to match its horizontal lockup.
+
+The remaining notes below describe the earlier sourcing and edits.
+
+### Milestone date check (October 16)
+
+These dates identify technology milestones, not the capture dates of the
+modern illustrative clips:
+
+- 1895 X-ray: [Nobel Prize, Röntgen](https://www.nobelprize.org/prizes/physics/1901/rontgen/biographical/).
+- 1929 cardiac catheterization: [Nobel Prize, Forssmann](https://www.nobelprize.org/prizes/medicine/1956/forssmann/biographical/).
+- 1958 obstetric ultrasound publication: [British Medical Ultrasound Society](https://www.bmus.org/for-patients/history-of-ultrasound/).
+- 1960 Starr-Edwards valve: [OHSU](https://www.ohsu.edu/knight-cardiovascular-institute/meet-dr-albert-starr).
+- 1977 coronary balloon angioplasty: [University Hospital Zurich](https://www.usz.ch/en/department/cardiology/research/andreas-gruentzig-clinical-research-center/).
+
+Existing source/licence records and public attributions were reviewed for
+consistency. This does not establish blanket permission for all portfolio
+company media; KOFA/SFP should confirm those company-supplied usage permissions.
+
 Two kinds of media live under `public/`:
 
 1. **Homepage imagery**: the hero film's shots in `public/media/film/`, and

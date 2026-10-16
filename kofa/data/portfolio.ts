@@ -326,7 +326,7 @@ export const portfolio: PortfolioCompany[] = [
     name: "Raydiant Oximetry",
     slug: "raydiant-oximetry",
     logo: "/company-logos/raydiant-oximetry.png",
-    logoAspect: 1.038,
+    logoAspect: 2.456,
     description:
       "In developing Lumerah™, a noninvasive sensor technology that directly measures fetal oxygen levels, Raydiant Oximetry aims to profoundly reduce the rising mortality and morbidity rates among mothers and babies during childbirth.",
     shortDescription:

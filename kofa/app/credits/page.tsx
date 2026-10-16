@@ -26,7 +26,7 @@ export default function CreditsPage() {
       <PageHero
         eyebrow="Legal"
         lines={["Image Credits"]}
-        intro="Every medical image and clip on this site is real, openly licensed work. These are its authors, sources and licences."
+        intro="Historical and contemporary medical imagery is credited below. The final Future scene is an original AI-generated concept of precision surgery, rather than a real clinical setting."
       />
 
       <Section className="border-t border-rule">
