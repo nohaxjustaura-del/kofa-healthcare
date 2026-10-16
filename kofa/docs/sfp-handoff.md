@@ -71,7 +71,24 @@ The daily job watches four configured official sources, rather than every
 portfolio company. Manual article publishing is available in the admin.
 Existing published data is retained while automatic refresh is blocked.
 
-## Portfolio media restriction
+## Current public release and partner editing
+
+The October 16 release is published through the existing Git-connected
+production projects at `kofa-healthcare.vercel.app` and `kofa-eight.vercel.app`.
+The separate team serving `kofa-healthcare-nine.vercel.app` rejected direct
+deployment because of its fair-use block, so its public pages remain older.
+Its existing configured partner portal remains at
+`https://kofa-healthcare-nine.vercel.app/admin`. Production deployments without
+partner credentials redirect sign-in there, without forwarding credentials
+or cookies. That portal writes the same main-branch content file, and the
+Git-connected public projects rebuild after those commits.
+
+SFP should configure the backend on its own host before replacing this
+temporary sign-in destination. The redirect is restricted to production and
+does not redirect the portal to itself. Do not reset existing partner
+credentials as part of a public-site release.
+
+## Portfolio media restriction (owner follow-up)
 
 Do not reintroduce portfolio-company technology photos, product renders,
 screenshots or video. The owner requested their removal on October 16.
