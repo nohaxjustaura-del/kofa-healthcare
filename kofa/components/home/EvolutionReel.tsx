@@ -41,25 +41,21 @@ import {
                                     bench, seen down its axis
      Today Live 3D ultrasound       the 1958 technology grown up: a fetus
                                     yawning, in real time, in three dimensions
-     Today Super-resolution         ultrasound again, past its own resolution
-           ultrasound               limit: a map of a brain's microvessels
-                                    down to the capillaries, arteries warm and
-                                    veins cool by flow direction
+     Future Precision surgery       an original AI-generated operating-room
+                                    concept, animated with a slow camera drift
 
    The client's September 25 note asked for "one or two additional images or
    clips" in Today (her ideas: "a modern angiogram, AI-enabled microvascular
    imaging, and a futuristic scene that represents the types of technologies
    we are backing"), and for the whole sequence to "feel more dynamic". The
-   valve is the technology KOFA backs; the microvessel map is the
-   microvascular imaging. It is captioned for what it is, not "AI": this map
-   was made by localizing and tracking microbubbles, not by machine
-   learning, and "AI" beside a real image also reads as "AI-generated",
-   which the site promised it would never show.
+   October 12 follow-up replaces the microvessel map with a non-imaging
+   future scene. Its caption identifies the generated concept explicitly.
 
    Dates are the published firsts; except 1895, the footage shows each
-   technique as practised rather than the historic first case. Nothing is
-   generated. Every file is openly licensed or public domain and credited at
-   /credits; sources and every edit are in public/media/CREDITS.md.
+   technique as practised rather than the historic first case. The final
+   Future shot is conceptual, not a historical or clinical claim. Sources,
+   licences and generation provenance are recorded at /credits and in
+   public/media/CREDITS.md.
 
    MOTION CONTRACT (same as the rest of the site)
    · Motion on (the default): the film loops, and everything pauses while
@@ -159,14 +155,11 @@ const SHOTS: readonly Shot[] = [
     drift: [[0.88, 0, 0], [0.92, -1, 1]],
   },
   {
-    year: "Today",
-    label: "Super-resolution ultrasound",
-    media: { kind: "image", src: "/media/film/today-super-resolution-ultrasound.jpg" },
+    year: "Future",
+    label: "Precision surgery · AI-generated concept",
+    media: { kind: "image", src: "/media/film/future-precision-surgery.jpg" },
     hold: 3.2,
-    // the one real push-in of the film: from the whole network toward the
-    // cortex's penetrating vessels. The still is 1600px so it stays sharp
-    // at the end of the move.
-    drift: [[0.95, 0, -1], [1.12, 0, 3]],
+    drift: [[1.0, 0, 0], [1.08, -1, 1]],
   },
 ];
 
@@ -183,7 +176,7 @@ const FADE = 0.8;
 const STILL = 0;
 
 const DESCRIPTION =
-  "A silent film of real medical imaging, in the order the technology arrived: Wilhelm Röntgen's 1895 X-ray of a hand; a catheter in a coronary artery; an ultrasound of a fetus; a 1960 Starr-Edwards mechanical heart valve; a balloon inflating inside an artery; and, today, a transcatheter heart valve opening, a live 3D ultrasound of a fetus yawning, and a super-resolution ultrasound map of a brain's smallest blood vessels.";
+  "A silent film tracing medical technology: Wilhelm Röntgen's 1895 X-ray of a hand; a catheter in a coronary artery; an ultrasound of a fetus; a 1960 Starr-Edwards mechanical heart valve; a balloon inflating inside an artery; today's transcatheter heart valve and live 3D ultrasound; then an AI-generated concept of a future operating room for precision surgery.";
 
 const useIsomorphicLayoutEffect =
   typeof window === "undefined" ? useEffect : useLayoutEffect;

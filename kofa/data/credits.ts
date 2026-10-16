@@ -121,17 +121,17 @@ export const imageCredits: readonly ImageCredit[] = [
       "Trimmed, cropped (the scanner’s on-screen text falls outside the crop), toned and re-encoded at 30 fps by frame blending. The adapted clip is licensed CC BY-SA 3.0.",
   },
   {
-    subject: "Super-resolution ultrasound of a brain’s microvessels, with flow direction",
-    usedOn: "Homepage film, today",
-    title: "ULM of the rat brain with flow directions",
-    author: "CoutureOlivier",
+    subject: "Future operating room for precision surgery — AI-generated concept",
+    usedOn: "Homepage film, Future",
+    title: "Future precision surgery",
+    author: "Generated for KOFA Healthcare with OpenAI image generation, October 16, 2026",
     source: {
-      label: "Wikimedia Commons",
-      href: "https://commons.wikimedia.org/wiki/File:ULM_of_the_rat_brain_with_flow_directions.jpg",
+      label: "OpenAI",
+      href: "https://openai.com/",
     },
-    license: { label: "CC BY-SA 4.0", href: "https://creativecommons.org/licenses/by-sa/4.0/" },
+    license: { label: "OpenAI output terms", href: "https://openai.com/policies/terms-of-use/" },
     changes:
-      "Cropped, the scale bar and its label removed (they sat on plain black), darks deepened with a tone curve, and toned. The adapted image is licensed CC BY-SA 4.0.",
+      "Original fictional scene, exported as JPEG and animated with a slow camera drift. It depicts no actual hospital or approved device and makes no clinical or historical claim.",
   },
 
   /* ---- the stills ---- */

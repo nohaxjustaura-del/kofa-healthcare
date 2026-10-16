@@ -1,5 +1,55 @@
 # Media credits
 
+## October 16, 2026 update
+
+Jing's October 12 request supersedes the earlier all-real-imagery direction
+for the final hero shot only. The active sequence replaces super-resolution
+ultrasound with an empty future operating-room concept focused on precision
+surgery. Its caption reads **Future — Precision surgery · AI-generated
+concept**. The existing dissolve and camera drift animate this original still;
+it is not independently moving surgical footage. The historical milestone
+dates remain separate from this undated concept.
+
+`film/future-precision-surgery.jpg` was generated with the built-in OpenAI
+image-generation tool on October 16, 2026, then exported as a 1536×1024 JPEG
+(quality 90). No stock image or screenshot was copied into the result.
+It is an illustrative scene, not a real hospital or a clinically validated
+product. Output use is governed by OpenAI's applicable terms; no Creative
+Commons licence or exclusive copyright is asserted for the generated asset.
+The former microvessel image remains in the repository as an unused asset;
+its source and attribution are retained below for provenance.
+
+Generation prompt: "An EMPTY plausible near-future operating room, compact
+precision surgical robotic arms folded beside a central unoccupied surgical
+table, ceiling mounted surgical lights, integrated equipment carts, brushed
+metal and ceramic surfaces, cool blue clinical light with natural white
+highlights and deep navy shadows. Calm realistic materials, documentary
+aesthetic, wide lens, balanced composition that crops to square. No people,
+patient, scanner, MRI tunnel, CT ring, ultrasound, radiographs, anatomy images,
+holograms, HUD, logos, text or watermark. Original fictional non-imaging
+MedTech concept; mechanically plausible equipment, not crowded."
+
+`company-logos/raydiant-oximetry.png` is the unchanged
+`raydiant-oximetry-logo-sept-2024.png` attachment supplied by Jing on
+October 12. The layout aspect ratio is updated to match its horizontal lockup.
+
+The remaining notes below describe the earlier sourcing and edits.
+
+### Milestone date check (October 16)
+
+These dates identify technology milestones, not the capture dates of the
+modern illustrative clips:
+
+- 1895 X-ray: [Nobel Prize, Röntgen](https://www.nobelprize.org/prizes/physics/1901/rontgen/biographical/).
+- 1929 cardiac catheterization: [Nobel Prize, Forssmann](https://www.nobelprize.org/prizes/medicine/1956/forssmann/biographical/).
+- 1958 obstetric ultrasound publication: [British Medical Ultrasound Society](https://www.bmus.org/for-patients/history-of-ultrasound/).
+- 1960 Starr-Edwards valve: [OHSU](https://www.ohsu.edu/knight-cardiovascular-institute/meet-dr-albert-starr).
+- 1977 coronary balloon angioplasty: [University Hospital Zurich](https://www.usz.ch/en/department/cardiology/research/andreas-gruentzig-clinical-research-center/).
+
+Existing source/licence records and public attributions were reviewed for
+consistency. This does not establish blanket permission for all portfolio
+company media; KOFA/SFP should confirm those company-supplied usage permissions.
+
 Two kinds of media live under `public/`:
 
 1. **Homepage imagery**: the hero film's shots in `public/media/film/`, and
@@ -209,42 +259,16 @@ state the author and licence per file, which a stock search does not. Avoid
 anything licensed NC (non-commercial): KOFA is a commercial site. Update
 `data/credits.ts` and this table in the same change.
 
-## Portfolio company media, `public/portfolio/`
+## Portfolio company media
 
-One asset per company, taken from the company's own official site. Videos are
-trimmed, muted, stripped of audio and re-encoded to web weight; each has a
-still poster so the grid never loads video and the detail page falls back
-cleanly when autoplay is refused.
-
-| Company | File(s) | Official source |
-| --- | --- | --- |
-| Axon Therapies | `axon-therapies.png` | axontherapies.com, Satera Ablation System illustration |
-| Venova Medical | `venova-medical.png` | venovamedical.com, Velocity System render |
-| CorFlow Therapeutics | `corflow.mp4` + `corflow.jpg` | corflow.com, CoFI console product loop (trimmed, muted) |
-| Zafrens | `zafrens.jpg` | zafrens.com, optimized still from the official Z-Screen cellular-assay animation |
-| IllumiCell AI | `illumicell-ai.mp4` + `illumicell-ai.jpg` | illumicell.ai, cellular microscopy loop (muted) |
-| Aria CV | `aria-cv.jpg` | Aria CV device photograph (balloon, anchor, catheter and reservoir), credited to Aria CV via implantable-device.com; official technology page: ariacv.com/technology |
-| Axena Health | `axena-health.jpg` | levacares.com, Leva wand sensors |
-| BioSpectal | `biospectal.png` | biospectal.com, OptiBP phone mockups |
-| Eyenuk | `eyenuk.jpg` | eyenuk.com, EyeArt retinal exam in use (AVIF converted to JPG) |
-| Raydiant Oximetry | `raydiant-oximetry.png` | raydiantoximetry.com, Lumerah technology visual |
-| Marrow Access Technologies | `marrow-access.png` | marrowaccess.com, SmartShot device-in-hand |
-| CareTaker Medical | `caretaker-medical.webp` | caretakermedical.net, VitalStream system |
-| Nectero Medical | `nectero-medical.mp4` + `nectero-medical.jpg` | necterotherapeutics.com, EAST System animation (trimmed to the occlusion-balloon segment, muted) |
-| Alydia Health | `alydia-health.png` | laborie.com, JADA System (current official product owner) |
-| Rivanna Medical | `rivanna-medical.png` | rivannamedical.com, Accuro 3S system render |
-| Cerapedics | `cerapedics.png` | cerapedics.com, P-15 mechanism-of-action frame |
-
-All 16 companies now have a real company-specific visual. The built-in
-generative "living network" remains as a graceful fallback if any local asset
-is removed or an additional company is added before approved imagery arrives.
+Removed October 16, 2026 at the owner's request. Portfolio company technology
+photographs, product renders, screenshots and videos are not displayed. The
+company-sourced files have been removed from public/portfolio, and individual
+company pages use logos and written descriptions only. News cards use abstract
+visuals rather than reusing company technology images. Company logos remain.
 
 ## Replacing any of these
 
-- **A company still**: drop the file in `public/portfolio/` and point the
-  company's `media` entry in `data/portfolio.ts` at it.
-- **A company video**: add `mp4` + a `poster` still, muted and audio-stripped,
-  and set `kind: "video"` on that company's `media` entry.
 - **A film clip**: grade it the same way (see "The hero film" above), drop
   the `.webm`, `.mp4` and poster `.jpg` in `public/media/film/`, and point
   the milestone in `components/home/EvolutionReel.tsx` at it.

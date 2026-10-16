@@ -89,6 +89,11 @@ repository.
 
 ## Deployment and launch
 
+For SFP's Node.js hosting requirements, configuration, staging checks and the
+October 16 Actions billing incident, see [sfp-handoff.md](docs/sfp-handoff.md).
+Jing has confirmed services should remain with SFP; the Vercel URL is the
+current review site, not confirmation of a completed SFP cutover.
+
 `vercel.json` identifies this folder as a Next.js project. Deploy this `kofa/`
 directory, or configure `kofa` as the project root in the hosting provider.
 The prepared default is Vercel with its project root set to `kofa`. Connect the
@@ -141,8 +146,9 @@ Per the client's September 24 note there are no people in the homepage
 imagery. The hero is a silent, looping film of real clinical imaging in the
 order the technology arrived: Röntgen's 1895 radiograph, catheterization,
 ultrasound, a 1960 heart valve and angioplasty, then three shots of today
-(a transcatheter heart valve opening, live 3D ultrasound, and a
-super-resolution ultrasound map of microvessels), shown full-bleed and
+(a transcatheter heart valve opening and live 3D ultrasound), followed by an
+original AI-generated future operating room animated with camera drift,
+shown full-bleed and
 cinematic. On any landscape screen from 1024px wide the copy sits left and
 the film right; phones and portrait tablets stack the film above the copy.
 Clips load one shot at a time, pause off-screen, and give way to a still of
