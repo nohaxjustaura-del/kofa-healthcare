@@ -10,6 +10,7 @@ import {
   mergeCuratedNews,
   parseRss,
   parseEyenukResources,
+  parseCerapedicsNews,
   refreshSnapshot,
   syncNews,
 } from "../scripts/sync-news.mjs";
@@ -27,6 +28,23 @@ test("official Eyenuk cards supply dated metadata, rejecting foreign and future 
   assert.equal(entries[0].title, "Eyenuk & partners");
   assert.equal(entries[0].date, "2026-09-18");
   assert.equal(entries[0].url, "https://eyenuk.com/en/blog/test-update");
+});
+
+test("Cerapedics news rows supply dated official links, skipping foreign, undated and future rows", () => {
+  const cerapedics = FEEDS.find((feed) => feed.id === "cerapedics");
+  const row = (href, date, title = "A test release") => `<div class="news__item views-row"><span class="views-field views-field-field-publication-date"><span class="field-content"><!-- debug -->\n${date}\n</span></span><span class="views-field views-field-title"><span class="field-content"><!-- debug --><a href="${href}" hreflang="en">${title}</a></span></span></div>`;
+  const html = row("/news/test-release", "September 18, 2026", "Cerapedics &amp; partners") + row("https://example.com/news/foreign", "September 18, 2026") + row("/news/undated", "") + row("/news/future", "September 20, 2026");
+  const entries = parseCerapedicsNews(html, cerapedics, now);
+  assert.equal(entries.length, 1);
+  assert.equal(entries[0].title, "Cerapedics & partners");
+  assert.equal(entries[0].date, "2026-09-18");
+  assert.equal(entries[0].url, "https://cerapedics.com/news/test-release");
+});
+
+test("no announcement appears twice once feeds and curated news are merged", async () => {
+  const { allNews, canonicalNewsUrl } = await loadTs("../data/news.ts");
+  const urls = allNews.map((item) => canonicalNewsUrl(item.externalUrl)).filter(Boolean);
+  assert.deepEqual(urls.filter((url, index) => urls.indexOf(url) !== index), []);
 });
 
 test("an explicit KOFA mention is classified as KOFA News and survives snapshot retention", async () => {

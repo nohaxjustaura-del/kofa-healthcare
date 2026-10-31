@@ -272,9 +272,9 @@ const curatedNews: NewsItem[] = [
     date: "2025-12-17",
     excerpt:
       "Two papers in Spine reported 24-month outcomes from the ASPIRE pivotal study, showing PearlMatrix met statistically superior Composite Clinical Success versus local autograft and more than twice as many patients fused at six months. Safety was comparable to local autograft with no significant difference in serious device-related adverse events.",
-    source: "PR Newswire",
+    source: "Cerapedics",
     externalUrl:
-      "https://www.prnewswire.com/news-releases/cerapedics-announces-publication-in-spine-of-24-month-aspire-study-results-of-pearlmatrix-p-15-peptide-enhanced-bone-graft-302644264.html",
+      "https://www.cerapedics.com/news/cerapedics-announces-publication-spine-24-month-aspire-study-results-pearlmatrixtm-p-15",
     company: "cerapedics",
   },
   {
@@ -311,9 +311,9 @@ const curatedNews: NewsItem[] = [
     date: "2025-10-20",
     excerpt:
       "The EFS at EVMS at Old Dominion University collected fetal signals both transvaginally and transabdominally from women in active labor, with participating clinicians blinded to all pulse oximetry data. The data will support machine learning algorithm development for future commercial products.",
-    source: "EIN Presswire",
+    source: "Raydiant Oximetry",
     externalUrl:
-      "https://www.einpresswire.com/article/859446282/raydiant-oximetry-successfully-completes-35-patient-early-feasibility-study-at-eastern-virginia-medical-school",
+      "https://raydiantoximetry.com/raydiant-oximetry-successfully-completes-35-patient-early-feasibility-study-at-eastern-virginia-medical-school-at-old-dominion-university/",
     company: "raydiant-oximetry",
   },
   {
@@ -350,9 +350,9 @@ const curatedNews: NewsItem[] = [
     date: "2025-09-16",
     excerpt:
       "Michael Nagel, previously CEO of Vomaris Innovations (acquired by Arthrex), was appointed CEO to lead the company into device commercialization. Founder Neil P. Ray, MD transitioned to a strategic advisor role after eight years leading the company.",
-    source: "EIN Presswire",
+    source: "Raydiant Oximetry",
     externalUrl:
-      "https://www.einpresswire.com/article/849323829/raydiant-oximetry-names-michael-nagel-to-lead-the-company-into-its-device-commercialization-stage-as-ceo",
+      "https://raydiantoximetry.com/raydiant-oximetry-names-michael-nagel-to-lead-the-company-into-its-device-commercialization-stage-as-ceo/",
     company: "raydiant-oximetry",
   },
   {
@@ -402,9 +402,9 @@ const curatedNews: NewsItem[] = [
     date: "2025-06-23",
     excerpt:
       "FDA granted premarket approval (PMA) to PearlMatrix P-15 Peptide Enhanced Bone Graft as a Class III drug-device combination product for single-level transforaminal lumbar interbody fusion (TLIF) in adults with degenerative disc disease. Approval was supported by the ASPIRE pivotal IDE study across 33 U.S. centers and 293 patients, roughly 60% of whom were high risk for non-union.",
-    source: "PR Newswire",
+    source: "Cerapedics",
     externalUrl:
-      "https://www.prnewswire.com/news-releases/cerapedics-announces-fda-approval-of-pearlmatrix-p-15-peptide-enhanced-bone-graft-the-first-and-only-proven-bone-growth-accelerator-for-lumbar-fusion-302488379.html",
+      "https://www.cerapedics.com/news/cerapedics-announces-fda-approval-pearlmatrixtm-p-15-peptide-enhanced-bone-graft-first-and",
     company: "cerapedics",
   },
   {
@@ -447,19 +447,6 @@ const curatedNews: NewsItem[] = [
     company: "corflow",
   },
   {
-    slug: "illumicell-ai-raises-2m-pre-seed-for-real-time",
-    title:
-      "IllumiCell AI raises $2M pre-seed for real-time AI male fertility diagnostics platform",
-    type: "Portfolio News",
-    date: "2025-04-10",
-    excerpt:
-      "The Boston-based startup raised $2 million pre-seed from investors including KOFA Healthcare, Harvard Phoenix Venture Fund and MedTechSyndicates to develop a portable lab scanner and AI platform for fluid-based diagnostics starting with semen analysis. The company reported over 400,000 datapoints collected and an FDA submission planned for 2026.",
-    source: "PR Newswire",
-    externalUrl:
-      "https://www.prnewswire.com/news-releases/illumicell-ai-raises-2m-pre-seed-to-launch-real-time-ai-platform-for-male-fertility-diagnostics-302425546.html",
-    company: "illumicell-ai",
-  },
-  {
     slug: "kofa-healthcare-backs-illumicell-ais-2m-pre-seed-for",
     title:
       "KOFA Healthcare backs illumicell AI's $2M pre-seed for point-of-care male fertility diagnostics",
@@ -470,19 +457,6 @@ const curatedNews: NewsItem[] = [
     source: "PR Newswire",
     externalUrl:
       "https://www.prnewswire.com/news-releases/illumicell-ai-raises-2m-pre-seed-to-launch-real-time-ai-platform-for-male-fertility-diagnostics-302425546.html",
-  },
-  {
-    slug: "zafrens-adds-imec-xpand-to-series-a-syndicate-bringing",
-    title:
-      "Zafrens adds imec.xpand to Series A syndicate, bringing total raised to $31 million",
-    type: "Portfolio News",
-    date: "2025-02-04",
-    excerpt:
-      "Zafrens welcomed imec.xpand into its Series A syndicate alongside existing investors Prime Movers Lab, KOFA Healthcare and Global Brain, bringing total capital raised to $31 million. Funds go toward expanding Z-Screen capacity and adding pharma partnerships across small molecules, cell therapies and antibodies.",
-    source: "PR Newswire",
-    externalUrl:
-      "https://www.prnewswire.com/news-releases/zafrens-expands-investor-syndicate-to-scale-revolutionary-drug-discovery-platform-302367633.html",
-    company: "zafrens",
   },
   {
     slug: "kofa-healthcare-among-existing-investors-as-zafrens-expands-31m",
@@ -520,19 +494,6 @@ const curatedNews: NewsItem[] = [
     source: "Business Wire",
     externalUrl:
       "https://www.businesswire.com/news/home/20240910783655/en/CorFlow-Therapeutics-AG-Completes-%E2%82%AC44-Million-Series-B-Financing-to-Support-the-Advancement-of-a-Novel-Diagnostic-and-Drug-Delivery-Platform-for-Microvascular-Obstruction-MVO-in-Heart-Attack-Patients",
-  },
-  {
-    slug: "venova-medical-announces-30m-series-b-and-adds-catalysts",
-    title:
-      "Venova Medical announces $30M Series B and adds Catalyst's Darshana Zaveri to the board",
-    type: "Portfolio News",
-    date: "2024-09-04",
-    excerpt:
-      "Venova Medical announced a $30 million Series B co-led by Catalyst Health Ventures and an unnamed leading medical device company, with participation from ShangBay Capital, Mirae Asset Capital, KOFA Healthcare, Cadence Healthcare Ventures and Aphelion Capital. The capital funds development of the Velocity pAVF System and US clinical trials toward FDA approval; Darshana Zaveri of Catalyst joined the board.",
-    source: "PRWeb",
-    externalUrl:
-      "https://www.prweb.com/releases/venova-medical-announces-30-million-series-b-financing-and-appointment-of-new-board-member-302237584.html",
-    company: "venova-medical",
   },
   {
     slug: "kofa-healthcare-invests-in-venova-medicals-30m-series-b",

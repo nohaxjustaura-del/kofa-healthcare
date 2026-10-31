@@ -320,6 +320,296 @@
         "url": "https://eyenuk.com/en/news/eyenuk-secures-the-first-european-union-mdr-certification-for-autonomous-ai-detection-of-diabetic-retinopathy-age-related-macular-degeneration-and-glaucoma",
         "company": "eyenuk"
       }
+    ],
+    "venova": [
+      {
+        "slug": "venova-medical-2025-11-06-venova-medical-announces-first-subjects-enrolled-in-venos-3-pivotal-ide-278affac2d",
+        "title": "Venova Medical Announces First Subjects Enrolled in VENOS-3 Pivotal IDE Study of the Velocity® Percutaneous AVF System",
+        "date": "2025-11-06",
+        "source": "Venova Medical",
+        "url": "https://venovamedical.com/2025/11/venos-3-enrollment",
+        "company": "venova-medical"
+      },
+      {
+        "slug": "venova-medical-2025-08-21-venova-medical-receives-fda-ide-approval-for-the-venos-3-pivotal-study-o-96000aab62",
+        "title": "Venova Medical Receives FDA IDE Approval for the VENOS-3 Pivotal Study of the Velocity® Percutaneous AVF System",
+        "date": "2025-08-21",
+        "source": "Venova Medical",
+        "url": "https://venovamedical.com/2025/08/venos-3-study-ide-approval",
+        "company": "venova-medical"
+      },
+      {
+        "slug": "venova-medical-2025-04-17-venova-medical-announces-completion-of-enrollment-for-venos-2-ide-study-3ba26624fb",
+        "title": "Venova Medical Announces Completion of Enrollment for VENOS-2 IDE Study of the VelocityTM Percutaneous AVF System",
+        "date": "2025-04-17",
+        "source": "Venova Medical",
+        "url": "https://venovamedical.com/2025/04/venova-medical-announces-completion-of-enrollment-for-venos-2-ide-study-of-the-velocitytm-percutaneous-avf-system",
+        "company": "venova-medical"
+      },
+      {
+        "slug": "venova-medical-2025-01-15-venova-medical-announces-first-subjects-enrolled-in-venos-2-ide-study-of-db49b26b37",
+        "title": "Venova Medical Announces First Subjects Enrolled in VENOS-2 IDE Study of the Velocity Percutaneous AVF System",
+        "date": "2025-01-15",
+        "source": "Venova Medical",
+        "url": "https://venovamedical.com/2025/01/venos-2-first-patient",
+        "company": "venova-medical"
+      },
+      {
+        "slug": "venova-medical-2024-09-04-venova-medical-announces-30-million-series-b-financing-and-appointment-o-dede22abb2",
+        "title": "Venova Medical Announces $30 Million Series B Financing and Appointment of New Board Member",
+        "date": "2024-09-04",
+        "source": "Venova Medical",
+        "url": "https://venovamedical.com/2024/09/venova-series-b-financing",
+        "company": "venova-medical",
+        "type": "KOFA News"
+      }
+    ],
+    "axena": [
+      {
+        "slug": "axena-health-2026-04-16-randomized-controlled-trial-published-in-urogynecology-demonstrates-leva-4ef801e6c5",
+        "title": "Randomized Controlled Trial Published in Urogynecology Demonstrates Leva® Pelvic Health System’s Efficacy in Treating Fecal Incontinence",
+        "date": "2026-04-16",
+        "source": "Axena Health",
+        "url": "https://axenahealth.com/2026/04/randomized-controlled-trial-published-in-urogynecology-demonstrates-leva-pelvic-health-systems-efficacy-in-treating-fecal-incontinence",
+        "company": "axena-health"
+      },
+      {
+        "slug": "axena-health-2026-03-09-new-real-world-evidence-study-shows-leva-pelvic-health-system-significan-faf93e7e66",
+        "title": "New Real-World Evidence Study Shows Leva® Pelvic Health System Significantly Improves Fecal Incontinence Symptoms in Women",
+        "date": "2026-03-09",
+        "source": "Axena Health",
+        "url": "https://axenahealth.com/2026/03/new-real-world-evidence-study-shows-leva-pelvic-health-system-significantly-improves-fecal-incontinence-symptoms-in-women",
+        "company": "axena-health"
+      },
+      {
+        "slug": "axena-health-2025-10-08-axena-health-accepted-into-agetech-collaborative-from-aarp-accelerator-p-7f7ef73dc7",
+        "title": "Axena Health Accepted into AgeTech Collaborative™ from AARP Accelerator Program, Advancing Pelvic Health Solutions for Women 50+",
+        "date": "2025-10-08",
+        "source": "Axena Health",
+        "url": "https://axenahealth.com/2025/10/axena-health-accepted-into-agetech-collaborative-from-aarp-accelerator-program-advancing-pelvic-health-solutions-for-women-50",
+        "company": "axena-health"
+      },
+      {
+        "slug": "axena-health-2025-10-02-axena-health-to-present-new-preliminary-findings-from-nigerian-ui-treatm-214d45a900",
+        "title": "Axena Health to Present New Preliminary Findings from Nigerian UI Treatment Feasibility Study at FIGO 2025",
+        "date": "2025-10-02",
+        "source": "Axena Health",
+        "url": "https://axenahealth.com/2025/10/new-preliminary-findings-from-nigerian-ui-treatment-feasibility-study-at-figo-2025",
+        "company": "axena-health"
+      },
+      {
+        "slug": "axena-health-2025-07-08-leva-pelvic-health-system-provides-enhanced-care-with-new-educational-co-ec27c73e57",
+        "title": "Leva Pelvic Health System Provides Enhanced Care with New Educational Content",
+        "date": "2025-07-08",
+        "source": "Axena Health",
+        "url": "https://axenahealth.com/2025/07/leva-pelvic-health-system-provides-enhanced-care-with-new-educational-content",
+        "company": "axena-health"
+      },
+      {
+        "slug": "axena-health-2025-05-21-axena-health-s-leva-pelvic-health-system-now-available-to-female-veteran-b4377ceb16",
+        "title": "Axena Health’s Leva® Pelvic Health System Now Available to Female Veterans Through Federal Healthcare Providers",
+        "date": "2025-05-21",
+        "source": "Axena Health",
+        "url": "https://axenahealth.com/2025/05/axena-healths-leva-pelvic-health-system-now-available-to-female-veterans-through-federal-healthcare-providers",
+        "company": "axena-health"
+      },
+      {
+        "slug": "axena-health-2025-05-06-new-budget-impact-model-published-in-the-journal-of-medical-economics-hi-71b3c1e8db",
+        "title": "New Budget Impact Model Published in the Journal of Medical Economics Highlights Significant Health Plan Cost Savings with the Leva® Pelvic Health System",
+        "date": "2025-05-06",
+        "source": "Axena Health",
+        "url": "https://axenahealth.com/2025/05/new-budget-impact-model-published-in-the-journal-of-medical-economics-highlights-significant-health-plan-cost-savings-with-the-leva-pelvic-health-system-2",
+        "company": "axena-health"
+      },
+      {
+        "slug": "axena-health-2025-02-06-axena-health-enters-into-collaboration-with-mayo-clinic-to-expand-educat-484a0fa278",
+        "title": "Axena Health Enters Into Collaboration with Mayo Clinic to Expand Education and Advance First-Line Care for Female Urinary Incontinence",
+        "date": "2025-02-06",
+        "source": "Axena Health",
+        "url": "https://axenahealth.com/2025/02/axena-health-enters-into-collaboration-with-mayo-clinic-to-expand-education-and-advance-first-line-care-for-female-urinary-incontinence",
+        "company": "axena-health"
+      },
+      {
+        "slug": "axena-health-2024-11-19-erica-rogers-joins-the-board-of-directors-at-axena-health-bringing-prove-decd8733dc",
+        "title": "Erica Rogers Joins the Board of Directors at Axena Health Bringing Proven Commercial Leadership and Expertise in Groundbreaking Healthcare Solutions",
+        "date": "2024-11-19",
+        "source": "Axena Health",
+        "url": "https://axenahealth.com/2024/11/erica-rogers-joins-the-board-of-directors-at-axena-health-bringing-proven-commercial-leadership-and-expertise-in-groundbreaking-healthcare-solutions",
+        "company": "axena-health"
+      },
+      {
+        "slug": "axena-health-2024-10-16-axena-health-inc-appoints-randy-pritchard-as-new-chief-executive-officer-274566323f",
+        "title": "Axena Health, Inc. Appoints Randy Pritchard as New Chief Executive Officer",
+        "date": "2024-10-16",
+        "source": "Axena Health",
+        "url": "https://axenahealth.com/2024/10/axena-health-inc-appoints-randy-pritchard-as-new-chief-executive-officer",
+        "company": "axena-health"
+      }
+    ],
+    "raydiant": [
+      {
+        "slug": "raydiant-oximetry-2025-11-05-raydiant-oximetry-launches-ide-pilot-study-at-lsu-health-shreveport-to-a-dc2493fab6",
+        "title": "Raydiant Oximetry Launches IDE Pilot Study at LSU Health Shreveport to Advance Fetal Monitoring Technology",
+        "date": "2025-11-05",
+        "source": "Raydiant Oximetry",
+        "url": "https://raydiantoximetry.com/raydiant-oximetry-launches-ide-pilot-study-at-lsu-health-shreveport-to-advance-fetal-monitoring-technology",
+        "company": "raydiant-oximetry"
+      },
+      {
+        "slug": "raydiant-oximetry-2025-10-16-raydiant-oximetry-successfully-completes-35-patient-early-feasibility-st-1952e902ce",
+        "title": "Raydiant Oximetry Successfully Completes 35-Patient Early Feasibility Study at Eastern Virginia Medical School at Old Dominion University",
+        "date": "2025-10-16",
+        "source": "Raydiant Oximetry",
+        "url": "https://raydiantoximetry.com/raydiant-oximetry-successfully-completes-35-patient-early-feasibility-study-at-eastern-virginia-medical-school-at-old-dominion-university",
+        "company": "raydiant-oximetry"
+      },
+      {
+        "slug": "raydiant-oximetry-2025-09-18-raydiant-oximetry-names-michael-nagel-to-lead-the-company-into-its-devic-0661915ebb",
+        "title": "Raydiant Oximetry Names Michael Nagel to Lead the Company into its Device Commercialization Stage as CEO",
+        "date": "2025-09-18",
+        "source": "Raydiant Oximetry",
+        "url": "https://raydiantoximetry.com/raydiant-oximetry-names-michael-nagel-to-lead-the-company-into-its-device-commercialization-stage-as-ceo",
+        "company": "raydiant-oximetry"
+      },
+      {
+        "slug": "raydiant-oximetry-2025-05-13-ge-healthcare-and-raydiant-oximetry-accelerate-innovation-in-fetal-oxyge-684b76e3d8",
+        "title": "GE HealthCare and Raydiant Oximetry accelerate innovation in fetal oxygen saturation technology",
+        "date": "2025-05-13",
+        "source": "Raydiant Oximetry",
+        "url": "https://raydiantoximetry.com/ge-healthcare-and-raydiant-oximetry-accelerate-innovation-in-fetal-oxygen-saturation-technology",
+        "company": "raydiant-oximetry"
+      },
+      {
+        "slug": "raydiant-oximetry-2025-02-25-raydiant-oximetry-wins-first-place-in-nih-radx-tech-fetal-monitoring-cha-17715c34d8",
+        "title": "Raydiant Oximetry Wins First Place in NIH RADx® Tech Fetal Monitoring Challenge Securing $750,000 in Prize Money",
+        "date": "2025-02-25",
+        "source": "Raydiant Oximetry",
+        "url": "https://raydiantoximetry.com/raydiant-oximetry-wins-first-place-in-nih-radx-tech-fetal-monitoring-challenge-securing-750000-in-prize-money",
+        "company": "raydiant-oximetry"
+      },
+      {
+        "slug": "raydiant-oximetry-2024-09-24-raydiant-oximetry-secures-1-million-grant-to-advance-fetal-monitoring-te-4cdeccd12b",
+        "title": "Raydiant Oximetry Secures $1 Million Grant to Advance Fetal Monitoring Technology",
+        "date": "2024-09-24",
+        "source": "Raydiant Oximetry",
+        "url": "https://raydiantoximetry.com/raydiant-oximetry-secures-1-million-grant-to-advance-fetal-monitoring-technology-2-2",
+        "company": "raydiant-oximetry"
+      },
+      {
+        "slug": "raydiant-oximetry-2023-02-07-raydiant-oximetry-kicks-off-series-b-financing-round-with-an-investment-4c30115a27",
+        "title": "Raydiant Oximetry Kicks Off Series B Financing Round with an Investment from March of Dimes",
+        "date": "2023-02-07",
+        "source": "Raydiant Oximetry",
+        "url": "https://raydiantoximetry.com/raydiant-oximetry-kicks-off-series-b-financing-round-with-an-investment-from-march-of-dimes",
+        "company": "raydiant-oximetry"
+      },
+      {
+        "slug": "raydiant-oximetry-2022-06-10-angelmd-portfolio-company-raydiant-oximetry-awarded-fda-breakthrough-dev-c6191dc4f8",
+        "title": "AngelMD Portfolio Company Raydiant Oximetry Awarded FDA Breakthrough Device Status",
+        "date": "2022-06-10",
+        "source": "Raydiant Oximetry",
+        "url": "https://raydiantoximetry.com/angelmd-portfolio-company-raydiant-oximetry-awarded-fda-breakthrough-device-status",
+        "company": "raydiant-oximetry"
+      },
+      {
+        "slug": "raydiant-oximetry-2021-11-02-fogarty-innovation-graduate-raydiant-oximetry-raises-5-million-in-oversu-b490620ce7",
+        "title": "Fogarty Innovation Graduate Raydiant Oximetry Raises $5 Million in Oversubscribed Series A2 Financing Round to Support Clinical Study",
+        "date": "2021-11-02",
+        "source": "Raydiant Oximetry",
+        "url": "https://raydiantoximetry.com/fogarty-innovation-graduate-raydiant-oximetry-raises-5-million-in-oversubscribed-series-a2-financing-round-to-support-clinical-study",
+        "company": "raydiant-oximetry",
+        "type": "KOFA News"
+      },
+      {
+        "slug": "raydiant-oximetry-2021-05-26-raydiant-oximetry-receives-3-million-grant-to-advance-its-innovative-tec-285365bf8c",
+        "title": "Raydiant Oximetry Receives $3 Million Grant to Advance Its Innovative Technology",
+        "date": "2021-05-26",
+        "source": "Raydiant Oximetry",
+        "url": "https://raydiantoximetry.com/raydiant-oximetry-receives-3-million-grant-to-advance-its-innovative-technology",
+        "company": "raydiant-oximetry"
+      }
+    ],
+    "cerapedics": [
+      {
+        "slug": "cerapedics-2026-04-24-cerapedics-announces-supplier-agreement-with-vizient-for-pearlmatrix-p-1-71b00005ef",
+        "title": "Cerapedics Announces Supplier Agreement with Vizient for PearlMatrix® P-15 Peptide Enhanced Bone Graft",
+        "date": "2026-04-24",
+        "source": "Cerapedics",
+        "url": "https://cerapedics.com/news/cerapedics-announces-supplier-agreement-vizient-pearlmatrixr-p-15-peptide-enhanced-bone-graft",
+        "company": "cerapedics"
+      },
+      {
+        "slug": "cerapedics-2026-01-13-cerapedics-pearlmatrix-p-15-peptide-enhanced-bone-graft-the-first-and-on-0058d4e52d",
+        "title": "Cerapedics’ PearlMatrix P-15 Peptide Enhanced Bone Graft, The First and Only Proven Bone Growth Accelerator, Now Approved for Expanded Indications for Use",
+        "date": "2026-01-13",
+        "source": "Cerapedics",
+        "url": "https://cerapedics.com/news/cerapedics-pearlmatrix-p-15-peptide-enhanced-bone-graft-first-and-only-proven-bone-growth",
+        "company": "cerapedics"
+      },
+      {
+        "slug": "cerapedics-2025-12-17-cerapedics-announces-publication-in-spine-of-24-month-aspire-study-resul-6baa502daf",
+        "title": "Cerapedics Announces Publication in Spine of 24-Month ASPIRE Study Results of PearlMatrix™ P-15 Peptide Enhanced Bone Graft",
+        "date": "2025-12-17",
+        "source": "Cerapedics",
+        "url": "https://cerapedics.com/news/cerapedics-announces-publication-spine-24-month-aspire-study-results-pearlmatrixtm-p-15",
+        "company": "cerapedics"
+      },
+      {
+        "slug": "cerapedics-2025-07-08-cerapedics-announces-first-u-s-patient-treated-with-pearlmatrix-p-15-pep-371f38c63f",
+        "title": "Cerapedics Announces First U.S. Patient Treated with PearlMatrix™ P-15 Peptide Enhanced Bone Graft following FDA approval",
+        "date": "2025-07-08",
+        "source": "Cerapedics",
+        "url": "https://cerapedics.com/news/cerapedics-announces-first-us-patient-treated-pearlmatrixtm-p-15-peptide-enhanced-bone-graft",
+        "company": "cerapedics"
+      },
+      {
+        "slug": "cerapedics-2025-06-23-cerapedics-announces-fda-approval-of-pearlmatrix-p-15-peptide-enhanced-b-4ecfffe0e0",
+        "title": "Cerapedics Announces FDA Approval of PearlMatrix™ P-15 Peptide Enhanced Bone Graft, The First and Only Proven Bone Growth Accelerator for Lumbar Fusion",
+        "date": "2025-06-23",
+        "source": "Cerapedics",
+        "url": "https://cerapedics.com/news/cerapedics-announces-fda-approval-pearlmatrixtm-p-15-peptide-enhanced-bone-graft-first-and",
+        "company": "cerapedics"
+      },
+      {
+        "slug": "cerapedics-2024-09-24-cerapedics-i-factor-p-15-peptide-enhanced-bone-graft-a-trusted-choice-in-4071563be3",
+        "title": "Cerapedics’ i-FACTOR P-15 Peptide Enhanced Bone Graft, a Trusted Choice in Bone Graft Solutions, Now Approved for Expanded Indications for Use",
+        "date": "2024-09-24",
+        "source": "Cerapedics",
+        "url": "https://cerapedics.com/news/cerapedics-i-factor-p-15-peptide-enhanced-bone-graft-trusted-choice-bone-graft-solutions-now",
+        "company": "cerapedics"
+      },
+      {
+        "slug": "cerapedics-2024-01-05-cerapedics-to-present-at-the-42nd-annual-j-p-morgan-healthcare-conferenc-31655029e1",
+        "title": "Cerapedics to Present at the 42nd Annual J.P. Morgan Healthcare Conference",
+        "date": "2024-01-05",
+        "source": "Cerapedics",
+        "url": "https://cerapedics.com/news/cerapedics-present-42nd-annual-jp-morgan-healthcare-conference",
+        "company": "cerapedics"
+      },
+      {
+        "slug": "cerapedics-2024-01-04-cerapedics-files-final-module-of-the-pma-application-for-fda-approval-of-153c7ddcdd",
+        "title": "Cerapedics Files Final Module of the PMA Application for FDA Approval of a new P-15 Peptide Enhanced Bone Graft for Lumbar Spine Fusion",
+        "date": "2024-01-04",
+        "source": "Cerapedics",
+        "url": "https://cerapedics.com/news/cerapedics-files-final-module-pma-application-fda-approval-new-p-15-peptide-enhanced-bone",
+        "company": "cerapedics"
+      },
+      {
+        "slug": "cerapedics-2023-10-17-cerapedics-reinforces-commitment-to-level-1-evidence-with-long-term-resu-7790459091",
+        "title": "Cerapedics Reinforces Commitment to Level 1 Evidence with Long-Term Results from Six-Year Pivotal IDE Cervical Study Demonstrating 98.6% Spine Fusion Rates in Patients Treated With i-FACTOR®",
+        "date": "2023-10-17",
+        "source": "Cerapedics",
+        "url": "https://cerapedics.com/news/cerapedics-reinforces-commitment-level-1-evidence-long-term-results-six-year-pivotal-ide",
+        "company": "cerapedics"
+      },
+      {
+        "slug": "cerapedics-2023-07-19-cerapedics-announces-expansion-of-headquarters-to-support-growth-of-its-bcb3c87d18",
+        "title": "Cerapedics™ Announces Expansion of Headquarters to Support Growth of its Bone Graft Products",
+        "date": "2023-07-19",
+        "source": "Cerapedics",
+        "url": "https://cerapedics.com/news/cerapedicstm-announces-expansion-headquarters-support-growth-its-bone-graft-products",
+        "company": "cerapedics"
+      }
     ]
   }
 }

@@ -76,8 +76,19 @@ the same validation, authentication, draft handling and public content layer.
 ## Automatic news coverage
 
 The daily synchronizer watches official sources for RIVANNA, Nectero,
-Caretaker and Eyenuk. Eyenuk's redesigned site uses dated HTML news/blog
-cards rather than its retired WordPress feed. The bot stores source metadata
+Caretaker, Eyenuk, Venova, Axena Health, Raydiant Oximetry and Cerapedics.
+Venova and Raydiant are read from their press-release category feeds and
+Axena from its news category. Eyenuk's redesigned site uses dated HTML
+news/blog cards rather than its retired WordPress feed, and Cerapedics' Drupal
+news listing is read the same way.
+
+The other companies have no machine-readable newsroom: Axon, Zafrens, IllumiCell
+and Marrow Access publish only on wire services or LinkedIn; CorFlow posts
+releases as PDFs; Biospectal's feed mixes blog posts with third-party press;
+Aria CV's site refuses automated connections; Alydia was acquired by Organon.
+Their news is added in the admin portal. Searching news engines for wire
+releases was tested and rejected: results were incomplete, often translations
+or syndicated copies, and the endpoint is unofficial. The bot stores source metadata
 and links, retains prior data during source outages, and does not copy bodies.
 An explicit `KOFA Healthcare` mention in an RSS title or description is
 classified as KOFA News. Manual edits take precedence and are stored separately

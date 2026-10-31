@@ -36,6 +36,35 @@ export const FEEDS = [
     company: "eyenuk",
     format: "eyenuk-resources",
   },
+  {
+    id: "venova",
+    feedUrl: "https://venovamedical.com/category/press-release/feed/",
+    host: "venovamedical.com",
+    source: "Venova Medical",
+    company: "venova-medical",
+  },
+  {
+    id: "axena",
+    feedUrl: "https://axenahealth.com/category/news/feed/",
+    host: "axenahealth.com",
+    source: "Axena Health",
+    company: "axena-health",
+  },
+  {
+    id: "raydiant",
+    feedUrl: "https://raydiantoximetry.com/category/press-releases/feed/",
+    host: "raydiantoximetry.com",
+    source: "Raydiant Oximetry",
+    company: "raydiant-oximetry",
+  },
+  {
+    id: "cerapedics",
+    feedUrl: "https://www.cerapedics.com/news-and-events/news",
+    host: "cerapedics.com",
+    source: "Cerapedics",
+    company: "cerapedics",
+    format: "cerapedics-news",
+  },
 ];
 
 function unwrapCdata(value) {
@@ -197,6 +226,32 @@ export function parseEyenukResources(html, feed, now = new Date()) {
   return entries;
 }
 
+/** Dated rows on Cerapedics' official news listing (Drupal view, no feed). */
+export function parseCerapedicsNews(html, feed, now = new Date()) {
+  const entries = [];
+  const seen = new Set();
+  const rows = html.replace(/<!--[\s\S]*?-->/g, "").split(/<div\b[^>]*class=["'][^"']*\bnews__item\b[^"']*["'][^>]*>/i).slice(1);
+  for (const row of rows.slice(0, MAX_ITEMS_PER_FEED)) {
+    const dateMarkup = row.match(/views-field-field-publication-date[^>]*>\s*<span\b[^>]*>([\s\S]*?)<\/span>/i)?.[1];
+    const link = row.match(/views-field-title[^>]*>\s*<span\b[^>]*>\s*<a\b[^>]*href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/i);
+    if (!link) continue;
+    let url;
+    try { url = allowedUrl(new URL(decodeEntities(link[1]), feed.feedUrl).href, feed.host); } catch { continue; }
+    if (!url || !/^\/news\/[^/]+$/.test(new URL(url).pathname) || seen.has(url)) continue;
+    const title = normalizeText(link[2]);
+    const date = publishedDate(dateMarkup ?? "", now);
+    if (!title || !date) continue;
+    seen.add(url);
+    entries.push({ slug: stableSlug({ company: feed.company, date, title, url }), title, date, source: feed.source, url, company: feed.company });
+  }
+  return entries;
+}
+
+const HTML_PARSERS = {
+  "eyenuk-resources": parseEyenukResources,
+  "cerapedics-news": parseCerapedicsNews,
+};
+
 function isUnicodeScalar(value) {
   return Number.isInteger(value) && value >= 0 && value <= 0x10ffff && (value < 0xd800 || value > 0xdfff);
 }
@@ -233,7 +288,7 @@ export async function fetchFeed(feed, { fetchImpl = fetch, now = new Date() } = 
     if (!response.ok) throw new Error(`Feed returned ${response.status}.`);
     const xml = await readBoundedText(response);
     if (!feed.format && !/<(?:rss|feed)\b/i.test(xml)) throw new Error("Feed was not RSS or Atom XML.");
-    const entries = feed.format === "eyenuk-resources" ? parseEyenukResources(xml, feed, now) : parseRss(xml, feed, now);
+    const entries = feed.format ? HTML_PARSERS[feed.format](xml, feed, now) : parseRss(xml, feed, now);
     if (entries.length === 0) throw new Error("Feed had no valid items.");
     return entries;
   } finally {
