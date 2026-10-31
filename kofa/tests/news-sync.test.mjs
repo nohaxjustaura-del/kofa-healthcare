@@ -13,6 +13,7 @@ import {
   refreshSnapshot,
   syncNews,
 } from "../scripts/sync-news.mjs";
+import { approvedNewsUrl } from "../lib/news-sources.mjs";
 
 const now = new Date("2026-09-19T12:00:00Z");
 const rivanna = FEEDS[0];
@@ -51,6 +52,34 @@ test("Axon's investment remains in KOFA news and on its company page after the p
   assert.equal(getNews(axon.slug, today).slug, axon.slug);
   const records = [{ ...axon, slug: "expired-portfolio", type: "Portfolio News" }, { ...axon, slug: "future-kofa", date: "2026-10-14" }];
   assert.deepEqual(currentNews(today, records), []);
+});
+
+async function loadTs(relative) {
+  const filename = new URL(relative, import.meta.url);
+  const compiled = ts.transpileModule(await readFile(filename, "utf8"), { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, esModuleInterop: true } }).outputText;
+  const module = { exports: {} };
+  new Function("require", "module", "exports", compiled)(createRequire(filename), module, module.exports);
+  return module.exports;
+}
+
+test("every news link and the partner override use an official company site or wire release", async () => {
+  const [{ allNews }, { portfolio }] = await Promise.all([loadTs("../data/news.ts"), loadTs("../data/portfolio.ts")]);
+  const overrides = JSON.parse(await readFile(new URL("../data/content.admin.json", import.meta.url), "utf8")).news;
+  const websites = new Map(portfolio.map((company) => [company.slug, company.website]));
+  const rejected = [...allNews, ...overrides]
+    .filter((item) => item.externalUrl && !approvedNewsUrl(item.externalUrl, { company: item.company, website: websites.get(item.company) }))
+    .map((item) => `${item.slug}: ${item.externalUrl}`);
+  assert.deepEqual(rejected, []);
+});
+
+test("approved sources exclude LinkedIn and third-party coverage", () => {
+  const corflow = { company: "corflow", website: "https://corflow.com/" };
+  assert.equal(approvedNewsUrl("https://corflow.com/news/update", corflow), true);
+  assert.equal(approvedNewsUrl("https://www.businesswire.com/news/home/1/en/CorFlow", corflow), true);
+  assert.equal(approvedNewsUrl("https://www.organon.com/news/jada", { company: "alydia-health", website: "https://www.merck.com/" }), true);
+  for (const url of ["https://www.linkedin.com/posts/corflow-update", "https://www.biospace.com/press-releases/corflow", "https://evilcorflow.com/news", "http://corflow.com/news", "https://rivannamedical.com/news"]) {
+    assert.equal(approvedNewsUrl(url, corflow), false, url);
+  }
 });
 
 function feedItem({ title, link, date = "Fri, 18 Sep 2026 10:00:00 GMT" }) {

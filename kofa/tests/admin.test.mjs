@@ -44,6 +44,13 @@ test("news validation checks publication dates, company relationships and extern
     assert.throws(() => validateRecord("news", { ...news, ...fields }, [company.slug], now));
   }
   assert.equal(validateRecord("news", { ...news, date: "2026-10-14", published: false }, [company.slug], now).published, false);
+  const websites = { [company.slug]: company.website };
+  const linked = (externalUrl) => validateRecord("news", { ...news, externalUrl, source: "Publisher" }, [company.slug], now, websites);
+  assert.equal(linked("https://example.com/news/update").externalUrl, "https://example.com/news/update");
+  assert.equal(linked("https://www.prnewswire.com/news-releases/test.html").source, "Publisher");
+  for (const url of ["https://www.linkedin.com/posts/test-company", "https://www.biospace.com/press-releases/test"]) {
+    assert.throws(() => linked(url), (error) => error.field === "externalUrl");
+  }
 });
 
 test("manual overrides preserve approved company media and drafts disappear from public records", () => {

@@ -13,7 +13,7 @@ export function checkPassword(password: unknown, env?: NodeJS.ProcessEnv): boole
 export function createSession(env?: NodeJS.ProcessEnv, now?: number): string;
 export function validSession(value: unknown, env?: NodeJS.ProcessEnv, now?: number): boolean;
 export function sameOrigin(request: Request): boolean;
-export function validateRecord(kind: string, input: unknown, companySlugs: string[], now?: Date): CompanyRecord | NewsRecord;
+export function validateRecord(kind: string, input: unknown, companySlugs: string[], now?: Date, companyWebsites?: Record<string, string>):CompanyRecord | NewsRecord;
 export function mergeRecords<T extends { slug: string }>(base: T[], overrides: Partial<T>[], includeDrafts?: boolean): (T & { published: boolean })[];
 export function applyRecord(document: ContentDocument, kind: string, record: CompanyRecord | NewsRecord): ContentDocument;
 export function readContent(options?: { env?: NodeJS.ProcessEnv; fetchImpl?: typeof fetch; cached?: boolean }): Promise<{ document: ContentDocument; revision: string }>;

@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
     const { document, revision } = await readContent();
     if (input.revision !== revision) throw new AdminError("Another partner updated the site. Reload the list before saving; your form has been kept.", 409);
     const companies = mergeRecords(portfolio, document.companies as Partial<(typeof portfolio)[number]>[], true);
-    const record = validateRecord(input.kind, input.record, companies.filter((company) => !input.record?.published || company.published).map((company) => company.slug));
+    const record = validateRecord(input.kind, input.record, companies.filter((company) => !input.record?.published || company.published).map((company) => company.slug), new Date(), Object.fromEntries(companies.map((company) => [company.slug, company.website])));
     const existing = input.kind === "company" ? companies : mergeRecords(allNews, document.news, true);
     if (input.create && existing.some((item) => item.slug === record.slug)) throw new AdminError("That page address is already used. Choose another one.", 409, "slug");
     if (!input.create && !existing.some((item) => item.slug === record.slug)) throw new AdminError("This entry no longer exists. Reload the list before saving.", 409);

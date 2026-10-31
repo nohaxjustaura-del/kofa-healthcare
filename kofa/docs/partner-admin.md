@@ -88,4 +88,13 @@ KOFA investor mention now correctly makes it KOFA News, retaining its original
 page address and company relationship. Marrow Access's recorded announcements
 are older than the portfolio window; its page explains the absence of recent
 records and links to the company website. Automatic collection is limited to
-the configured sources, so partners can manually add other coverage.
+the configured sources, so partners can manually add other announcements.
+
+## Approved news sources
+
+News links must point to the related company's own website (or its
+acquirer's newsroom, e.g. Organon for Alydia) or to the company's press release
+on PR Newswire, Business Wire, GlobeNewswire, EIN Presswire or PRWeb. The admin
+portal rejects LinkedIn posts and third-party coverage such as trade press or
+journals, and the site hides any such link that predates the rule. The list
+lives in `lib/news-sources.mjs`.

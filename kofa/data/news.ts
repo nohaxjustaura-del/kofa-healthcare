@@ -70,19 +70,6 @@ const curatedNews: NewsItem[] = [
     company: "rivanna-medical",
   },
   {
-    slug: "illumicell-ai-closes-regulation-crowdfunding-raise-led-by-medtech",
-    title:
-      "IllumiCell AI closes Regulation Crowdfunding raise led by MedTech Syndicates",
-    type: "Portfolio News",
-    date: "2026-07-16",
-    excerpt:
-      "IllumiCell AI completed a Regulation Crowdfunding offering with ICON Capital Group as broker-of-record and MedTech Syndicates as lead investor. Proceeds are earmarked for product development and commercialization of its AI cellular imaging and diagnostics platform.",
-    source: "ICON Capital Group (via KOREWIRE syndication)",
-    externalUrl:
-      "https://www.voiceofalexandria.com/news/national_business_news/illumicell-ai-successfully-completes-regulation-crowdfunding-capital-raise/article_1834390c-4b85-52e6-9ae4-7c15215f55ef.html",
-    company: "illumicell-ai",
-  },
-  {
     slug: "illumicell-ai-places-second-on-meet-the-drapers-season",
     title:
       "IllumiCell AI places second on Meet the Drapers Season 9 and receives $500,000 from Tim Draper",
@@ -155,9 +142,9 @@ const curatedNews: NewsItem[] = [
     date: "2026-04-30",
     excerpt:
       "CorFlow completed Phase 1 of the MOCA II pivotal trial with 19 patients at eight sites (five US, three European), cleared by the independent DSMB, and enrolled the first Phase 2 patients at Cardiocentro Ticino in Lugano, Switzerland. The company also received approval to begin the REVITALISE randomized controlled trial of CoFI-delivered therapy in the UK: targeting at least 250 STEMI patients with early results expected in 2027, and added Dr. Rick Kuntz as board observer and Dr. Pedro Eerdmans as VP Clinical.",
-    source: "BioSpace (CorFlow press release)",
+    source: "Business Wire",
     externalUrl:
-      "https://www.biospace.com/press-releases/corflow-therapeutics-announces-successful-completion-of-phase-1-and-first-patients-enrolled-in-phase-2-of-the-moca-ii-pivotal-trial-approval-to-start-the-revitalise-rct-in-europe-and-strengthening-of-clinical-leadership",
+      "https://www.businesswire.com/news/home/20260430413675/en/CorFlow-Therapeutics-Announces-Successful-Completion-of-Phase-1-and-First-Patients-Enrolled-in-Phase-2-of-the-MOCA-II-Pivotal-Trial-Approval-to-Start-the-REVITALISE-RCT-in-Europe-and-Strengthening-of-Clinical-Leadership",
     company: "corflow",
   },
   {
@@ -382,19 +369,6 @@ const curatedNews: NewsItem[] = [
     company: "venova-medical",
   },
   {
-    slug: "aria-cv-device-design-and-preclinical-early-human-data",
-    title:
-      "Aria CV device design and preclinical/early human data published in Pulmonary Circulation",
-    type: "Portfolio News",
-    date: "2025-07-29",
-    excerpt:
-      "A peer-reviewed paper led by Aria CV co-founder Karl Vollmers described development of the pulmonary endovascular device (a 20-cc implanted balloon, catheter and subcutaneous gas reservoir) and reported roughly 0.4 mL/mmHg augmentation of pulmonary arterial compliance, consistent with earlier human prototype results. In vitro, animal and 46-patient CT anatomic analyses supported the ASPIRE PH trial design.",
-    source: "Pulmonary Circulation (PMC)",
-    externalUrl:
-      "https://pmc.ncbi.nlm.nih.gov/articles/PMC12307243/",
-    company: "aria-cv",
-  },
-  {
     slug: "barda-awards-rivanna-nearly-10-million-to-accelerate-the",
     title:
       "BARDA awards RIVANNA nearly $10 million to accelerate the CADe/x AI module for Accuro XV",
@@ -467,9 +441,9 @@ const curatedNews: NewsItem[] = [
     date: "2025-05-06",
     excerpt:
       "CorFlow named Chris O'Connell, a 21-year Medtronic veteran who served as EVP and President of the Restorative Therapies Group before becoming CEO of Waters Corporation, as Chairman of the Board, succeeding Rick Geoffrion, who remains a director. The appointment came as the company executed on its Series B objectives including the FDA IDE trial.",
-    source: "BioSpace (CorFlow press release)",
+    source: "Business Wire",
     externalUrl:
-      "https://www.biospace.com/press-releases/corflow-therapeutics-appoints-chris-oconnell-as-chairman-of-the-board-of-directors",
+      "https://www.businesswire.com/news/home/20250506197436/en/CorFlow-Therapeutics-Appoints-Chris-OConnell-as-Chairman-of-the-Board-of-Directors",
     company: "corflow",
   },
   {
@@ -571,6 +545,7 @@ const curatedNews: NewsItem[] = [
     source: "Venova Medical (company press release)",
     externalUrl:
       "https://venovamedical.com/2024/09/venova-series-b-financing/",
+    company: "venova-medical",
   },
   {
     slug: "virginia-catalyst-awards-caretaker-medical-800-000-grant-for",
@@ -649,19 +624,6 @@ const curatedNews: NewsItem[] = [
     externalUrl:
       "https://necterotherapeutics.com/nectero-medical-granted-breakthrough-therapy-designation-for-the-nectero-east-system-to-treat-infrarenal-aaa/",
     company: "nectero-medical",
-  },
-  {
-    slug: "rebalance-hf-misses-in-overall-hfpef-population-but-identifies",
-    title:
-      "REBALANCE-HF misses in overall HFpEF population but identifies a responder subgroup",
-    type: "Portfolio News",
-    date: "2023-10-11",
-    excerpt:
-      "The sham-controlled REBALANCE-HF randomized trial of greater splanchnic nerve ablation showed no significant hemodynamic or clinical benefit in the overall HFpEF population, but roughly 55% of patients formed a responder subgroup with greater gains in exercise capacity. The procedure had a 98% treatment success rate with no difference in serious adverse events versus sham.",
-    source: "TCTMD",
-    externalUrl:
-      "https://www.tctmd.com/news/rebalance-hf-uncovers-hfpef-group-responds-splanchnic-nerve-ablation",
-    company: "axon-therapies",
   },
   {
     slug: "axon-presents-late-breaking-rebalance-hf-data-at-hfsa",
@@ -850,12 +812,12 @@ const curatedNews: NewsItem[] = [
     title:
       "Aria CV raises $31M Series B to fund first US clinical study of its PAH implant",
     type: "Portfolio News",
-    date: "2020-02-27",
+    date: "2020-02-25",
     excerpt:
       "Aria CV completed a $31 million Series B led by Xeraya Capital, with Longview Ventures, Catalyst Health Ventures, BioStar Ventures, Cedar Point Capital, Frontcourt Group and three strategic investors participating. The round funded the FDA early feasibility study of the Aria CV Pulmonary Hypertension System and followed the device's FDA Breakthrough Device Designation by about one week.",
-    source: "Diagnostic and Interventional Cardiology (DAIC)",
+    source: "Business Wire",
     externalUrl:
-      "https://www.dicardiology.com/content/aria-cv-pulmonary-hypertension-acquires-31-million-feasibility-study",
+      "https://www.businesswire.com/news/home/20200225005252/en/Aria-CV-Announces-%2431-Million-in-Series-B-Funding",
     company: "aria-cv",
   },
 ];

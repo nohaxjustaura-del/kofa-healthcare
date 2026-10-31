@@ -230,7 +230,7 @@ export function AdminPortal({ signedIn, configured, publishingConnected }: { sig
               {dropdown("company", "Related company", [{ value: "", label: draft.type === "Portfolio News" ? "Choose a company" : "No related company" }, ...(library?.companies.filter((company) => company.published).map((company) => ({ value: company.slug, label: company.name })) ?? [])], draft.type === "Portfolio News")}
               <p className={styles.hint}>Linking a company also adds this article to its portfolio page. Portfolio News appears for 12 months; KOFA News remains available.</p>
               {field("excerpt", "Short summary", { required: true, multiline: true, hint: "Shown in the newsroom and beneath the headline.", max: 2000 })}
-              {field("externalUrl", "Original article link", { type: "url", hint: "For coverage from another publisher, paste its https:// article address.", max: 2000 })}
+              {field("externalUrl", "Original article link", { type: "url", hint: "Use the company's own website or its press release on a wire service (PR Newswire, Business Wire, GlobeNewswire, EIN Presswire, PRWeb). LinkedIn and third-party coverage are not accepted.", max: 2000 })}
               {field("source", "Original publisher", { hint: "Required when linking to an external article.", max: 180 })}
               {field("body", "Write an article", { multiline: true, hint: "For KOFA-authored news, write here instead of adding an external link. Leave a blank line between paragraphs.", max: 40000 })}
             </>}

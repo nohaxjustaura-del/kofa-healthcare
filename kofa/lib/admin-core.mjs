@@ -1,6 +1,7 @@
 import { createHash, createHmac, timingSafeEqual } from "node:crypto";
 import { readFile, writeFile, rename, unlink } from "node:fs/promises";
 import path from "node:path";
+import { approvedNewsUrl } from "./news-sources.mjs";
 
 export const SESSION_COOKIE = "kofa-admin-session";
 export const SESSION_SECONDS = 12 * 60 * 60;
@@ -94,7 +95,7 @@ function logo(value) {
   throw new AdminError("Use a PNG, JPG or WebP logo up to 100 KB, or an https:// image address.", 422, "logo");
 }
 
-export function validateRecord(kind, input, companySlugs, now = new Date()) {
+export function validateRecord(kind, input, companySlugs, now = new Date(), companyWebsites = {}) {
   if (!input || typeof input !== "object" || Array.isArray(input)) throw new AdminError("The entry could not be read.");
   const slug = text(input, "slug", 160, true);
   if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) throw new AdminError("Use lowercase letters, numbers and hyphens for the page address.", 422, "slug");
@@ -128,6 +129,7 @@ export function validateRecord(kind, input, companySlugs, now = new Date()) {
   const source = text(input, "source", 180);
   const body = text(input, "body", 40000);
   if (!externalUrl && !body) throw new AdminError("Add an article link or write the article below.", 422, "body");
+  if (externalUrl && !approvedNewsUrl(externalUrl, { company, website: companyWebsites[company] })) throw new AdminError("Link to the company's own website or its press release on PR Newswire, Business Wire, GlobeNewswire, EIN Presswire or PRWeb. LinkedIn posts and third-party coverage are not accepted.", 422, "externalUrl");
   if (externalUrl && !source) throw new AdminError("Name the original publisher.", 422, "source");
   return { ...common, title: text(input, "title", 300, true), type: input.type, date,
     excerpt: text(input, "excerpt", 2000, true), company, externalUrl, source, body,
