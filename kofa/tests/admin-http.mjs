@@ -9,6 +9,7 @@ const original = await readFile(snapshot, "utf8");
 let cookie = "";
 const request = (path, options = {}) => fetch(`${origin}${path}`, { ...options, headers: { origin, "Content-Type": "application/json", ...(cookie ? { cookie } : {}), ...options.headers }, signal: AbortSignal.timeout(60000) });
 const page = async (path) => { const response = await request(path); return { status: response.status, html: await response.text() }; };
+const teamMarkup = async () => (await page("/team")).html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, "");
 const company = { slug: "local-integration-test-company", name: "Integration Test Company (local only)", website: "https://example.com", category: "Diagnostics", portfolioStatus: "Active", focus: "Local integration test", shortDescription: "Synthetic company for isolated verification.", description: "Synthetic content used only in the local development test.", logo: "", logoAspect: 1, sortOrder: 100, published: false, featured: false };
 const article = { slug: "local-integration-test-news", title: "Local integration test article", type: "KOFA News", date: "2026-10-13", excerpt: "Synthetic news for isolated verification.", body: "Synthetic article body.\n\nSecond paragraph.", company: company.slug, published: true };
 
@@ -30,6 +31,14 @@ try {
     if (response.ok) revision = body.revision;
     return { status: response.status, body };
   };
+  assert.ok(library.team.some((entry) => entry.slug === "jing-lin"));
+  const advisor = { slug: "local-test-advisor", name: "Local Test Advisor", role: "Clinical Advisor", biography: "Local verification only.", sortOrder: 4, published: false };
+  assert.equal((await save("team", advisor, true)).status, 200);
+  assert.ok(!(await teamMarkup()).includes(advisor.name));
+  assert.equal((await save("team", { ...advisor, published: true }, false)).status, 200);
+  assert.ok((await teamMarkup()).includes(advisor.name));
+  assert.equal((await save("team", advisor, false)).status, 200);
+  assert.ok(!(await teamMarkup()).includes(advisor.name));
   assert.equal((await save("company", company, true)).status, 200);
   assert.equal((await page(`/portfolio/${company.slug}`)).status, 404);
   assert.equal((await save("company", { ...company, published: true }, false)).status, 200);
@@ -58,7 +67,7 @@ try {
   assert.ok((await page("/portfolio/eyenuk")).html.includes("Top HealthTech Companies of 2026"));
   assert.ok((await page("/portfolio/marrow-access")).html.includes("No news updates have been added"));
   assert.equal((await request("/api/admin/session", { method: "DELETE" })).status, 200);
-  console.log("Passed: sign-in boundaries, persistent drafts/publishing, portfolio/homepage/news/sitemap integration, conflict rejection, draft removal, Axon/Eyenuk news and Marrow Access empty state.");
+  console.log("Passed: sign-in boundaries, persistent team/advisor drafts and publishing, portfolio/homepage/news/sitemap integration, conflict rejection, draft removal, Axon/Eyenuk news and Marrow Access empty state.");
 } finally {
   await writeFile(snapshot, original);
 }

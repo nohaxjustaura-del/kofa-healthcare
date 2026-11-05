@@ -83,3 +83,23 @@ test("persistent writes include the saved revision and refuse concurrent edits o
   await assert.rejects(writeContent(document, revision, { env, fetchImpl: async () => new Response("conflict", { status: 409 }) }), (error) => error.status === 409);
   await assert.rejects(readContent({ env, fetchImpl: async () => new Response("offline", { status: 503 }) }), (error) => error.status === 502);
 });
+
+
+test("team profiles persist in legacy libraries, preserve focus areas, clear placeholders and keep drafts private", () => {
+  const member = { slug: "test-advisor", name: "Test Advisor", role: "Clinical Advisor", biography: "Approved biography.", published: false, sortOrder: 4, focusAreas: ["Cardiovascular"], portrait: "/team/jing-lin.png" };
+  const draft = validateRecord("team", member, [], now);
+  const saved = applyRecord(document, "team", draft);
+  assert.equal(saved.team[0].role, "Clinical Advisor");
+  assert.equal(saved.news.length, 0);
+  assert.equal(mergeRecords([], saved.team).length, 0);
+  assert.equal(mergeRecords([], saved.team, true).length, 1);
+  const published = validateRecord("team", { ...member, published: true }, [], now);
+  assert.equal(mergeRecords([], [published])[0].name, member.name);
+  const existing = { ...member, bioStatus: "placeholder" };
+  assert.equal(mergeRecords([existing], [published])[0].bioStatus, "");
+  assert.deepEqual(published.focusAreas, ["Cardiovascular"]);
+  for (const fields of [{ name: "" }, { role: "" }, { biography: "" }, { linkedin: "javascript:alert(1)" }, { portrait: "data:image/svg+xml;base64,PHN2Zz4=" }, { sortOrder: -1 }, { focusAreas: "bad" }]) {
+    assert.throws(() => validateRecord("team", { ...member, ...fields }, [], now));
+  }
+  assert.throws(() => applyRecord(document, "unknown", published));
+});

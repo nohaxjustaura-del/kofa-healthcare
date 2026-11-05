@@ -1,5 +1,6 @@
 import { NextRequest } from "next/server";
 import { revalidatePath, revalidateTag } from "next/cache";
+import { team } from "@/data/team";
 import { portfolio } from "@/data/portfolio";
 import { allNews } from "@/data/news";
 import { AdminError, applyRecord, MAX_CONTENT_BYTES, mergeRecords, readContent, validateRecord, writeContent } from "@/lib/admin-core.mjs";
@@ -9,7 +10,7 @@ export async function GET(request: NextRequest) {
   try {
     requireAdmin(request);
     const { document, revision } = await readContent();
-    return adminResponse({ revision, companies: mergeRecords(portfolio, document.companies as Partial<(typeof portfolio)[number]>[], true), news: mergeRecords(allNews, document.news, true) });
+    return adminResponse({ revision, team: mergeRecords(team, document.team ?? [], true), companies: mergeRecords(portfolio, document.companies as Partial<(typeof portfolio)[number]>[], true), news: mergeRecords(allNews, document.news, true) });
   } catch (error) { return adminFailure(error); }
 }
 
@@ -21,7 +22,7 @@ export async function POST(request: NextRequest) {
     if (input.revision !== revision) throw new AdminError("Another partner updated the site. Reload the list before saving; your form has been kept.", 409);
     const companies = mergeRecords(portfolio, document.companies as Partial<(typeof portfolio)[number]>[], true);
     const record = validateRecord(input.kind, input.record, companies.filter((company) => !input.record?.published || company.published).map((company) => company.slug), new Date(), Object.fromEntries(companies.map((company) => [company.slug, company.website])));
-    const existing = input.kind === "company" ? companies : mergeRecords(allNews, document.news, true);
+    const existing = input.kind === "company" ? companies : input.kind === "team" ? mergeRecords(team, document.team ?? [], true) : mergeRecords(allNews, document.news, true);
     if (input.create && existing.some((item) => item.slug === record.slug)) throw new AdminError("That page address is already used. Choose another one.", 409, "slug");
     if (!input.create && !existing.some((item) => item.slug === record.slug)) throw new AdminError("This entry no longer exists. Reload the list before saving.", 409);
     const nextRevision = await writeContent(applyRecord(document, input.kind, record), revision);

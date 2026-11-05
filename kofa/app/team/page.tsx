@@ -1,9 +1,12 @@
+import { getSiteContent } from "@/lib/site-content";
 import type { Metadata } from "next";
 import { Container, Section } from "@/components/ui/primitives";
 import { PageHero } from "@/components/ui/PageHero";
 import { TeamGrid } from "@/components/team/TeamGrid";
 import { CTASection } from "@/components/ui/CTASection";
 import { pageMetadata } from "@/lib/metadata";
+
+export const revalidate = 60;
 
 /* See lib/metadata.ts: a hand-written page-level `openGraph` replaces the root
    layout's wholesale, taking og:site_name, og:locale, og:type and the share
@@ -16,7 +19,8 @@ export const metadata: Metadata = pageMetadata({
   socialDescription: "The people behind KOFA Healthcare.",
 });
 
-export default function TeamPage() {
+export default async function TeamPage() {
+  const { team } = await getSiteContent();
   return (
     <>
       <PageHero
@@ -27,7 +31,7 @@ export default function TeamPage() {
 
       <Section space="tight" className="border-t border-rule pt-[clamp(3rem,5vw,4.5rem)]">
         <Container>
-          <TeamGrid />
+          <TeamGrid members={team} />
         </Container>
       </Section>
 

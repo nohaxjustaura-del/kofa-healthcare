@@ -80,10 +80,10 @@ function httpsUrl(value, field) {
   }
 }
 
-function logo(value) {
+function logo(value, field = "logo") {
   if (!value) return "";
   if (/^\/(?!\/)[a-zA-Z0-9/_ .%-]+\.(png|jpg|jpeg|webp)$/i.test(value) && !value.includes("..")) return value;
-  if (value.startsWith("https://")) return httpsUrl(value, "logo");
+  if (value.startsWith("https://")) return httpsUrl(value, field);
   const match = value.match(/^data:image\/(png|jpeg|webp);base64,([a-zA-Z0-9+/]+={0,2})$/);
   if (match) {
     const bytes = Buffer.from(match[2], "base64");
@@ -92,7 +92,7 @@ function logo(value) {
       : bytes.subarray(0, 4).toString() === "RIFF" && bytes.subarray(8, 12).toString() === "WEBP";
     if (valid && bytes.length <= 100_000) return value;
   }
-  throw new AdminError("Use a PNG, JPG or WebP logo up to 100 KB, or an https:// image address.", 422, "logo");
+  throw new AdminError("Use a PNG, JPG or WebP image up to 100 KB, or an https:// image address.", 422, field);
 }
 
 export function validateRecord(kind, input, companySlugs, now = new Date(), companyWebsites = {}) {
@@ -116,6 +116,16 @@ export function validateRecord(kind, input, companySlugs, now = new Date(), comp
       logo: logo(text(input, "logo", 150000)), logoAspect: aspect,
       featured: Boolean(input.featured), sortOrder: Number.isFinite(input.sortOrder) ? input.sortOrder : 1000,
     };
+  }
+  if (kind === "team") {
+    const sortOrder = Number(input.sortOrder ?? 1000);
+    if (!Number.isFinite(sortOrder) || !Number.isInteger(sortOrder) || sortOrder < 0 || sortOrder > 100000) throw new AdminError("Enter a whole display order from 0 to 100000.", 422, "sortOrder");
+    if (input.bioStatus && input.bioStatus !== "placeholder") throw new AdminError("Choose a biography status.", 422, "bioStatus");
+    if (input.focusAreas !== undefined && (!Array.isArray(input.focusAreas) || input.focusAreas.length > 10 || input.focusAreas.some((area) => typeof area !== "string" || area.length > 100))) throw new AdminError("Use up to ten focus areas, each 100 characters or fewer.", 422, "focusAreas");
+    return { ...common, name: text(input, "name", 160, true), role: text(input, "role", 180, true),
+      biography: text(input, "biography", 12000, true), standfirst: text(input, "standfirst", 500),
+      portrait: logo(text(input, "portrait", 150000), "portrait"), linkedin: httpsUrl(text(input, "linkedin", 2000), "linkedin"),
+      sortOrder, bioStatus: input.bioStatus || "", focusAreas: (input.focusAreas ?? []).map((area) => area.trim()).filter(Boolean) };
   }
   if (kind !== "news") throw new AdminError("Choose a company or news article.");
   if (!["KOFA News", "Portfolio News"].includes(input.type)) throw new AdminError("Choose a news category.", 422, "type");
@@ -143,8 +153,9 @@ export function mergeRecords(base, overrides, includeDrafts = false) {
 }
 
 export function applyRecord(document, kind, record) {
-  const key = kind === "company" ? "companies" : "news";
-  const result = { ...document, [key]: [...document[key].filter((item) => item.slug !== record.slug), record] };
+  if (!["company", "team", "news"].includes(kind)) throw new AdminError("Choose a company, team member or news article.");
+  const key = kind === "company" ? "companies" : kind === "team" ? "team" : "news";
+  const result = { ...document, [key]: [...(document[key] ?? []).filter((item) => item.slug !== record.slug), record] };
   if (Buffer.byteLength(JSON.stringify(result)) > MAX_CONTENT_BYTES) throw new AdminError("The content library is full. Reduce logo file sizes before saving.", 422, "logo");
   return result;
 }
@@ -181,7 +192,7 @@ export async function readContent({ env = process.env, fetchImpl = fetch, cached
   if (file.encoding !== "base64" || typeof file.sha !== "string" || typeof file.content !== "string" || file.size > MAX_CONTENT_BYTES) throw new AdminError("The content library has an unsupported format.", 502);
   let document;
   try { document = JSON.parse(Buffer.from(file.content, "base64").toString("utf8")); } catch { throw new AdminError("The content library could not be read.", 502); }
-  if (document.version !== 1 || !Array.isArray(document.companies) || !Array.isArray(document.news)) throw new AdminError("The content library has an unsupported format.", 502);
+  if (document.version !== 1 || !Array.isArray(document.companies) || !Array.isArray(document.news) || (document.team !== undefined && !Array.isArray(document.team))) throw new AdminError("The content library has an unsupported format.", 502);
   return { document, revision: file.sha };
 }
 

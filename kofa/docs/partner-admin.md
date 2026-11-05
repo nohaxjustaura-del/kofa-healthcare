@@ -28,6 +28,16 @@ Portfolio News stays visible for 12 months. KOFA News does not expire. Drafts
 and future-dated stories are excluded from public pages. A future-dated story
 must remain a draft until its publication date; there is no scheduled publisher.
 
+## Team and advisors
+
+In **Team**, choose an existing profile or **Add team member**. Edit the name,
+role (for example, Clinical Advisor), short introduction, biography, optional
+portrait and LinkedIn link. Lower display-order numbers appear first. Upload a
+PNG, JPG or WebP portrait up to 100 KB, or use an HTTPS image address. Choose
+**Approved biography** after replacing forthcoming copy. Save as a draft to
+keep the profile private, publish when ready, or move it back to draft to hide
+it. Existing approved team content is retained until edited.
+
 ## One-time production setup
 
 1. Merge the feature and deploy the `kofa/` application to the existing Vercel
@@ -109,3 +119,25 @@ on PR Newswire, Business Wire, GlobeNewswire, EIN Presswire or PRWeb. The admin
 portal rejects LinkedIn posts and third-party coverage such as trade press or
 journals, and the site hides any such link that predates the rule. The list
 lives in `lib/news-sources.mjs`.
+
+
+## What the website host handles
+
+The existing GitHub Actions job checks the eight configured official sources
+once daily. It collects headlines, dates, short summaries and source links,
+not full article bodies. It does not search every company website or the whole
+internet. Companies without a supported source can be updated manually.
+
+No host-side bot rewrite is needed to restrict automatic collection: the
+synchronizer already accepts links only on each configured company domain.
+Manual news links may also use company-issued releases on the approved wire
+services listed above. Third-party reporting and LinkedIn are excluded.
+
+SFP's role is to run the Node.js application, configure the existing admin
+and content credentials privately, and rebuild/deploy after generated news
+snapshot commits. The generated snapshot ships with the application; a
+successful collection job alone does not update an unreconstructed SFP build.
+Partners' manual edits use the shared GitHub content library at runtime, with
+a one-minute cache. SFP should also monitor refresh/deployment failures and
+maintain source adapters if companies change their newsrooms. The latest
+verified refresh on November 4, 2026 succeeded and saved 74 automated items.

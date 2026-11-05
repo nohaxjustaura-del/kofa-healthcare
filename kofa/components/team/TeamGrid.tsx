@@ -6,7 +6,7 @@ import { isMotionOff } from "@/components/motion/MotionPreference";
 import { Rise } from "@/components/motion/Rise";
 import { Arrow } from "@/components/ui/Arrow";
 import { Eyebrow } from "@/components/ui/primitives";
-import { teamSorted, type TeamMember } from "@/data/team";
+import type { TeamMember } from "@/data/team";
 
 /** Length of the sheet's slide-out; matches .team-sheet in app/globals.css. */
 const EXIT_MS = 600;
@@ -26,6 +26,7 @@ function Portrait({ member }: { member: TeamMember }) {
         src={member.portrait}
         alt={`${member.name}, ${member.role}`}
         fill
+        unoptimized={member.portrait.startsWith("https://") || member.portrait.startsWith("data:")}
         quality={88}
         sizes="(max-width: 767px) calc(100vw - 3rem), (max-width: 1023px) calc((100vw - 5rem) / 2), 380px"
         className="object-cover transition-transform duration-[900ms] ease-kofa group-hover/member:scale-[1.02]"
@@ -80,7 +81,7 @@ function Portrait({ member }: { member: TeamMember }) {
 --------------------------------------------------------------------------- */
 const COLUMN_LEAN = ["left", "up", "right"] as const;
 
-export function TeamGrid() {
+export function TeamGrid({ members }: { members: TeamMember[] }) {
   const [member, setMember] = useState<TeamMember | null>(null);
   const [closing, setClosing] = useState(false);
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -153,7 +154,7 @@ export function TeamGrid() {
   return (
     <>
       <div className="grid grid-cols-1 gap-x-8 gap-y-16 md:grid-cols-2 lg:grid-cols-3">
-        {teamSorted.map((member, i) => (
+        {members.map((member, i) => (
           // The lean goes on the card, never on the portrait frame below it:
           // that frame is overflow-hidden and would shear the skewed corners
           // off mid-flight.

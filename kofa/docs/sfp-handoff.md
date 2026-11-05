@@ -63,12 +63,13 @@ https://github.com/nohaxjustaura-del/kofa-healthcare/actions/runs/38944878128
 
 GitHub reports: the job was not started because recent account payments failed
 or the spending limit needs increasing. No checkout, tests, feeds or build ran.
-The owner must resolve the Billing & plans restriction before rerunning.
+At the time, the owner needed to resolve the Billing & plans restriction before rerunning.
 No payment, plan or spending-limit change was made during this follow-up.
 Do not treat this as a parser failure or suppress it with a workflow change.
 
-The daily job watches four configured official sources, rather than every
-portfolio company. Manual article publishing is available in the admin.
+As of November 5, the daily job watches eight configured official sources,
+rather than every portfolio company. The November 4 refresh succeeded and
+saved 74 automated items; the October billing incident below is historical. Manual article publishing is available in the admin.
 Existing published data is retained while automatic refresh is blocked.
 
 ## Current public release and partner editing
@@ -94,3 +95,21 @@ Do not reintroduce portfolio-company technology photos, product renders,
 screenshots or video. The owner requested their removal on October 16.
 The public company-media files and their data references have been removed;
 portfolio pages retain company logos, descriptions and official website links.
+
+
+## November 5: team editing and news responsibilities
+
+The partner portal includes **Team** alongside Portfolio and News. Profiles
+and advisors use the same authenticated, revision-checked content storage,
+draft/publish controls and public cache invalidation. No new secrets or data
+migration are required: older content documents without a team list remain
+supported. Deploy this version to both the admin destination and public host.
+
+News collection already restricts automated links to the eight configured
+company domains. SFP does not need to rewrite the collector to enable this.
+Manual entries additionally allow company-issued releases on approved wire
+services; this is separate from automatic collection. See `partner-admin.md`
+for the client-facing explanation and the rebuild requirement after generated
+snapshot commits. Monitor the existing job and deployment pipeline; update
+individual source adapters when official sites change. Do not change DNS or
+existing partner credentials for this feature release.

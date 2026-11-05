@@ -1,8 +1,10 @@
 import type { PortfolioCompany } from "../data/portfolio";
+import type { TeamMember } from "../data/team";
 import type { NewsItem } from "../data/news";
 export type CompanyRecord = Omit<PortfolioCompany, "investmentYear"> & { investmentYear?: number | null; published: boolean };
 export type NewsRecord = NewsItem & { published: boolean };
-export interface ContentDocument { version: number; companies: CompanyRecord[]; news: NewsRecord[] }
+export type TeamRecord = TeamMember & { published: boolean };
+export interface ContentDocument { version: number; companies: CompanyRecord[]; news: NewsRecord[]; team?: TeamRecord[] }
 export class AdminError extends Error { status: number; field?: string; constructor(message: string, status?: number, field?: string) }
 export const SESSION_COOKIE: string;
 export const SESSION_SECONDS: number;
@@ -13,8 +15,8 @@ export function checkPassword(password: unknown, env?: NodeJS.ProcessEnv): boole
 export function createSession(env?: NodeJS.ProcessEnv, now?: number): string;
 export function validSession(value: unknown, env?: NodeJS.ProcessEnv, now?: number): boolean;
 export function sameOrigin(request: Request): boolean;
-export function validateRecord(kind: string, input: unknown, companySlugs: string[], now?: Date, companyWebsites?: Record<string, string>):CompanyRecord | NewsRecord;
+export function validateRecord(kind: string, input: unknown, companySlugs: string[], now?: Date, companyWebsites?: Record<string, string>):CompanyRecord | NewsRecord | TeamRecord;
 export function mergeRecords<T extends { slug: string }>(base: T[], overrides: Partial<T>[], includeDrafts?: boolean): (T & { published: boolean })[];
-export function applyRecord(document: ContentDocument, kind: string, record: CompanyRecord | NewsRecord): ContentDocument;
+export function applyRecord(document: ContentDocument, kind: string, record: CompanyRecord | NewsRecord | TeamRecord): ContentDocument;
 export function readContent(options?: { env?: NodeJS.ProcessEnv; fetchImpl?: typeof fetch; cached?: boolean }): Promise<{ document: ContentDocument; revision: string }>;
 export function writeContent(document: ContentDocument, revision: string, options?: { env?: NodeJS.ProcessEnv; fetchImpl?: typeof fetch }): Promise<string>;

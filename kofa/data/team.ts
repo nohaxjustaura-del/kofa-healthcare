@@ -46,7 +46,7 @@ export interface TeamMember {
   /** cms: menu_order */
   sortOrder: number;
   /** Internal: marks unapproved copy so it renders as a labelled slot. */
-  bioStatus?: "placeholder";
+  bioStatus?: "placeholder" | "";
 }
 
 export const team: TeamMember[] = [
