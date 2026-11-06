@@ -18,7 +18,7 @@ export const KOFA_HOST = "kofahealthcare.com";
 
 /** Official newsrooms that differ from the website listed for the company. */
 export const EXTRA_OFFICIAL_HOSTS = {
-  "alydia-health": ["organon.com"],
+  "alydia-health": ["organon.com", "laborie.com"],
   "axena-health": ["axenahealth.com"],
 };
 

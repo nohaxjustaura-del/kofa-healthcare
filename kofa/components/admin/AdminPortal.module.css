@@ -76,3 +76,9 @@
   .welcome { padding-bottom: 32px; }
 }
 @media (prefers-reduced-motion: reduce) { .portal * { transition: none !important; } }
+
+.sourceChecks { margin-top: 16px; }
+.sourceChecks summary { cursor: pointer; min-height: 44px; font-weight: 500; }
+.sourceChecks ul { list-style: none; padding: 0; }
+.sourceChecks li { display: grid; gap: 4px; padding: 12px 0; border-top: 1px solid var(--color-rule, #cfe0e3); }
+.sourceChecks li span { font-size: .875rem; line-height: 1.6; }

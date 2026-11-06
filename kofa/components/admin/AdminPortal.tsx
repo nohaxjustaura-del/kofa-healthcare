@@ -8,7 +8,8 @@ import styles from "./AdminPortal.module.css";
 type Kind = "company" | "news" | "team";
 type Entry = CompanyRecord | NewsRecord | TeamRecord;
 type Draft = Record<string, string | number | boolean | null | undefined>;
-type Library = { revision: string; companies: CompanyRecord[]; news: NewsRecord[]; team: TeamRecord[] };
+type SourceCheck = { company: string; source: string; sourceUrl: string; checkedAt: string; status: string; items: number; message: string };
+type Library = { revision: string; companies: CompanyRecord[]; news: NewsRecord[]; team: TeamRecord[]; collection: SourceCheck[] };
 const libraryKey = (kind: Kind) => kind === "company" ? "companies" : kind === "team" ? "team" : "news";
 const fieldsFor = (entry: Entry): Draft => Object.fromEntries(Object.entries(entry).map(([key, value]) => [key, key === "focusAreas" && Array.isArray(value) ? value.join("\n") : value]).filter(([, value]) => value == null || ["string", "boolean", "number"].includes(typeof value)));
 const categories = ["Cardiovascular", "Women's Health", "Diagnostics", "Orthopedics", "Digital Health"];
@@ -195,7 +196,16 @@ export function AdminPortal({ signedIn, configured, publishingConnected }: { sig
   return <section className={styles.portal}>
     <header className={styles.header}><div><h1>Partner admin</h1><p>Your portfolio, team and newsroom, in one place.</p></div><div className={styles.headerActions}><Link href="/portfolio" target="_blank" rel="noopener noreferrer">View website</Link><button className={styles.secondary} onClick={signOut} disabled={busy}>Sign out</button></div></header>
     <nav className={styles.tabs} aria-label="Manage website content">{(["company", "team", "news"] as Kind[]).map((tab) => <button key={tab} aria-pressed={kind === tab} disabled={busy} onClick={() => { if (mayLeave()) { setKind(tab); setQuery(""); setDraft(undefined); setOriginal(""); setError(""); setNotice(""); setConflict(false); } }}>{tab === "company" ? "Portfolio" : tab === "team" ? "Team" : "News"}</button>)}</nav>
-    {kind === "news" && <p className={styles.message}>News is checked daily from eight configured official company sources. Other announcements can be added here. Links must use company websites or company-issued releases on approved wire services. Automatic coverage does not include every portfolio company.</p>}
+    {kind === "news" && <div className={styles.message}>
+      <p>Official websites are checked daily for all 16 current portfolio companies. Accessible, dated announcements are imported automatically. If a company has no public news or its website cannot be read, you can add an announcement here. Third-party reporting and LinkedIn are excluded.</p>
+      {library && library.collection.length > 0 && <details className={styles.sourceChecks}><summary>Automatic collection status</summary>
+        <p>Last check: {new Date(library.collection[0].checkedAt).toLocaleString()}. Counts show announcements found at the last check, including older stories. Portfolio News appears publicly for 12 months.</p>
+        <ul>{library.collection.map((check) => <li key={check.sourceUrl}>
+          <strong>{library.companies.find((company) => company.slug === check.company)?.name ?? check.company}{check.source !== library.companies.find((company) => company.slug === check.company)?.name ? ` (${check.source})` : ""}</strong>
+          <span>{check.status === "connected" ? `Connected: ${check.items} announcements found` : check.status === "unavailable" ? "Source unavailable" : "No dated announcements found"}. {check.message}</span>
+        </li>)}</ul>
+      </details>}
+    </div>}
     {!publishingConnected && <p className={styles.message}>Publishing is being connected. Ask the site administrator to complete setup before adding content.</p>}
     {error && !draft && <p className={styles.error} role="alert">{error} {publishingConnected && <button className={styles.textButton} onClick={() => void load()}>Try again</button>}</p>}
     <div className={styles.workspace}>

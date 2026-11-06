@@ -1,5 +1,6 @@
 import { NextRequest } from "next/server";
 import { revalidatePath, revalidateTag } from "next/cache";
+import newsSnapshot from "@/data/news.generated.json";
 import { team } from "@/data/team";
 import { portfolio } from "@/data/portfolio";
 import { allNews } from "@/data/news";
@@ -10,7 +11,7 @@ export async function GET(request: NextRequest) {
   try {
     requireAdmin(request);
     const { document, revision } = await readContent();
-    return adminResponse({ revision, team: mergeRecords(team, document.team ?? [], true), companies: mergeRecords(portfolio, document.companies as Partial<(typeof portfolio)[number]>[], true), news: mergeRecords(allNews, document.news, true) });
+    return adminResponse({ revision, collection: Object.values(newsSnapshot.checks), team: mergeRecords(team, document.team ?? [], true), companies: mergeRecords(portfolio, document.companies as Partial<(typeof portfolio)[number]>[], true), news: mergeRecords(allNews, document.news, true) });
   } catch (error) { return adminFailure(error); }
 }
 

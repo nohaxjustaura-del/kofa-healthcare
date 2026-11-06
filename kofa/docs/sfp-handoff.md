@@ -67,8 +67,8 @@ At the time, the owner needed to resolve the Billing & plans restriction before 
 No payment, plan or spending-limit change was made during this follow-up.
 Do not treat this as a parser failure or suppress it with a workflow change.
 
-As of November 5, the daily job watches eight configured official sources,
-rather than every portfolio company. The November 4 refresh succeeded and
+The original release watched eight official sources. The expanded November 5
+release described below checks all 16 current portfolio companies. The November 4 refresh succeeded and
 saved 74 automated items; the October billing incident below is historical. Manual article publishing is available in the admin.
 Existing published data is retained while automatic refresh is blocked.
 
@@ -105,11 +105,30 @@ draft/publish controls and public cache invalidation. No new secrets or data
 migration are required: older content documents without a team list remain
 supported. Deploy this version to both the admin destination and public host.
 
-News collection already restricts automated links to the eight configured
-company domains. SFP does not need to rewrite the collector to enable this.
+News collection already restricts automated links to configured
+official domains. SFP does not need to rewrite the collector to enable this.
 Manual entries additionally allow company-issued releases on approved wire
 services; this is separate from automatic collection. See `partner-admin.md`
 for the client-facing explanation and the rebuild requirement after generated
 snapshot commits. Monitor the existing job and deployment pipeline; update
 individual source adapters when official sites change. Do not change DNS or
 existing partner credentials for this feature release.
+
+
+## November 5: expanded official news collection
+
+The collector now checks all 16 current portfolio companies (17 official
+sources, including both Organon and Laborie for Alydia/JADA). Eleven companies
+currently have dated announcements connected. The remaining five receive
+bounded homepage/feed/newsroom discovery checks; Axon and Aria currently have
+access errors, while Zafrens, IllumiCell AI and Marrow Access have no discoverable
+dated news. Do not describe a successful website check as a guarantee that
+all announcements are collected. Company-issued wire releases can be entered
+manually. See the live News collection status for the latest result.
+
+The existing daily GitHub Actions schedule runs the expanded collector without
+new secrets or hosting services. Generated snapshot commits still require a
+rebuild on the host. JSON date handling preserves the source's printed calendar
+date across server timezones. Redirects and article discovery stay on each
+configured official domain. New portfolio additions require a matching source
+entry in `scripts/sync-news.mjs`.

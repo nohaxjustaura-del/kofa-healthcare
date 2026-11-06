@@ -7,6 +7,10 @@ import { createRequire } from "node:module";
 import ts from "typescript";
 import {
   FEEDS,
+  fetchFeed,
+  parseCorflowNews,
+  parseWordpressNews,
+  parseOfficialArticle,
   mergeCuratedNews,
   parseRss,
   parseEyenukResources,
@@ -211,4 +215,63 @@ test("all-source failure preserves the checked-in snapshot and reports failure",
   } finally {
     await rm(directory, { recursive: true, force: true });
   }
+});
+
+
+test("daily sources cover every current portfolio company without accepting foreign domains", async () => {
+  const { portfolio } = await loadTs("../data/portfolio.ts");
+  assert.deepEqual([...new Set(FEEDS.map((feed) => feed.company))].sort(), portfolio.map((company) => company.slug).sort());
+  assert.equal(new Set(FEEDS.map((feed) => feed.id)).size, FEEDS.length);
+  const websites = new Map(portfolio.map((company) => [company.slug, company.website]));
+  for (const feed of FEEDS) assert.ok(approvedNewsUrl(feed.feedUrl, { company: feed.company, website: websites.get(feed.company) }), feed.id);
+});
+
+test("CorFlow PDF releases use their printed release dates and reject foreign, undated and future files", () => {
+  const feed = FEEDS.find((item) => item.id === "corflow");
+  const section = (href, date) => `<section><span class="elementor-icon-list-text">${date}</span><h5>CorFlow trial update</h5><a href="${href}">Download full press release</a></section>`;
+  const html = section("https://corflow.com/wp-content/uploads/2026/05/release.pdf", "BREAKING NEWS: Monday the 4th May 2026") + section("https://example.com/release.pdf", "May 4, 2026") + section("https://corflow.com/undated.pdf", "") + section("https://corflow.com/future.pdf", "May 4, 2027");
+  const entries = parseCorflowNews(html + '<section><span class="elementor-icon-list-text">May 4, 2026</span><h5>Third-party guidelines</h5><a href="https://corflow.com/guidelines.pdf">Download guidelines</a></section>', feed, now);
+  assert.equal(entries.length, 1);
+  assert.equal(entries[0].date, "2026-05-04");
+});
+
+test("acquirer feeds include only related JADA/Alydia headlines and preserve WordPress calendar dates", () => {
+  const feed = FEEDS.find((item) => item.id === "alydia-organon");
+  const post = (title, link = "https://organon.com/news/jada-update") => ({ title: { rendered: title }, link, date: "2026-05-04T23:30:00" });
+  const entries = parseWordpressNews(JSON.stringify([post("JADA system update"), post("Unrelated financial results"), post("JADA update", "https://example.com/story")]), feed, now);
+  assert.equal(entries.length, 1);
+  assert.equal(entries[0].date, "2026-05-04");
+  assert.deepEqual(parseWordpressNews("[]", feed, now), []);
+  assert.throws(() => parseWordpressNews("{}", feed, now));
+});
+
+test("article discovery requires published article metadata, not homepage or modification dates", () => {
+  const feed = FEEDS.find((item) => item.id === "zafrens");
+  const metadata = (type, date) => `<script type="application/ld+json">${JSON.stringify({ "@type": type, headline: "Official research update", ...date })}</script>`;
+  assert.equal(parseOfficialArticle(metadata("NewsArticle", { datePublished: "2026-05-04T23:30:00" }), "https://zafrens.com/news/update", feed, now).date, "2026-05-04");
+  assert.equal(parseOfficialArticle(metadata("WebPage", { datePublished: "2026-05-04" }), "https://zafrens.com/", feed, now), null);
+  assert.equal(parseOfficialArticle(metadata("NewsArticle", { dateModified: "2026-05-04" }), "https://zafrens.com/news/update", feed, now), null);
+});
+
+test("discovery detects new official newsrooms and preserves history when no dated stories are available", async () => {
+  const feed = FEEDS.find((item) => item.id === "zafrens");
+  const pages = {
+    [feed.feedUrl]: '<a href="/news">News</a><a href="https://example.com/news">External news</a>',
+    "https://zafrens.com/news": '<a href="/news/launch">Zafrens research announcement published today</a>',
+    "https://zafrens.com/news/launch": '<meta property="og:type" content="article"><meta property="og:title" content="Official launch"><meta property="article:published_time" content="2026-05-04">',
+  };
+  const entries = await fetchFeed(feed, { now, fetchImpl: async (url) => { assert.ok(pages[url], url); return new Response(pages[url]); } });
+  assert.equal(entries.length, 1);
+  const previous = { version: 1, sources: { [feed.id]: entries } };
+  const { snapshot, outages } = await refreshSnapshot(previous, { now, feeds: [feed], fetchImpl: async () => new Response("<html>No public announcements</html>") });
+  assert.deepEqual(outages, []);
+  assert.equal(snapshot.sources[feed.id][0].slug, entries[0].slug);
+  assert.equal(snapshot.checks[feed.id].status, "no-dated-news");
+});
+
+test("an official source redirect cannot fetch or import from another website", async () => {
+  const feed = FEEDS.find((item) => item.id === "zafrens");
+  let calls = 0;
+  await assert.rejects(fetchFeed(feed, { fetchImpl: async () => { calls++; return new Response(null, { status: 302, headers: { location: "https://example.com/press" } }); } }), /official domain/);
+  assert.equal(calls, 1);
 });

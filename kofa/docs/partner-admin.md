@@ -85,21 +85,30 @@ the same validation, authentication, draft handling and public content layer.
 
 ## Automatic news coverage
 
-The daily synchronizer watches official sources for RIVANNA, Nectero,
-Caretaker, Eyenuk, Venova, Axena Health, Raydiant Oximetry and Cerapedics.
-Venova and Raydiant are read from their press-release category feeds and
-Axena from its news category. Eyenuk's redesigned site uses dated HTML
-news/blog cards rather than its retired WordPress feed, and Cerapedics' Drupal
-news listing is read the same way.
+The daily synchronizer now checks official websites for all 16 current
+portfolio companies. Eleven companies currently supply accessible, dated
+announcements. Existing feed and HTML sources are joined by CorFlow's dated
+PDF-release links, Biospectal's own news categories (excluding its third-party
+Press Room category), and JADA/Alydia-specific releases from Organon and the
+product's current owner, Laborie. Unrelated acquirer news is excluded.
 
-The other companies have no machine-readable newsroom: Axon, Zafrens, IllumiCell
-and Marrow Access publish only on wire services or LinkedIn; CorFlow posts
-releases as PDFs; Biospectal's feed mixes blog posts with third-party press;
-Aria CV's site refuses automated connections; Alydia was acquired by Organon.
-Their news is added in the admin portal. Searching news engines for wire
-releases was tested and rejected: results were incomplete, often translations
-or syndicated copies, and the endpoint is unofficial. The bot stores source metadata
-and links, retains prior data during source outages, and does not copy bodies.
+Axon Therapies currently returns HTTP 500 and Aria CV fails an HTTPS
+connection. Zafrens, IllumiCell AI and Marrow Access currently expose no
+accessible dated announcements through their homepage news links or declared
+feeds. Their official homepages are still checked daily for newly linked
+newsrooms, feeds and articles. Discovery follows a bounded number of links on
+the same official domain and requires article publication metadata. A general
+homepage, product page, copyright year or modification date is never promoted
+to a news article. Source access errors preserve previous articles.
+
+Open **News > Automatic collection status** to see the last check, connected
+sources, unavailable sites and sites with no dated announcements. Source
+counts include older items, while public Portfolio News retains the 12-month
+window. The collector stores metadata and source links, not article bodies.
+Manual publishing remains available for company-issued wire releases or
+announcements that cannot be collected automatically. It does not scrape
+LinkedIn or search-engine results.
+
 An explicit `KOFA Healthcare` mention in an RSS title or description is
 classified as KOFA News. Manual edits take precedence and are stored separately
 from the generated snapshot, so the daily refresh cannot overwrite them.
@@ -123,10 +132,12 @@ lives in `lib/news-sources.mjs`.
 
 ## What the website host handles
 
-The existing GitHub Actions job checks the eight configured official sources
-once daily. It collects headlines, dates, short summaries and source links,
-not full article bodies. It does not search every company website or the whole
-internet. Companies without a supported source can be updated manually.
+The existing GitHub Actions job checks the official sources for all 16
+current portfolio companies once daily. It collects headlines, dates, short summaries and source links,
+not full article bodies. It checks configured official websites and linked news sources, rather than
+searching the whole internet. New portfolio companies require a source
+configuration entry; a regression check prevents omissions from the current
+checked-in portfolio. Companies without accessible news can be updated manually.
 
 No host-side bot rewrite is needed to restrict automatic collection: the
 synchronizer already accepts links only on each configured company domain.
@@ -139,5 +150,5 @@ snapshot commits. The generated snapshot ships with the application; a
 successful collection job alone does not update an unreconstructed SFP build.
 Partners' manual edits use the shared GitHub content library at runtime, with
 a one-minute cache. SFP should also monitor refresh/deployment failures and
-maintain source adapters if companies change their newsrooms. The latest
-verified refresh on November 4, 2026 succeeded and saved 74 automated items.
+maintain source adapters if companies change their newsrooms. Source status is recorded in the generated snapshot and shown in the admin
+portal after deployment.
