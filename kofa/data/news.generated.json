@@ -886,7 +886,7 @@
       "company": "rivanna-medical",
       "source": "RIVANNA",
       "sourceUrl": "https://rivannamedical.com/category/press-releases/feed/",
-      "checkedAt": "2026-11-08T18:51:55.649Z",
+      "checkedAt": "2026-11-09T23:28:05.522Z",
       "status": "connected",
       "items": 10,
       "message": "Official dated announcements are connected."
@@ -895,7 +895,7 @@
       "company": "nectero-medical",
       "source": "Nectero Therapeutics",
       "sourceUrl": "https://necterotherapeutics.com/feed/",
-      "checkedAt": "2026-11-08T18:51:55.649Z",
+      "checkedAt": "2026-11-09T23:28:05.522Z",
       "status": "connected",
       "items": 10,
       "message": "Official dated announcements are connected."
@@ -904,7 +904,7 @@
       "company": "caretaker-medical",
       "source": "Caretaker Medical",
       "sourceUrl": "https://caretakermedical.net/feed/",
-      "checkedAt": "2026-11-08T18:51:55.649Z",
+      "checkedAt": "2026-11-09T23:28:05.522Z",
       "status": "connected",
       "items": 10,
       "message": "Official dated announcements are connected."
@@ -913,7 +913,7 @@
       "company": "eyenuk",
       "source": "Eyenuk",
       "sourceUrl": "https://www.eyenuk.com/en/resources",
-      "checkedAt": "2026-11-08T18:51:55.649Z",
+      "checkedAt": "2026-11-09T23:28:05.522Z",
       "status": "connected",
       "items": 7,
       "message": "Official dated announcements are connected."
@@ -922,7 +922,7 @@
       "company": "venova-medical",
       "source": "Venova Medical",
       "sourceUrl": "https://venovamedical.com/category/press-release/feed/",
-      "checkedAt": "2026-11-08T18:51:55.649Z",
+      "checkedAt": "2026-11-09T23:28:05.522Z",
       "status": "connected",
       "items": 5,
       "message": "Official dated announcements are connected."
@@ -931,7 +931,7 @@
       "company": "axena-health",
       "source": "Axena Health",
       "sourceUrl": "https://axenahealth.com/category/news/feed/",
-      "checkedAt": "2026-11-08T18:51:55.649Z",
+      "checkedAt": "2026-11-09T23:28:05.522Z",
       "status": "connected",
       "items": 10,
       "message": "Official dated announcements are connected."
@@ -940,7 +940,7 @@
       "company": "raydiant-oximetry",
       "source": "Raydiant Oximetry",
       "sourceUrl": "https://raydiantoximetry.com/category/press-releases/feed/",
-      "checkedAt": "2026-11-08T18:51:55.649Z",
+      "checkedAt": "2026-11-09T23:28:05.522Z",
       "status": "connected",
       "items": 10,
       "message": "Official dated announcements are connected."
@@ -949,7 +949,7 @@
       "company": "cerapedics",
       "source": "Cerapedics",
       "sourceUrl": "https://www.cerapedics.com/news-and-events/news",
-      "checkedAt": "2026-11-08T18:51:55.649Z",
+      "checkedAt": "2026-11-09T23:28:05.522Z",
       "status": "connected",
       "items": 10,
       "message": "Official dated announcements are connected."
@@ -958,7 +958,7 @@
       "company": "corflow",
       "source": "CorFlow Therapeutics",
       "sourceUrl": "https://corflow.com/news",
-      "checkedAt": "2026-11-08T18:51:55.649Z",
+      "checkedAt": "2026-11-09T23:28:05.522Z",
       "status": "connected",
       "items": 6,
       "message": "Official dated announcements are connected."
@@ -967,7 +967,7 @@
       "company": "biospectal",
       "source": "Biospectal",
       "sourceUrl": "https://biospectal.com/wp-json/wp/v2/posts?categories=10,28&per_page=25&_fields=link,title,date,categories",
-      "checkedAt": "2026-11-08T18:51:55.649Z",
+      "checkedAt": "2026-11-09T23:28:05.522Z",
       "status": "connected",
       "items": 18,
       "message": "Official dated announcements are connected."
@@ -976,7 +976,7 @@
       "company": "alydia-health",
       "source": "Organon",
       "sourceUrl": "https://www.organon.com/wp-json/wp/v2/news_item/?per_page=25&search=JADA&_fields=link,title,date",
-      "checkedAt": "2026-11-08T18:51:55.649Z",
+      "checkedAt": "2026-11-09T23:28:05.522Z",
       "status": "connected",
       "items": 6,
       "message": "Official dated announcements are connected."
@@ -985,7 +985,7 @@
       "company": "alydia-health",
       "source": "Laborie",
       "sourceUrl": "https://www.laborie.com/about-us/news/",
-      "checkedAt": "2026-11-08T18:51:55.649Z",
+      "checkedAt": "2026-11-09T23:28:05.522Z",
       "status": "unavailable",
       "items": 0,
       "message": "Official source could not be read. Previous articles have been retained."
@@ -994,7 +994,7 @@
       "company": "axon-therapies",
       "source": "Axon Therapies",
       "sourceUrl": "https://axontherapies.com/",
-      "checkedAt": "2026-11-08T18:51:55.649Z",
+      "checkedAt": "2026-11-09T23:28:05.522Z",
       "status": "unavailable",
       "items": 0,
       "message": "Official source could not be read. Previous articles have been retained."
@@ -1003,7 +1003,7 @@
       "company": "zafrens",
       "source": "Zafrens",
       "sourceUrl": "https://www.zafrens.com/",
-      "checkedAt": "2026-11-08T18:51:55.649Z",
+      "checkedAt": "2026-11-09T23:28:05.522Z",
       "status": "no-dated-news",
       "items": 0,
       "message": "No accessible dated announcements were found. Manual publishing is available."
@@ -1012,7 +1012,7 @@
       "company": "illumicell-ai",
       "source": "IllumiCell AI",
       "sourceUrl": "https://www.illumicell.ai/",
-      "checkedAt": "2026-11-08T18:51:55.649Z",
+      "checkedAt": "2026-11-09T23:28:05.522Z",
       "status": "no-dated-news",
       "items": 0,
       "message": "No accessible dated announcements were found. Manual publishing is available."
@@ -1021,7 +1021,7 @@
       "company": "aria-cv",
       "source": "Aria CV",
       "sourceUrl": "https://ariacv.com/",
-      "checkedAt": "2026-11-08T18:51:55.649Z",
+      "checkedAt": "2026-11-09T23:28:05.522Z",
       "status": "unavailable",
       "items": 0,
       "message": "Official source could not be read. Previous articles have been retained."
@@ -1030,7 +1030,7 @@
       "company": "marrow-access",
       "source": "Marrow Access Technologies",
       "sourceUrl": "https://marrowaccess.com/",
-      "checkedAt": "2026-11-08T18:51:55.649Z",
+      "checkedAt": "2026-11-09T23:28:05.522Z",
       "status": "no-dated-news",
       "items": 0,
       "message": "No accessible dated announcements were found. Manual publishing is available."
